@@ -4,17 +4,18 @@ import { useState, useEffect } from "react"
 import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export default function InstallPWAButton() {
+export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
-  const [isInstallable, setIsInstallable] = useState(false)
+  const [showInstallButton, setShowInstallButton] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false)
 
   useEffect(() => {
     // Detectar si es iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
     setIsIOS(isIOSDevice)
 
-    // Detectar si la app ya está instalada
+    // No mostrar el botón si ya está en modo standalone (ya instalada)
     if (window.matchMedia("(display-mode: standalone)").matches) {
       return
     }
@@ -25,18 +26,23 @@ export default function InstallPWAButton() {
       e.preventDefault()
       // Guardar el evento para usarlo después
       setDeferredPrompt(e)
-      setIsInstallable(true)
-      console.log("La app es instalable, se ha capturado el evento beforeinstallprompt")
+      setShowInstallButton(true)
     }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
 
+    // Limpiar el evento cuando el componente se desmonte
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
     }
   }, [])
 
   const handleInstallClick = async () => {
+    if (isIOS) {
+      setShowIOSInstructions(!showIOSInstructions)
+      return
+    }
+
     if (!deferredPrompt) {
       console.log("No hay prompt disponible para instalar")
       return
@@ -48,27 +54,20 @@ export default function InstallPWAButton() {
     // Esperar a que el usuario responda al prompt
     const { outcome } = await deferredPrompt.userChoice
 
-    console.log(`El usuario ${outcome === "accepted" ? "aceptó" : "rechazó"} la instalación`)
-
-    // Limpiar el prompt guardado, solo se puede usar una vez
-    setDeferredPrompt(null)
+    // Si el usuario aceptó, limpiar el prompt
+    if (outcome === "accepted") {
+      setDeferredPrompt(null)
+      setShowInstallButton(false)
+    }
   }
 
-  if (isIOS) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200"
-      >
-        <Download className="h-4 w-4" />
-        Instalar (iOS): Usa "Añadir a inicio"
-      </Button>
-    )
+  // Si no hay que mostrar el botón, no renderizar nada
+  if (!showInstallButton && !isIOS) {
+    return null
   }
 
-  if (isInstallable) {
-    return (
+  return (
+    <div className="relative">
       <Button
         onClick={handleInstallClick}
         variant="outline"
@@ -76,10 +75,19 @@ export default function InstallPWAButton() {
         className="flex items-center gap-2 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200"
       >
         <Download className="h-4 w-4" />
-        Instalar app
+        {isIOS ? "Instalar en iOS" : "Instalar app"}
       </Button>
-    )
-  }
 
-  return null
+      {isIOS && showIOSInstructions && (
+        <div className="absolute bottom-full mb-2 w-64 rounded-lg bg-white p-3 text-xs shadow-lg">
+          <p className="mb-2 font-medium">Para instalar en iOS:</p>
+          <ol className="list-decimal pl-4 space-y-1">
+            <li>Toca el botón "Compartir" en Safari</li>
+            <li>Desplázate y selecciona "Añadir a pantalla de inicio"</li>
+            <li>Toca "Añadir" en la esquina superior derecha</li>
+          </ol>
+        </div>
+      )}
+    </div>
+  )
 }

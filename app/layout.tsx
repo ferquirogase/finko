@@ -10,11 +10,9 @@ import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"] })
 
-// Reemplazar el título y descripción
 export const metadata = {
   title: "finko - Herramientas para freelancers",
   description: "Calcula tarifas, genera presupuestos y crea facturas profesionales fácilmente",
-  // Metadatos Open Graph para compartir en redes sociales
   openGraph: {
     type: "website",
     locale: "es_ES",
@@ -31,21 +29,12 @@ export const metadata = {
       },
     ],
   },
-  // Metadatos para Twitter
   twitter: {
     card: "summary_large_image",
     title: "finko - Herramientas para freelancers",
     description: "Calcula tarifas, genera presupuestos y crea facturas profesionales fácilmente",
     images: ["https://finko.app/og-image.png"],
     creator: "@finkoapp",
-  },
-  // Metadatos para PWA
-  manifest: "/manifest.json",
-  themeColor: "#4c1d95",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Finko",
   },
     generator: 'v0.dev'
 }
@@ -63,12 +52,17 @@ export default function RootLayout({
 
         {/* PWA meta tags */}
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#4c1d95" />
+        <meta name="theme-color" content="#6d28d9" />
+        <meta name="application-name" content="Finko" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Finko" />
-        <link rel="apple-touch-icon" href="/finko-fav.png" />
-        <link rel="apple-touch-startup-image" href="/finko-fav.png" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+
+        {/* Apple touch icons */}
+        <link rel="apple-touch-icon" href="/pwa/apple-icon-180.png" />
+        <link rel="apple-touch-startup-image" href="/pwa/apple-splash-dark-2048-2732.png" />
 
         {/* Google Analytics */}
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-WJQ2C9VR70" strategy="afterInteractive" />
@@ -81,17 +75,17 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Service Worker Registration - Mejorado */}
+        {/* Service Worker Registration */}
         <Script id="register-sw" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js')
                   .then(function(registration) {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    console.log('Service Worker registrado con éxito:', registration.scope);
                   })
-                  .catch(function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
+                  .catch(function(error) {
+                    console.log('Error al registrar el Service Worker:', error);
                   });
               });
             }

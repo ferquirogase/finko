@@ -1,6 +1,7 @@
+// Nombre de la caché
 const CACHE_NAME = "finko-cache-v1"
 
-// Lista de recursos para cachear inicialmente
+// Archivos a cachear inicialmente
 const urlsToCache = [
   "/",
   "/calculadora",
@@ -8,43 +9,40 @@ const urlsToCache = [
   "/recibos",
   "/pagos-exterior",
   "/manifest.json",
-  "/icon-192.png",
-  "/icon-512.png",
+  "/pwa/icon-192.png",
+  "/pwa/icon-512.png",
   "/finko.png",
   "/finko-fav.png",
 ]
 
 // Instalación del service worker
 self.addEventListener("install", (event) => {
+  // Realizar tareas de instalación
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache)
-      })
-      .then(() => self.skipWaiting()),
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log("Opened cache")
+      return cache.addAll(urlsToCache)
+    }),
   )
 })
 
 // Activación del service worker
 self.addEventListener("activate", (event) => {
+  const cacheWhitelist = [CACHE_NAME]
   event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              return caches.delete(cacheName)
-            }
-          }),
-        )
-      })
-      .then(() => self.clients.claim()),
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName)
+          }
+        }),
+      )
+    }),
   )
 })
 
-// Estrategia de caché: Cache first, falling back to network
+// Interceptar solicitudes de red
 self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
@@ -52,21 +50,7 @@ self.addEventListener("fetch", (event) => {
       if (response) {
         return response
       }
-      return fetch(event.request).then((response) => {
-        // Check if we received a valid response
-        if (!response || response.status !== 200 || response.type !== "basic") {
-          return response
-        }
-
-        // Clone the response
-        var responseToCache = response.clone()
-
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache)
-        })
-
-        return response
-      })
+      return fetch(event.request)
     }),
   )
 })
