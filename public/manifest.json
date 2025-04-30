@@ -1,7 +1,7 @@
 {
-  "name": "Finko - Herramientas para freelancers",
+  "name": "Finko",
   "short_name": "Finko",
-  "description": "Calcula tarifas, genera presupuestos y crea facturas profesionales",
+  "description": "Herramientas para freelancers",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#6d28d9",
@@ -16,12 +16,6 @@
       "src": "/pwa/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
-    },
-    {
-      "src": "/pwa/maskable-icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }

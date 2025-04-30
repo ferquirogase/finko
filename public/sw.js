@@ -2,18 +2,7 @@
 const CACHE_NAME = "finko-cache-v1"
 
 // Archivos a cachear inicialmente
-const urlsToCache = [
-  "/",
-  "/calculadora",
-  "/presupuestos",
-  "/recibos",
-  "/pagos-exterior",
-  "/manifest.json",
-  "/pwa/icon-192.png",
-  "/pwa/icon-512.png",
-  "/finko.png",
-  "/finko-fav.png",
-]
+const urlsToCache = ["/", "/offline.html", "/finko.png", "/finko-fav.png", "/pwa/icon-192.png", "/pwa/icon-512.png"]
 
 // Instalación del service worker
 self.addEventListener("install", (event) => {
@@ -24,33 +13,51 @@ self.addEventListener("install", (event) => {
       return cache.addAll(urlsToCache)
     }),
   )
+  // Forzar la activación inmediata
+  self.skipWaiting()
 })
 
 // Activación del service worker
 self.addEventListener("activate", (event) => {
-  const cacheWhitelist = [CACHE_NAME]
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName)
-          }
-        }),
-      )
-    }),
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              return caches.delete(cacheName)
+            }
+          }),
+        )
+      })
+      .then(() => {
+        // Tomar control de los clientes inmediatamente
+        return self.clients.claim()
+      }),
   )
 })
 
-// Interceptar solicitudes de red
+// Interceptar solicitudes de red - estrategia más segura
 self.addEventListener("fetch", (event) => {
+  // No interceptar solicitudes a chunks de JavaScript o recursos críticos
+  if (
+    event.request.url.includes("/next/static/chunks/") ||
+    event.request.url.includes("/_next/") ||
+    event.request.url.includes("webpack")
+  ) {
+    return
+  }
+
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Cache hit - return response
-      if (response) {
-        return response
+    fetch(event.request).catch(() => {
+      // Solo usar caché para navegación si la red falla
+      if (event.request.mode === "navigate") {
+        return caches.match("/offline.html")
       }
-      return fetch(event.request)
+
+      // Para otros recursos, intentar desde caché
+      return caches.match(event.request)
     }),
   )
 })

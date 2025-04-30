@@ -75,18 +75,21 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Service Worker Registration */}
-        <Script id="register-sw" strategy="afterInteractive">
+        {/* Service Worker Registration - Mejorado y más seguro */}
+        <Script id="register-sw" strategy="lazyOnload">
           {`
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(registration) {
-                    console.log('Service Worker registrado con éxito:', registration.scope);
-                  })
-                  .catch(function(error) {
-                    console.log('Error al registrar el Service Worker:', error);
-                  });
+                // Retrasar el registro para asegurar que la página cargue primero
+                setTimeout(() => {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                      console.log('Service Worker registrado con éxito:', registration.scope);
+                    })
+                    .catch(function(error) {
+                      console.log('Error al registrar el Service Worker:', error);
+                    });
+                }, 5000); // Retrasar 5 segundos
               });
             }
           `}
