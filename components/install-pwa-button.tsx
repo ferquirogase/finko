@@ -23,6 +23,7 @@ export default function InstallPWAButton() {
       // Guardar el evento para usarlo después
       setDeferredPrompt(e)
       setIsInstallable(true)
+      console.log("La app es instalable, se ha capturado el evento beforeinstallprompt")
     }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
@@ -32,6 +33,7 @@ export default function InstallPWAButton() {
       setIsInstalled(true)
       setIsInstallable(false)
       setDeferredPrompt(null)
+      console.log("La app ha sido instalada")
     })
 
     return () => {
@@ -41,13 +43,18 @@ export default function InstallPWAButton() {
   }, [])
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return
+    if (!deferredPrompt) {
+      console.log("No hay prompt disponible para instalar")
+      return
+    }
 
     // Mostrar el prompt de instalación
     deferredPrompt.prompt()
 
     // Esperar a que el usuario responda al prompt
     const { outcome } = await deferredPrompt.userChoice
+
+    console.log(`El usuario ${outcome === "accepted" ? "aceptó" : "rechazó"} la instalación`)
 
     // Limpiar el prompt guardado, solo se puede usar una vez
     setDeferredPrompt(null)
