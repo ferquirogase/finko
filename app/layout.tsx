@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import ParticlesBackground from "@/components/particles-background"
+import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,6 +23,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        {/* Google Analytics */}
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-8B8ML2P53M" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-8B8ML2P53M');
+          `}
+        </Script>
+      </head>
       <body className={`${inter.className} bg-gradient-to-br from-[#f5f7fa] to-[#f0f2f8]`}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <ParticlesBackground />
