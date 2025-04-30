@@ -50,7 +50,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         {/* Favicon */}
-        <link rel="icon" href="/finko.png" />
+        <link rel="icon" href="/finko-fav.png" />
 
         {/* Google Analytics */}
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-WJQ2C9VR70" strategy="afterInteractive" />

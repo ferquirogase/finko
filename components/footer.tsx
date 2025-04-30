@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/finko-logo.svg" alt="finko logo" width={100} height={30} />
+              <Image src="/finko.png" alt="finko logo" width={96} height={24} className="h-6 w-auto" />
             </Link>
             <p className="text-sm text-gray-500">
               Herramientas para freelancers que simplifican tu negocio. Calcula tarifas, genera presupuestos y crea
