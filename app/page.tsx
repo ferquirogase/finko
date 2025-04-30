@@ -1,5 +1,6 @@
 import ToolCard from "@/components/tool-card"
 import { Calculator, FileText, CreditCard, DollarSign } from "lucide-react"
+import InstallPWAButton from "@/components/install-pwa-button"
 
 export default function Home() {
   return (
@@ -9,6 +10,10 @@ export default function Home() {
         <p className="mb-6 text-lg text-white/90">
           Calcula cuánto cobrar, genera presupuestos y crea facturas profesionales en minutos.
         </p>
+      </div>
+
+      <div className="flex justify-center my-4">
+        <InstallPWAButton />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

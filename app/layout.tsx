@@ -39,6 +39,14 @@ export const metadata = {
     images: ["https://finko.app/og-image.png"],
     creator: "@finkoapp",
   },
+  // Metadatos para PWA
+  manifest: "/manifest.json",
+  themeColor: "#4c1d95",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Finko",
+  },
     generator: 'v0.dev'
 }
 
@@ -55,12 +63,12 @@ export default function RootLayout({
 
         {/* PWA meta tags */}
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#8b5cf6" />
+        <meta name="theme-color" content="#4c1d95" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Finko" />
-        <link rel="apple-touch-icon" href="/icon.png" />
-        <link rel="icon" href="/icon.png" />
+        <link rel="apple-touch-icon" href="/finko-fav.png" />
+        <link rel="apple-touch-startup-image" href="/finko-fav.png" />
 
         {/* Google Analytics */}
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-WJQ2C9VR70" strategy="afterInteractive" />
@@ -73,19 +81,18 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Service Worker Registration */}
+        {/* Service Worker Registration - Mejorado */}
         <Script id="register-sw" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').then(
-                  function(registration) {
+                navigator.serviceWorker.register('/sw.js')
+                  .then(function(registration) {
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                  },
-                  function(err) {
+                  })
+                  .catch(function(err) {
                     console.log('ServiceWorker registration failed: ', err);
-                  }
-                );
+                  });
               });
             }
           `}
