@@ -59,10 +59,62 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Finko" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-TileColor" content="#6d28d9" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
         {/* Apple touch icons */}
         <link rel="apple-touch-icon" href="/pwa/apple-icon-180.png" />
-        <link rel="apple-touch-startup-image" href="/pwa/apple-splash-dark-2048-2732.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/pwa/apple-icon-152.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/pwa/apple-icon-180.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/pwa/apple-icon-167.png" />
+
+        {/* Apple splash screens */}
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-2048-2732.png"
+          media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-1668-2388.png"
+          media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-1536-2048.png"
+          media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-1125-2436.png"
+          media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-1242-2688.png"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-828-1792.png"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-1242-2208.png"
+          media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-750-1334.png"
+          media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/pwa/apple-splash-640-1136.png"
+          media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        />
 
         {/* Google Analytics */}
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-WJQ2C9VR70" strategy="afterInteractive" />
@@ -75,21 +127,18 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Service Worker Registration - Mejorado y más seguro */}
-        <Script id="register-sw" strategy="lazyOnload">
+        {/* Service Worker Registration - Optimizado para móviles */}
+        <Script id="register-sw" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', function() {
-                // Retrasar el registro para asegurar que la página cargue primero
-                setTimeout(() => {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      console.log('Service Worker registrado con éxito:', registration.scope);
-                    })
-                    .catch(function(error) {
-                      console.log('Error al registrar el Service Worker:', error);
-                    });
-                }, 5000); // Retrasar 5 segundos
+                navigator.serviceWorker.register('/sw.js')
+                  .then(function(registration) {
+                    console.log('Service Worker registrado con éxito:', registration.scope);
+                  })
+                  .catch(function(error) {
+                    console.log('Error al registrar el Service Worker:', error);
+                  });
               });
             }
           `}

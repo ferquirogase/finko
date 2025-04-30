@@ -19,23 +19,27 @@
       text-align: center;
     }
     .container {
-      max-width: 500px;
+      max-width: 90%;
+      width: 360px;
       padding: 2rem;
       background-color: white;
       border-radius: 1rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 1rem;
     }
     h1 {
       color: #6d28d9;
       margin-bottom: 1rem;
+      font-size: 1.5rem;
     }
     p {
       margin-bottom: 1.5rem;
       line-height: 1.5;
+      font-size: 0.95rem;
     }
     .logo {
-      width: 120px;
-      margin-bottom: 2rem;
+      width: 100px;
+      margin-bottom: 1.5rem;
     }
     .button {
       background-color: #6d28d9;
@@ -47,15 +51,22 @@
       cursor: pointer;
       text-decoration: none;
       display: inline-block;
+      font-size: 0.95rem;
     }
     .button:hover {
       background-color: #5b21b6;
+    }
+    .offline-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #6d28d9;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <img src="/finko.png" alt="Finko logo" class="logo">
+    <div class="offline-icon">📶</div>
     <h1>Sin conexión a Internet</h1>
     <p>No se puede acceder a Finko en este momento porque no tienes conexión a Internet. Verifica tu conexión y vuelve a intentarlo.</p>
     <button class="button" onclick="window.location.reload()">Reintentar</button>

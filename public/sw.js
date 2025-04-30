@@ -1,8 +1,17 @@
 // Nombre de la caché
-const CACHE_NAME = "finko-cache-v1"
+const CACHE_NAME = "finko-cache-v2"
 
 // Archivos a cachear inicialmente
-const urlsToCache = ["/", "/offline.html", "/finko.png", "/finko-fav.png", "/pwa/icon-192.png", "/pwa/icon-512.png"]
+const urlsToCache = [
+  "/",
+  "/offline.html",
+  "/finko.png",
+  "/finko-fav.png",
+  "/pwa/icon-192.png",
+  "/pwa/icon-512.png",
+  "/pwa/maskable-icon.png",
+  "/pwa/apple-icon-180.png",
+]
 
 // Instalación del service worker
 self.addEventListener("install", (event) => {
@@ -38,26 +47,66 @@ self.addEventListener("activate", (event) => {
   )
 })
 
-// Interceptar solicitudes de red - estrategia más segura
+// Interceptar solicitudes de red - estrategia más segura para móviles
 self.addEventListener("fetch", (event) => {
   // No interceptar solicitudes a chunks de JavaScript o recursos críticos
   if (
     event.request.url.includes("/next/static/chunks/") ||
     event.request.url.includes("/_next/") ||
-    event.request.url.includes("webpack")
+    event.request.url.includes("webpack") ||
+    event.request.url.includes("analytics") ||
+    event.request.url.includes("gtag")
   ) {
     return
   }
 
+  // Estrategia: Network first, fallback to cache, then offline page
   event.respondWith(
-    fetch(event.request).catch(() => {
-      // Solo usar caché para navegación si la red falla
-      if (event.request.mode === "navigate") {
-        return caches.match("/offline.html")
-      }
+    fetch(event.request)
+      .then((response) => {
+        // Si la respuesta es válida, clonarla y guardarla en caché
+        if (response && response.status === 200) {
+          const responseToCache = response.clone()
+          caches.open(CACHE_NAME).then((cache) => {
+            // Solo cachear GET requests
+            if (event.request.method === "GET") {
+              cache.put(event.request, responseToCache)
+            }
+          })
+        }
+        return response
+      })
+      .catch(() => {
+        // Si falla la red, intentar desde caché
+        return caches.match(event.request).then((cachedResponse) => {
+          // Si está en caché, devolver la respuesta cacheada
+          if (cachedResponse) {
+            return cachedResponse
+          }
 
-      // Para otros recursos, intentar desde caché
-      return caches.match(event.request)
-    }),
+          // Si es una navegación y no está en caché, mostrar página offline
+          if (event.request.mode === "navigate") {
+            return caches.match("/offline.html")
+          }
+
+          // Para otros recursos, devolver un error
+          return new Response("", {
+            status: 404,
+            statusText: "Not Found",
+          })
+        })
+      }),
   )
 })
+
+// Evento para sincronización en segundo plano (útil para móviles)
+self.addEventListener("sync", (event) => {
+  if (event.tag === "sync-data") {
+    event.waitUntil(syncData())
+  }
+})
+
+// Función para sincronizar datos (placeholder)
+function syncData() {
+  return Promise.resolve()
+}
