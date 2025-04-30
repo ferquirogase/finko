@@ -254,8 +254,8 @@ export default function PaymentMethods() {
                       1
                     </div>
                     <span>
-                      <span className="font-medium">Regístrate:</span> Crea una cuenta gratuita en Saldoar con tu correo
-                      electrónico.
+                      <span className="font-medium">Cotizas y haces tu pedido:</span> Indicas el monto y la plataforma
+                      desde donde enviarás el dinero.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -263,8 +263,8 @@ export default function PaymentMethods() {
                       2
                     </div>
                     <span>
-                      <span className="font-medium">Conecta tus cuentas:</span> Vincula tus cuentas de PayPal, Wise,
-                      Payoneer u otros servicios.
+                      <span className="font-medium">Recibes las instrucciones para hacer tu envío:</span> Te indicamos
+                      los datos para realizar la transferencia.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -272,17 +272,8 @@ export default function PaymentMethods() {
                       3
                     </div>
                     <span>
-                      <span className="font-medium">Solicita un cambio:</span> Indica el monto en USD que deseas
-                      convertir a tu moneda local.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">
-                      4
-                    </div>
-                    <span>
-                      <span className="font-medium">Recibe tu dinero:</span> El dinero se transfiere directamente a tu
-                      cuenta bancaria local.
+                      <span className="font-medium">Te enviamos el saldo cotizado:</span> Recibes el dinero en tu cuenta
+                      bancaria local.
                     </span>
                   </li>
                 </ol>
