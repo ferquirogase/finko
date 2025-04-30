@@ -1,5 +1,5 @@
 import ToolCard from "@/components/tool-card"
-import { Calculator, FileText, CreditCard, DollarSign, Download } from "lucide-react"
+import { Calculator, FileText, CreditCard, DollarSign } from "lucide-react"
 import InstallPWA from "@/components/install-pwa"
 
 export default function Home() {
@@ -10,24 +10,12 @@ export default function Home() {
         <p className="mb-6 text-lg text-white/90">
           Calcula cuánto cobrar, genera presupuestos y crea facturas profesionales en minutos.
         </p>
-        <div className="flex justify-start">
+        <div className="flex justify-start md:hidden">
           <InstallPWA />
         </div>
       </div>
 
-      {/* Banner de instalación para móviles */}
-      <div className="md:hidden rounded-xl bg-purple-100 p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full bg-purple-200 p-2">
-            <Download className="h-5 w-5 text-purple-600" />
-          </div>
-          <div>
-            <h3 className="font-medium text-purple-900">Instala Finko</h3>
-            <p className="text-xs text-purple-700">Accede rápidamente sin conexión</p>
-          </div>
-        </div>
-        <InstallPWA />
-      </div>
+      {/* Eliminado el banner adicional de instalación */}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <ToolCard

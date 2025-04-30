@@ -3,15 +3,19 @@
 import { useState, useEffect } from "react"
 import { Download, Smartphone } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
-  const [showInstallButton, setShowInstallButton] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
   const [showIOSInstructions, setShowIOSInstructions] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
+    // Si no es un dispositivo móvil, no hacer nada
+    if (!isMobile) return
+
     // Detectar si ya está instalada como PWA
     if (window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true) {
       setIsStandalone(true)
@@ -28,17 +32,16 @@ export default function InstallPWA() {
       e.preventDefault()
       // Guardar el evento para usarlo después
       setDeferredPrompt(e)
-      setShowInstallButton(true)
       console.log("La app es instalable, se ha capturado el evento beforeinstallprompt")
     }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
 
-    // Limpiar el evento cuando el componente se desmonte
+    // Limpiar los eventos cuando el componente se desmonte
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
     }
-  }, [])
+  }, [isMobile])
 
   const handleInstallClick = async () => {
     if (isIOS) {
@@ -51,21 +54,24 @@ export default function InstallPWA() {
       return
     }
 
-    // Mostrar el prompt de instalación
-    deferredPrompt.prompt()
+    try {
+      // Mostrar el prompt de instalación
+      deferredPrompt.prompt()
 
-    // Esperar a que el usuario responda al prompt
-    const { outcome } = await deferredPrompt.userChoice
+      // Esperar a que el usuario responda al prompt
+      const { outcome } = await deferredPrompt.userChoice
 
-    // Si el usuario aceptó, limpiar el prompt
-    if (outcome === "accepted") {
-      setDeferredPrompt(null)
-      setShowInstallButton(false)
+      // Si el usuario aceptó, limpiar el prompt
+      if (outcome === "accepted") {
+        setDeferredPrompt(null)
+      }
+    } catch (error) {
+      console.error("Error al mostrar el prompt de instalación:", error)
     }
   }
 
-  // Si ya está instalada o no es instalable, no mostrar nada
-  if (isStandalone || (!showInstallButton && !isIOS)) {
+  // Si no es móvil o ya está instalada, no mostrar nada
+  if (!isMobile || isStandalone) {
     return null
   }
 

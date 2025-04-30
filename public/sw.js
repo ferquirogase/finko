@@ -1,5 +1,5 @@
 // Nombre de la caché
-const CACHE_NAME = "finko-cache-v2"
+const CACHE_NAME = "finko-cache-v3"
 
 // Archivos a cachear inicialmente
 const urlsToCache = [
@@ -15,10 +15,11 @@ const urlsToCache = [
 
 // Instalación del service worker
 self.addEventListener("install", (event) => {
+  console.log("Service Worker: Instalando...")
   // Realizar tareas de instalación
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log("Opened cache")
+      console.log("Service Worker: Cacheando archivos")
       return cache.addAll(urlsToCache)
     }),
   )
@@ -28,6 +29,7 @@ self.addEventListener("install", (event) => {
 
 // Activación del service worker
 self.addEventListener("activate", (event) => {
+  console.log("Service Worker: Activando...")
   event.waitUntil(
     caches
       .keys()
@@ -35,6 +37,7 @@ self.addEventListener("activate", (event) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME) {
+              console.log("Service Worker: Limpiando caché antigua", cacheName)
               return caches.delete(cacheName)
             }
           }),
@@ -42,6 +45,7 @@ self.addEventListener("activate", (event) => {
       })
       .then(() => {
         // Tomar control de los clientes inmediatamente
+        console.log("Service Worker: Ahora está activo")
         return self.clients.claim()
       }),
   )
@@ -110,3 +114,31 @@ self.addEventListener("sync", (event) => {
 function syncData() {
   return Promise.resolve()
 }
+
+// Manejar notificaciones push
+self.addEventListener("push", (event) => {
+  if (event.data) {
+    const data = event.data.json()
+
+    const options = {
+      body: data.body,
+      icon: "/pwa/icon-192.png",
+      badge: "/pwa/icon-192.png",
+      vibrate: [100, 50, 100],
+      data: {
+        url: data.url || "/",
+      },
+    }
+
+    event.waitUntil(self.registration.showNotification(data.title, options))
+  }
+})
+
+// Manejar clics en notificaciones
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+
+  if (event.notification.data && event.notification.data.url) {
+    event.waitUntil(clients.openWindow(event.notification.data.url))
+  }
+})

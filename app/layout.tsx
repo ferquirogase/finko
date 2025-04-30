@@ -135,10 +135,39 @@ export default function RootLayout({
                 navigator.serviceWorker.register('/sw.js')
                   .then(function(registration) {
                     console.log('Service Worker registrado con éxito:', registration.scope);
+                    
+                    // Verificar si hay actualizaciones del service worker
+                    registration.addEventListener('updatefound', function() {
+                      // Si hay una actualización, obtener el nuevo service worker
+                      const newWorker = registration.installing;
+                      
+                      console.log('Se encontró una actualización del Service Worker');
+                      
+                      // Escuchar cambios de estado en el nuevo service worker
+                      newWorker.addEventListener('statechange', function() {
+                        console.log('Estado del nuevo Service Worker:', newWorker.state);
+                      });
+                    });
+                    
+                    // Verificar actualizaciones cada hora
+                    setInterval(function() {
+                      registration.update();
+                      console.log('Verificando actualizaciones del Service Worker');
+                    }, 3600000); // 1 hora
                   })
                   .catch(function(error) {
-                    console.log('Error al registrar el Service Worker:', error);
+                    console.error('Error al registrar el Service Worker:', error);
                   });
+              });
+              
+              // Manejar actualizaciones del service worker
+              let refreshing = false;
+              navigator.serviceWorker.addEventListener('controllerchange', function() {
+                if (!refreshing) {
+                  refreshing = true;
+                  console.log('Service Worker actualizado, recargando la página');
+                  window.location.reload();
+                }
               });
             }
           `}

@@ -28,7 +28,10 @@ export default function Footer() {
                 <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </Link>
-              <InstallPWA />
+              {/* Solo mostrar en móviles */}
+              <div className="md:hidden">
+                <InstallPWA />
+              </div>
             </div>
           </div>
 
