@@ -65,7 +65,8 @@ export default function InstallPWAButton() {
       onClick={handleInstallClick}
       variant="outline"
       size="sm"
-      className="flex items-center gap-2 rounded-full bg-purple-50 text-purple-600 hover:bg-purple-100"
+      className="flex items-center gap-2 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200"
+      data-install-pwa
     >
       <Download className="h-4 w-4" />
       Instalar app

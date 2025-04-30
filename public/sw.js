@@ -1,4 +1,4 @@
-const CACHE_NAME = "finko-v1"
+const CACHE_NAME = "finko-v2"
 const urlsToCache = [
   "/",
   "/calculadora",
@@ -6,7 +6,7 @@ const urlsToCache = [
   "/recibos",
   "/pagos-exterior",
   "/finko.png",
-  "/finko-fav.png",
+  "/icon.png",
   "/manifest.json",
 ]
 
@@ -16,6 +16,7 @@ self.addEventListener("install", (event) => {
       return cache.addAll(urlsToCache)
     }),
   )
+  self.skipWaiting()
 })
 
 self.addEventListener("fetch", (event) => {
@@ -57,4 +58,5 @@ self.addEventListener("activate", (event) => {
       )
     }),
   )
+  self.clients.claim()
 })

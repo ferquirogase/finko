@@ -5,7 +5,7 @@ import InstallPWAButton from "./install-pwa-button"
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-white py-12 mb-16">
+    <footer className="mb-16 border-t bg-white py-12">
       <div className="mx-auto max-w-3xl px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="space-y-4">
