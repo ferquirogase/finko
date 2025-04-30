@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60">
+	<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&amp;display=swap');
+text {
+  font-family: 'Poppins', sans-serif;
+  fill: #6A40C5;
+  font-size: 40px;
+  font-weight: 600;
+}
+</style>
+	<text x="0" y="45">finko</text>
+</svg>

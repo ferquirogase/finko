@@ -1,0 +1,53 @@
+import Link from "next/link"
+import { Linkedin, Coffee } from "lucide-react"
+import Image from "next/image"
+
+export default function Footer() {
+  return (
+    <footer className="border-t bg-white py-12">
+      <div className="mx-auto max-w-3xl px-4">
+        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+          <div className="space-y-4">
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/finko-logo.svg" alt="finko logo" width={100} height={30} />
+            </Link>
+            <p className="text-sm text-gray-500">
+              Herramientas para freelancers que simplifican tu negocio. Calcula tarifas, genera presupuestos y crea
+              facturas profesionales.
+            </p>
+            <div className="flex space-x-4">
+              <Link
+                href="https://www.linkedin.com/in/ferquirogase/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-500 hover:text-purple-600"
+              >
+                <Linkedin className="h-5 w-5" />
+                <span className="sr-only">LinkedIn</span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <p className="mb-2 text-center text-sm text-gray-600">
+              ¿Te resultaron útiles nuestras herramientas? ¡Invítanos a un cafecito!
+            </p>
+            <a
+              href="https://cafecito.app/ferquirogaux"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600"
+            >
+              <Coffee className="h-4 w-4" />
+              Invitame un cafecito
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-8 border-t pt-8 text-center">
+          <p className="text-sm text-gray-500">© {new Date().getFullYear()} Finko. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    </footer>
+  )
+}
