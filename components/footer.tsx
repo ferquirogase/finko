@@ -1,10 +1,11 @@
 import Link from "next/link"
 import { Linkedin, Coffee } from "lucide-react"
 import Image from "next/image"
+import InstallPWAButton from "./install-pwa-button"
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-white py-12">
+    <footer className="border-t bg-white py-12 mb-16">
       <div className="mx-auto max-w-3xl px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="space-y-4">
@@ -15,7 +16,7 @@ export default function Footer() {
               Herramientas para freelancers que simplifican tu negocio. Calcula tarifas, genera presupuestos y crea
               facturas profesionales.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex items-center space-x-4">
               <Link
                 href="https://www.linkedin.com/in/ferquirogase/"
                 target="_blank"
@@ -25,6 +26,7 @@ export default function Footer() {
                 <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </Link>
+              <InstallPWAButton />
             </div>
           </div>
 

@@ -1,0 +1,26 @@
+import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import InvoiceTemplates from "@/components/invoice-templates"
+
+export default function RecibosPage() {
+  return (
+    <div className="space-y-6 pb-20">
+      <div className="mb-6 flex items-center">
+        <Link href="/">
+          <Button variant="ghost" className="gap-2 text-purple-600 hover:bg-purple-50 hover:text-purple-700">
+            <ArrowLeft className="h-4 w-4" />
+            Volver a herramientas
+          </Button>
+        </Link>
+      </div>
+
+      <div className="rounded-3xl bg-gradient-to-br from-purple-500 to-purple-700 p-8 text-white">
+        <h1 className="mb-4 text-3xl font-bold">Generador de Recibos</h1>
+        <p className="mb-6 text-lg text-white/90">Crea recibos profesionales para tus clientes</p>
+      </div>
+
+      <InvoiceTemplates />
+    </div>
+  )
+}

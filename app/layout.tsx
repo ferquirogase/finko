@@ -4,6 +4,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import BottomNav from "@/components/bottom-nav"
 import ParticlesBackground from "@/components/particles-background"
 import Script from "next/script"
 
@@ -52,6 +53,14 @@ export default function RootLayout({
         {/* Favicon */}
         <link rel="icon" href="/finko-fav.png" />
 
+        {/* PWA meta tags */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#8b5cf6" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Finko" />
+        <link rel="apple-touch-icon" href="/pwa-icons/icon-192x192.png" />
+
         {/* Google Analytics */}
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-WJQ2C9VR70" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -60,6 +69,24 @@ export default function RootLayout({
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'G-WJQ2C9VR70');
+          `}
+        </Script>
+
+        {/* Service Worker Registration */}
+        <Script id="register-sw" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(
+                  function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                  },
+                  function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                  }
+                );
+              });
+            }
           `}
         </Script>
 
@@ -157,6 +184,7 @@ export default function RootLayout({
             {children}
           </div>
           <Footer />
+          <BottomNav />
         </ThemeProvider>
       </body>
     </html>
