@@ -1,5 +1,3 @@
-// Utilidad para enviar eventos al dataLayer de forma consistente
-
 /**
  * Envía un evento al dataLayer para Google Tag Manager
  * @param eventName Nombre del evento
