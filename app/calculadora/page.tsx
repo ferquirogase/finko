@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { IconArrowLeft } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import PricingCalculator from "@/components/pricing-calculator"
 
@@ -9,7 +9,7 @@ export default function CalculadoraPage() {
       <div className="mb-6 flex items-center">
         <Link href="/">
           <Button variant="ghost" className="gap-2 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
-            <ArrowLeft className="h-4 w-4" />
+            <IconArrowLeft className="h-4 w-4" stroke={1.5} />
             Volver a herramientas
           </Button>
         </Link>

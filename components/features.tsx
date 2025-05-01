@@ -1,4 +1,4 @@
-import { Calculator, FileText, CreditCard, Clock, PieChart, Users } from "lucide-react"
+import { IconCalculator, IconFileText, IconCreditCard, IconClock, IconChartPie, IconUsers } from "@tabler/icons-react"
 
 export default function Features() {
   return (
@@ -20,7 +20,7 @@ export default function Features() {
         <div className="mx-auto mt-16 grid max-w-5xl gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-3">
           <div className="flex flex-col items-center space-y-2 rounded-lg border border-purple-100 p-4 text-center">
             <div className="rounded-full bg-purple-100 p-2 text-purple-600">
-              <Calculator className="h-6 w-6" />
+              <IconCalculator className="h-6 w-6" stroke={1.5} />
             </div>
             <h3 className="text-xl font-bold text-purple-900">Calculadora de Tarifas</h3>
             <p className="text-sm text-gray-600">
@@ -29,7 +29,7 @@ export default function Features() {
           </div>
           <div className="flex flex-col items-center space-y-2 rounded-lg border border-purple-100 p-4 text-center">
             <div className="rounded-full bg-purple-100 p-2 text-purple-600">
-              <FileText className="h-6 w-6" />
+              <IconFileText className="h-6 w-6" stroke={1.5} />
             </div>
             <h3 className="text-xl font-bold text-purple-900">Generador de Presupuestos</h3>
             <p className="text-sm text-gray-600">
@@ -38,7 +38,7 @@ export default function Features() {
           </div>
           <div className="flex flex-col items-center space-y-2 rounded-lg border border-purple-100 p-4 text-center">
             <div className="rounded-full bg-purple-100 p-2 text-purple-600">
-              <CreditCard className="h-6 w-6" />
+              <IconCreditCard className="h-6 w-6" stroke={1.5} />
             </div>
             <h3 className="text-xl font-bold text-purple-900">Plantillas de Facturas</h3>
             <p className="text-sm text-gray-600">
@@ -47,7 +47,7 @@ export default function Features() {
           </div>
           <div className="flex flex-col items-center space-y-2 rounded-lg border border-purple-100 p-4 text-center">
             <div className="rounded-full bg-purple-100 p-2 text-purple-600">
-              <Clock className="h-6 w-6" />
+              <IconClock className="h-6 w-6" stroke={1.5} />
             </div>
             <h3 className="text-xl font-bold text-purple-900">Seguimiento de Tiempo</h3>
             <p className="text-sm text-gray-600">
@@ -56,7 +56,7 @@ export default function Features() {
           </div>
           <div className="flex flex-col items-center space-y-2 rounded-lg border border-purple-100 p-4 text-center">
             <div className="rounded-full bg-purple-100 p-2 text-purple-600">
-              <PieChart className="h-6 w-6" />
+              <IconChartPie className="h-6 w-6" stroke={1.5} />
             </div>
             <h3 className="text-xl font-bold text-purple-900">Análisis de Ingresos</h3>
             <p className="text-sm text-gray-600">
@@ -65,7 +65,7 @@ export default function Features() {
           </div>
           <div className="flex flex-col items-center space-y-2 rounded-lg border border-purple-100 p-4 text-center">
             <div className="rounded-full bg-purple-100 p-2 text-purple-600">
-              <Users className="h-6 w-6" />
+              <IconUsers className="h-6 w-6" stroke={1.5} />
             </div>
             <h3 className="text-xl font-bold text-purple-900">Gestión de Clientes</h3>
             <p className="text-sm text-gray-600">

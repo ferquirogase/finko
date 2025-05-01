@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Linkedin, Coffee } from "lucide-react"
+import { IconBrandLinkedin, IconCoffee } from "@tabler/icons-react"
 import Image from "next/image"
 
 export default function Footer() {
@@ -24,7 +24,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-purple-600"
               >
-                <Linkedin className="h-5 w-5" />
+                <IconBrandLinkedin className="h-5 w-5" stroke={1.5} />
                 <span className="sr-only">LinkedIn</span>
               </Link>
             </div>
@@ -40,7 +40,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600"
             >
-              <Coffee className="h-4 w-4" />
+              <IconCoffee className="h-4 w-4" stroke={1.5} />
               Invitame un cafecito
             </a>
           </div>

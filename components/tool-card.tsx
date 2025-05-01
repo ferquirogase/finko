@@ -1,11 +1,12 @@
+import type React from "react"
 import Link from "next/link"
-import type { LucideIcon } from "lucide-react"
+import type { TablerIconsProps } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 
 interface ToolCardProps {
   title: string
   description: string
-  icon: LucideIcon
+  icon: React.FC<TablerIconsProps>
   href: string
   color: "purple" | "blue" | "green" | "amber"
   className?: string
@@ -51,7 +52,7 @@ export default function ToolCard({ title, description, icon: Icon, href, color, 
       )}
     >
       <div className={cn("mb-3 flex h-10 w-10 items-center justify-center rounded-full", colorClasses[color].icon)}>
-        <Icon className="h-5 w-5" />
+        <Icon className="h-5 w-5" stroke={1.5} />
       </div>
       <h3 className="mb-1 font-semibold text-gray-800">{title}</h3>
       <p className="text-sm text-gray-600">{description}</p>

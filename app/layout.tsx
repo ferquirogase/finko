@@ -1,5 +1,5 @@
 import type React from "react"
-import { Inter } from "next/font/google"
+import { Inclusive_Sans } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
@@ -8,7 +8,11 @@ import BottomNav from "@/components/bottom-nav"
 import ParticlesBackground from "@/components/particles-background"
 import Script from "next/script"
 
-const inter = Inter({ subsets: ["latin"] })
+const inclusiveSans = Inclusive_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+})
 
 export const metadata = {
   title: "finko - Herramientas para freelancers",
@@ -149,7 +153,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} bg-gradient-to-br from-[#f5f7fa] to-[#f0f2f8]`}>
+      <body className={`${inclusiveSans.className} bg-gradient-to-br from-[#f5f7fa] to-[#f0f2f8]`}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <ParticlesBackground />
           <div className="mx-auto max-w-3xl px-4 py-8">

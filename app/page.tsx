@@ -1,5 +1,5 @@
 import ToolCard from "@/components/tool-card"
-import { Calculator, FileText, CreditCard, DollarSign } from "lucide-react"
+import { IconCalculator, IconFileText, IconCreditCard, IconCurrencyDollar } from "@tabler/icons-react"
 
 export default function Home() {
   return (
@@ -17,28 +17,28 @@ export default function Home() {
         <ToolCard
           title="Calculadora de Tarifas"
           description="Determina cuánto cobrar por tus servicios basado en tu experiencia, ubicación y tipo de proyecto."
-          icon={Calculator}
+          icon={IconCalculator}
           href="/calculadora"
           color="blue"
         />
         <ToolCard
           title="Generador de Presupuestos"
           description="Crea presupuestos profesionales con plantillas personalizables que impresionarán a tus clientes."
-          icon={FileText}
+          icon={IconFileText}
           href="/presupuestos"
           color="green"
         />
         <ToolCard
           title="Generador de Recibos"
           description="Genera facturas legales y profesionales en segundos, listas para enviar a tus clientes."
-          icon={CreditCard}
+          icon={IconCreditCard}
           href="/recibos"
           color="purple"
         />
         <ToolCard
           title="Cobros del Exterior"
           description="Compara las mejores plataformas para recibir pagos internacionales y maximiza tus ingresos."
-          icon={DollarSign}
+          icon={IconCurrencyDollar}
           href="/pagos-exterior"
           color="amber"
         />
@@ -71,7 +71,7 @@ export default function Home() {
       <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 to-amber-600 p-6 text-white shadow-md">
         <div className="flex flex-col items-center gap-4 md:flex-row md:items-start">
           <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-md">
-            <DollarSign className="h-8 w-8 text-amber-500" />
+            <IconCurrencyDollar className="h-8 w-8 text-amber-500" stroke={1.5} />
           </div>
           <div>
             <h3 className="mb-2 text-2xl font-bold">¿Cobras del exterior?</h3>
