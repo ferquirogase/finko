@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select"
@@ -8,10 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Slider } from "@/components/ui/slider"
 
 // Añadir este objeto de categorías y subcategorías al inicio del componente, justo después de las importaciones
 const projectCategories = [
@@ -314,79 +316,43 @@ Servicios adicionales:
     prefix?: string
     tooltip?: string
     className?: string
-  }) => (
-    <div className={`space-y-2 ${className}`}>
-      {label && (
-        <div className="flex items-center gap-1.5">
-          <label className="text-sm font-medium">{label}</label>
-          {tooltip && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                    <HelpCircle className="h-3.5 w-3.5" />
-                    <span className="sr-only">Ayuda</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs text-xs">
-                  <p>{tooltip}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-      )}
-      <div className="relative">
-        {prefix && (
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-            <span className="text-gray-500">{prefix}</span>
-          </div>
-        )}
-        <Input
-          type="number"
-          value={value}
-          onChange={(e) => onChange(Math.min(Math.max(Number(e.target.value) || min, min), max))}
-          className={`rounded-lg text-center transition-all focus-within:ring-2 focus-within:ring-blue-500 ${
-            prefix ? "pl-7" : ""
-          } ${suffix ? "pr-10" : ""}`}
-          min={min}
-          max={max}
-          step={step}
-        />
-        {suffix && (
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-            <span className="text-gray-500">{suffix}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+  }) => {
+    // Estado interno para manejar el valor durante la edición
+    const [inputValue, setInputValue] = useState(value.toString())
 
-  // Componente de slider mejorado
-  const EnhancedSlider = ({
-    value,
-    onChange,
-    min,
-    max,
-    step = 1,
-    label,
-    tooltip,
-    marks,
-    className = "",
-  }: {
-    value: number
-    onChange: (value: number) => void
-    min: number
-    max: number
-    step?: number
-    label?: string
-    tooltip?: string
-    marks?: { value: number; label: string }[]
-    className?: string
-  }) => (
-    <div className={`space-y-3 ${className}`}>
-      {label && (
-        <div className="flex items-center justify-between">
+    // Actualizar el estado interno cuando cambia el valor externo
+    useEffect(() => {
+      setInputValue(value.toString())
+    }, [value])
+
+    // Manejar cambios en el input
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value
+      setInputValue(newValue) // Actualizar el estado interno sin restricciones
+    }
+
+    // Cuando el input pierde el foco, actualizar el valor externo
+    const handleBlur = () => {
+      const numValue = inputValue === "" ? min : Number(inputValue)
+      const validValue = Math.min(Math.max(numValue, min), max)
+      onChange(validValue)
+      setInputValue(validValue.toString()) // Sincronizar con el valor validado
+    }
+
+    // Cuando se presiona Enter, actualizar el valor externo
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        const numValue = inputValue === "" ? min : Number(inputValue)
+        const validValue = Math.min(Math.max(numValue, min), max)
+        onChange(validValue)
+        setInputValue(validValue.toString())
+        e.currentTarget.blur() // Quitar el foco del input
+      }
+    }
+
+    return (
+      <div className={`space-y-2 ${className}`}>
+        {label && (
           <div className="flex items-center gap-1.5">
             <label className="text-sm font-medium">{label}</label>
             {tooltip && (
@@ -405,28 +371,35 @@ Servicios adicionales:
               </TooltipProvider>
             )}
           </div>
-          <span className="text-sm font-medium">{value}</span>
+        )}
+        <div className="relative">
+          {prefix && (
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+              <span className="text-gray-500">{prefix}</span>
+            </div>
+          )}
+          <Input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className={`rounded-lg text-center transition-all focus-within:ring-2 focus-within:ring-blue-500 ${
+              prefix ? "pl-7" : ""
+            } ${suffix ? "pr-10" : ""}`}
+            step={step}
+          />
+          {suffix && (
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+              <span className="text-gray-500">{suffix}</span>
+            </div>
+          )}
         </div>
-      )}
-      <div className="px-1">
-        <Slider
-          value={[value]}
-          onValueChange={(vals) => onChange(vals[0])}
-          min={min}
-          max={max}
-          step={step}
-          className="py-1"
-        />
       </div>
-      {marks && (
-        <div className="flex justify-between px-1 text-xs text-gray-500">
-          {marks.map((mark) => (
-            <span key={mark.value}>{mark.label}</span>
-          ))}
-        </div>
-      )}
-    </div>
-  )
+    )
+  }
+
+  // Componente de slider personalizado desde cero
 
   // Pasos para la calculadora básica
   const basicSteps = [
@@ -435,20 +408,44 @@ Servicios adicionales:
       description: "Información sobre tu experiencia y especialidad",
       content: (
         <div className="space-y-6">
-          <EnhancedSlider
-            label="Años de experiencia"
-            value={experience}
-            onChange={setExperience}
-            min={0}
-            max={10}
-            step={1}
-            tooltip="Indica cuántos años de experiencia tienes en tu campo. Esto afecta directamente a tu tarifa recomendada."
-            marks={[
-              { value: 0, label: "Principiante" },
-              { value: 5, label: "Intermedio" },
-              { value: 10, label: "Experto" },
-            ]}
-          />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <label className="text-sm font-medium">Años de experiencia</label>
+                {false && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                          <HelpCircle className="h-3.5 w-3.5" />
+                          <span className="sr-only">Ayuda</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs text-xs">
+                        <p>
+                          Indica cuántos años de experiencia tienes en tu campo. Esto afecta directamente a tu tarifa
+                          recomendada.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
+              <span className="text-sm font-medium">{experience}</span>
+            </div>
+            <Slider
+              value={[experience]}
+              onValueChange={(values) => setExperience(values[0])}
+              min={0}
+              max={10}
+              step={1}
+            />
+            <div className="flex justify-between px-1 text-xs text-gray-500">
+              <span>Principiante</span>
+              <span>Intermedio</span>
+              <span>Experto</span>
+            </div>
+          </div>
 
           <div className="space-y-2">
             <div className="flex items-center gap-1.5">
@@ -475,17 +472,18 @@ Servicios adicionales:
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="Buscar tipo de proyecto..."
+                  placeholder="Buscar o seleccionar tipo de proyecto..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="rounded-lg pr-10"
                   onFocus={() => setOpenProjectSelector(true)}
+                  onClick={() => setOpenProjectSelector(true)}
                 />
                 <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>
 
               {openProjectSelector && (
-                <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+                <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
                   {projectCategories.map((category) => {
                     // Filtrar subcategorías que coincidan con la búsqueda
                     const filteredSubcategories = category.subcategories.filter(
@@ -506,6 +504,7 @@ Servicios adicionales:
                         {filteredSubcategories.map((subcategory) => (
                           <button
                             key={subcategory.id}
+                            type="button"
                             className={`flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-blue-50 ${
                               projectType === subcategory.id ? "bg-blue-50 font-medium text-blue-600" : ""
                             }`}
@@ -519,7 +518,26 @@ Servicios adicionales:
                               {projectType === subcategory.id && <Check className="mr-2 h-4 w-4 text-blue-600" />}
                               <span>{subcategory.name}</span>
                             </div>
-                            <span className="text-xs text-gray-500">{subcategory.multiplier.toFixed(2)}x</span>
+                            <div className="flex items-center">
+                              <span className="text-xs text-gray-500 mr-1">Multiplicador:</span>
+                              <span className="flex items-center">
+                                <span className="font-medium text-blue-600">{subcategory.multiplier.toFixed(2)}x</span>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info className="h-3.5 w-3.5 ml-1 text-gray-400" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs text-xs">
+                                      <p>
+                                        Este multiplicador afecta el cálculo de tu tarifa base según el tipo de
+                                        proyecto. Un valor mayor indica un tipo de proyecto que generalmente se cobra a
+                                        una tarifa más alta en el mercado.
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </span>
+                            </div>
                           </button>
                         ))}
                       </div>
@@ -537,8 +555,31 @@ Servicios adicionales:
               )}
             </div>
 
-            <div className="mt-1 text-xs text-gray-500">
-              {projectType && `Multiplicador: ${getProjectMultiplier(projectType).toFixed(2)}x`}
+            <div className="mt-1 flex items-center text-xs text-gray-500">
+              {projectType ? (
+                <>
+                  <span>Multiplicador seleccionado: </span>
+                  <span className="flex items-center ml-1">
+                    <span className="font-medium text-blue-600">{getProjectMultiplier(projectType).toFixed(2)}x</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 ml-1 text-gray-400 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs text-xs">
+                          <p>
+                            Este multiplicador afecta el cálculo de tu tarifa base según el tipo de proyecto
+                            seleccionado. Se aplica como un porcentaje sobre la tarifa base para reflejar el valor de
+                            mercado de este tipo de trabajo.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </span>
+                </>
+              ) : (
+                "Selecciona un tipo de proyecto para ver su multiplicador"
+              )}
             </div>
           </div>
 
@@ -681,21 +722,44 @@ Servicios adicionales:
 
               {urgency > 1 && (
                 <div className="mt-4">
-                  <EnhancedSlider
-                    value={urgencyFee}
-                    onChange={(value) => {
-                      setUrgencyFee(value)
-                      setUrgency(1 + value / 100)
-                    }}
-                    min={5}
-                    max={100}
-                    step={5}
-                    marks={[
-                      { value: 5, label: "5%" },
-                      { value: 50, label: "50%" },
-                      { value: 100, label: "100%" },
-                    ]}
-                  />
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <label className="text-sm font-medium">Tarifa de urgencia</label>
+                        {false && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                                  <HelpCircle className="h-3.5 w-3.5" />
+                                  <span className="sr-only">Ayuda</span>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs text-xs">
+                                <p></p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium">{urgencyFee}%</span>
+                    </div>
+                    <Slider
+                      value={[urgencyFee]}
+                      onValueChange={(values) => {
+                        setUrgencyFee(values[0])
+                        setUrgency(1 + values[0] / 100)
+                      }}
+                      min={5}
+                      max={100}
+                      step={5}
+                    />
+                    <div className="flex justify-between px-1 text-xs text-gray-500">
+                      <span>5%</span>
+                      <span>50%</span>
+                      <span>100%</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -775,52 +839,107 @@ Servicios adicionales:
           </div>
 
           <div className="grid gap-6 sm:grid-cols-3">
-            <EnhancedSlider
-              label="Semanas de vacaciones"
-              value={vacationWeeks}
-              onChange={setVacationWeeks}
-              min={0}
-              max={8}
-              step={1}
-              tooltip="Número de semanas al año que planeas tomar como vacaciones (sin ingresos)."
-              marks={[
-                { value: 0, label: "0" },
-                { value: 4, label: "4" },
-                { value: 8, label: "8" },
-              ]}
-            />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <label className="text-sm font-medium">Semanas de vacaciones</label>
+                  {false && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                            <HelpCircle className="h-3.5 w-3.5" />
+                            <span className="sr-only">Ayuda</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs text-xs">
+                          <p>Número de semanas al año que planeas tomar como vacaciones (sin ingresos).</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
+                <span className="text-sm font-medium">{vacationWeeks} semanas</span>
+              </div>
+              <Slider
+                value={[vacationWeeks]}
+                onValueChange={(values) => setVacationWeeks(values[0])}
+                min={0}
+                max={8}
+                step={1}
+              />
+              <div className="flex justify-between px-1 text-xs text-gray-500">
+                <span>0</span>
+                <span>4</span>
+                <span>8</span>
+              </div>
+            </div>
 
-            <EnhancedSlider
-              label="Tasa de impuestos"
-              value={taxRate}
-              onChange={setTaxRate}
-              min={0}
-              max={50}
-              step={5}
-              suffix="%"
-              tooltip="Porcentaje aproximado que pagas en impuestos sobre tus ingresos."
-              marks={[
-                { value: 0, label: "0%" },
-                { value: 25, label: "25%" },
-                { value: 50, label: "50%" },
-              ]}
-            />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <label className="text-sm font-medium">Tasa de impuestos</label>
+                  {false && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                            <HelpCircle className="h-3.5 w-3.5" />
+                            <span className="sr-only">Ayuda</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs text-xs">
+                          <p>Porcentaje aproximado que pagas en impuestos sobre tus ingresos.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
+                <span className="text-sm font-medium">{taxRate}%</span>
+              </div>
+              <Slider value={[taxRate]} onValueChange={(values) => setTaxRate(values[0])} min={0} max={50} step={5} />
+              <div className="flex justify-between px-1 text-xs text-gray-500">
+                <span>0%</span>
+                <span>25%</span>
+                <span>50%</span>
+              </div>
+            </div>
 
-            <EnhancedSlider
-              label="Margen de beneficio"
-              value={profitMargin}
-              onChange={setProfitMargin}
-              min={0}
-              max={50}
-              step={5}
-              suffix="%"
-              tooltip="Margen adicional para crecimiento, inversiones y contingencias."
-              marks={[
-                { value: 0, label: "0%" },
-                { value: 25, label: "25%" },
-                { value: 50, label: "50%" },
-              ]}
-            />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <label className="text-sm font-medium">Margen de beneficio</label>
+                  {false && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                            <HelpCircle className="h-3.5 w-3.5" />
+                            <span className="sr-only">Ayuda</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs text-xs">
+                          <p>Margen adicional para crecimiento, inversiones y contingencias.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
+                <span className="text-sm font-medium">{profitMargin}%</span>
+              </div>
+              <Slider
+                value={[profitMargin]}
+                onValueChange={(values) => setProfitMargin(values[0])}
+                min={0}
+                max={50}
+                step={5}
+              />
+              <div className="flex justify-between px-1 text-xs text-gray-500">
+                <span>0%</span>
+                <span>25%</span>
+                <span>50%</span>
+              </div>
+            </div>
           </div>
         </div>
       ),
@@ -943,21 +1062,41 @@ Servicios adicionales:
             tooltip="El monto total que cobrarás por el proyecto completo."
           />
 
-          <EnhancedSlider
-            label="Duración del proyecto"
-            value={projectDuration}
-            onChange={setProjectDuration}
-            min={1}
-            max={24}
-            step={1}
-            suffix=" semanas"
-            tooltip="Tiempo estimado para completar el proyecto en semanas."
-            marks={[
-              { value: 1, label: "1 sem." },
-              { value: 12, label: "12 sem." },
-              { value: 24, label: "24 sem." },
-            ]}
-          />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <label className="text-sm font-medium">Duración del proyecto</label>
+                {false && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                          <HelpCircle className="h-3.5 w-3.5" />
+                          <span className="sr-only">Ayuda</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs text-xs">
+                        <p>Tiempo estimado para completar el proyecto en semanas.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
+              <span className="text-sm font-medium">{projectDuration} semanas</span>
+            </div>
+            <Slider
+              value={[projectDuration]}
+              onValueChange={(values) => setProjectDuration(values[0])}
+              min={1}
+              max={24}
+              step={1}
+            />
+            <div className="flex justify-between px-1 text-xs text-gray-500">
+              <span>1 sem.</span>
+              <span>12 sem.</span>
+              <span>24 sem.</span>
+            </div>
+          </div>
 
           <div className="rounded-xl border border-amber-100 bg-amber-50 p-4">
             <div className="flex items-center justify-between">
@@ -974,18 +1113,41 @@ Servicios adicionales:
 
             {includeRush && (
               <div className="mt-4">
-                <EnhancedSlider
-                  value={rushFee}
-                  onChange={setRushFee}
-                  min={5}
-                  max={100}
-                  step={5}
-                  marks={[
-                    { value: 5, label: "5%" },
-                    { value: 50, label: "50%" },
-                    { value: 100, label: "100%" },
-                  ]}
-                />
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <label className="text-sm font-medium">Tarifa de urgencia</label>
+                      {false && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                                <HelpCircle className="h-3.5 w-3.5" />
+                                <span className="sr-only">Ayuda</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs text-xs">
+                              <p></p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
+                    <span className="text-sm font-medium">{rushFee}%</span>
+                  </div>
+                  <Slider
+                    value={[rushFee]}
+                    onValueChange={(values) => setRushFee(values[0])}
+                    min={5}
+                    max={100}
+                    step={5}
+                  />
+                  <div className="flex justify-between px-1 text-xs text-gray-500">
+                    <span>5%</span>
+                    <span>50%</span>
+                    <span>100%</span>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -997,20 +1159,41 @@ Servicios adicionales:
       description: "Define las revisiones incluidas y tarifas de mantenimiento",
       content: (
         <div className="space-y-6">
-          <EnhancedSlider
-            label="Rondas de revisión incluidas"
-            value={revisionRounds}
-            onChange={setRevisionRounds}
-            min={1}
-            max={5}
-            step={1}
-            tooltip="Número de rondas de revisión incluidas en el precio base."
-            marks={[
-              { value: 1, label: "1" },
-              { value: 3, label: "3" },
-              { value: 5, label: "5" },
-            ]}
-          />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <label className="text-sm font-medium">Rondas de revisión incluidas</label>
+                {false && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                          <HelpCircle className="h-3.5 w-3.5" />
+                          <span className="sr-only">Ayuda</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs text-xs">
+                        <p>Número de rondas de revisión incluidas en el precio base.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
+              <span className="text-sm font-medium">{revisionRounds}</span>
+            </div>
+            <Slider
+              value={[revisionRounds]}
+              onValueChange={(values) => setRevisionRounds(values[0])}
+              min={1}
+              max={5}
+              step={1}
+            />
+            <div className="flex justify-between px-1 text-xs text-gray-500">
+              <span>1</span>
+              <span>3</span>
+              <span>5</span>
+            </div>
+          </div>
 
           <EnhancedNumericInput
             label="Tarifa por revisión adicional"
@@ -1045,20 +1228,41 @@ Servicios adicionales:
               </TooltipProvider>
             </div>
             <div className="flex items-center">
-              <EnhancedSlider
-                value={maintenanceFee}
-                onChange={setMaintenanceFee}
-                min={5}
-                max={30}
-                step={1}
-                suffix="%"
-                className="flex-1"
-                marks={[
-                  { value: 5, label: "5%" },
-                  { value: 15, label: "15%" },
-                  { value: 30, label: "30%" },
-                ]}
-              />
+              <div className="space-y-2 flex-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-sm font-medium">Tarifa de mantenimiento mensual</label>
+                    {false && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
+                              <HelpCircle className="h-3.5 w-3.5" />
+                              <span className="sr-only">Ayuda</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs text-xs">
+                            <p></p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium">{maintenanceFee}%</span>
+                </div>
+                <Slider
+                  value={[maintenanceFee]}
+                  onValueChange={(values) => setMaintenanceFee(values[0])}
+                  min={5}
+                  max={30}
+                  step={1}
+                />
+                <div className="flex justify-between px-1 text-xs text-gray-500">
+                  <span>5%</span>
+                  <span>15%</span>
+                  <span>30%</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1153,8 +1357,17 @@ Servicios adicionales:
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node
-      const searchInput = document.querySelector('input[type="text"][placeholder="Buscar tipo de proyecto..."]')
-      if (searchInput && !searchInput.contains(target) && openProjectSelector) {
+      const searchInput = document.querySelector('input[placeholder="Buscar o seleccionar tipo de proyecto..."]')
+      const dropdown = document.querySelector(".absolute.z-50.mt-1")
+
+      // Solo cerrar si el clic no fue en el input ni en el dropdown
+      if (
+        searchInput &&
+        dropdown &&
+        !searchInput.contains(target) &&
+        !dropdown.contains(target) &&
+        openProjectSelector
+      ) {
         setOpenProjectSelector(false)
       }
     }
