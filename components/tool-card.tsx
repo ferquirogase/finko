@@ -51,10 +51,12 @@ export default function ToolCard({ title, description, icon: Icon, href, color, 
         className,
       )}
     >
-      <div className={cn("mb-3 flex h-10 w-10 items-center justify-center rounded-full", colorClasses[color].icon)}>
-        <Icon className="h-5 w-5" stroke={1.5} />
+      <div className="flex items-center gap-3 mb-2">
+        <div className={cn("flex h-10 w-10 items-center justify-center rounded-full", colorClasses[color].icon)}>
+          <Icon className="h-5 w-5" stroke={1.5} />
+        </div>
+        <h3 className="font-semibold text-gray-800">{title}</h3>
       </div>
-      <h3 className="mb-1 font-semibold text-gray-800">{title}</h3>
       <p className="text-sm text-gray-600">{description}</p>
     </Link>
   )
