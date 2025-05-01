@@ -1,5 +1,5 @@
 // Nombre de la caché
-const CACHE_NAME = "finko-cache-v3"
+const CACHE_NAME = "finko-cache-v4"
 
 // Archivos a cachear inicialmente
 const urlsToCache = [

@@ -10,6 +10,7 @@ export default function InstallPWA() {
   const [isIOS, setIsIOS] = useState(false)
   const [showIOSInstructions, setShowIOSInstructions] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
+  const [installable, setInstallable] = useState(false)
   const isMobile = useIsMobile()
 
   useEffect(() => {
@@ -17,53 +18,86 @@ export default function InstallPWA() {
     if (!isMobile) return
 
     // Detectar si ya está instalada como PWA
-    if (window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true) {
-      setIsStandalone(true)
-      return
+    const checkIfStandalone = () => {
+      const isStandaloneMode =
+        window.matchMedia("(display-mode: standalone)").matches || (window.navigator as any).standalone === true
+
+      setIsStandalone(isStandaloneMode)
+      console.log("¿Está en modo standalone?", isStandaloneMode)
     }
 
     // Detectar si es iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
     setIsIOS(isIOSDevice)
+    console.log("¿Es dispositivo iOS?", isIOSDevice)
 
     // Capturar el evento beforeinstallprompt
     const handleBeforeInstallPrompt = (e: Event) => {
       // Prevenir que Chrome muestre el prompt automáticamente
       e.preventDefault()
+
       // Guardar el evento para usarlo después
       setDeferredPrompt(e)
-      console.log("La app es instalable, se ha capturado el evento beforeinstallprompt")
+      setInstallable(true)
+      console.log("La app es instalable, se ha capturado el evento beforeinstallprompt", e)
     }
 
+    // Verificar si está en modo standalone
+    checkIfStandalone()
+
+    // Agregar event listeners
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+
+    // Detectar cuando la app se ha instalado
+    window.addEventListener("appinstalled", () => {
+      console.log("PWA instalada correctamente")
+      setIsStandalone(true)
+      setInstallable(false)
+    })
 
     // Limpiar los eventos cuando el componente se desmonte
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+      window.removeEventListener("appinstalled", () => {})
     }
   }, [isMobile])
 
   const handleInstallClick = async () => {
+    console.log("Botón de instalación presionado")
+
     if (isIOS) {
+      console.log("Mostrando instrucciones para iOS")
       setShowIOSInstructions(!showIOSInstructions)
       return
     }
 
     if (!deferredPrompt) {
       console.log("No hay prompt disponible para instalar")
+
+      // Si estamos en Android pero no tenemos el prompt, intentar mostrar un mensaje
+      if (!isIOS) {
+        alert(
+          "Para instalar la app: \n1. Toca los tres puntos en la esquina superior derecha\n2. Selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'",
+        )
+      }
+
       return
     }
 
     try {
+      console.log("Mostrando prompt de instalación")
+
       // Mostrar el prompt de instalación
       deferredPrompt.prompt()
 
       // Esperar a que el usuario responda al prompt
       const { outcome } = await deferredPrompt.userChoice
+      console.log(`Usuario eligió: ${outcome}`)
 
       // Si el usuario aceptó, limpiar el prompt
       if (outcome === "accepted") {
         setDeferredPrompt(null)
+        setInstallable(false)
       }
     } catch (error) {
       console.error("Error al mostrar el prompt de instalación:", error)

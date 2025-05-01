@@ -169,6 +169,11 @@ export default function RootLayout({
                   window.location.reload();
                 }
               });
+
+              // Registrar cuando la app se instala
+              window.addEventListener('appinstalled', (event) => {
+                console.log('La aplicación fue instalada', event);
+              });
             }
           `}
         </Script>
