@@ -129,7 +129,18 @@ export default function PaymentMethods() {
                 className="mt-1 w-full rounded-xl border border-gray-300 p-2"
                 type="number"
                 value={selectedAmount}
-                onChange={(e) => setSelectedAmount(Number(e.target.value))}
+                onChange={(e) => {
+                  const newAmount = Number(e.target.value)
+                  setSelectedAmount(newAmount)
+
+                  // Enviar evento al dataLayer cuando se cambia el monto a recibir
+                  if (typeof window !== "undefined" && window.dataLayer && newAmount > 0) {
+                    window.dataLayer.push({
+                      event: "payment_amount_changed",
+                      amount: newAmount,
+                    })
+                  }
+                }}
                 min={1}
                 placeholder="Ingresa el monto"
               />
@@ -147,7 +158,20 @@ export default function PaymentMethods() {
 
             <div className="grid gap-4">
               {paymentPlatforms.map((platform) => (
-                <Card key={platform.id} className="overflow-hidden">
+                <Card
+                  key={platform.id}
+                  className="overflow-hidden"
+                  onClick={() => {
+                    // Enviar evento al dataLayer cuando se hace clic en una plataforma de pago
+                    if (typeof window !== "undefined" && window.dataLayer) {
+                      window.dataLayer.push({
+                        event: "payment_platform_viewed",
+                        platform_name: platform.name,
+                        platform_id: platform.id,
+                      })
+                    }
+                  }}
+                >
                   <CardContent className="p-0">
                     <div className="flex flex-col md:flex-row">
                       <div className="flex items-center justify-center border-b border-gray-100 bg-gray-50 p-4 md:w-1/4 md:border-b-0 md:border-r">

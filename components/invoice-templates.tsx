@@ -95,6 +95,16 @@ export default function InvoiceTemplates() {
       // Guardar el PDF
       pdf.save(`recibo-${invoiceNumber || "001"}.pdf`)
 
+      // Enviar evento al dataLayer cuando se exporta un recibo a PDF
+      if (typeof window !== "undefined" && window.dataLayer) {
+        window.dataLayer.push({
+          event: "invoice_exported",
+          invoice_number: invoiceNumber || "001",
+          client_name: clientName || "sin_nombre",
+          invoice_amount: calculateTotal().toFixed(2),
+        })
+      }
+
       setIsExporting(false)
     } catch (error) {
       console.error("Error al exportar PDF:", error)
@@ -107,6 +117,16 @@ export default function InvoiceTemplates() {
 
     const printContent = receiptRef.current.innerHTML
     const originalContent = document.body.innerHTML
+
+    // Enviar evento al dataLayer cuando se imprime un recibo
+    if (typeof window !== "undefined" && window.dataLayer) {
+      window.dataLayer.push({
+        event: "invoice_printed",
+        invoice_number: invoiceNumber || "001",
+        client_name: clientName || "sin_nombre",
+        invoice_amount: calculateTotal().toFixed(2),
+      })
+    }
 
     document.body.innerHTML = printContent
     window.print()
