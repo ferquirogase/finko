@@ -25,16 +25,6 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-purple-600"
-                onClick={() => {
-                  // Enviar evento al dataLayer cuando se hace clic en el enlace de LinkedIn
-                  if (typeof window !== "undefined" && window.dataLayer) {
-                    window.dataLayer.push({
-                      event: "external_link_click",
-                      link_type: "social",
-                      link_name: "linkedin",
-                    })
-                  }
-                }}
               >
                 <IconBrandLinkedin className="h-5 w-5" stroke={1.5} />
                 <span className="sr-only">LinkedIn</span>
@@ -51,16 +41,6 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600"
-              onClick={() => {
-                // Enviar evento al dataLayer cuando se hace clic en el enlace de Cafecito
-                if (typeof window !== "undefined" && window.dataLayer) {
-                  window.dataLayer.push({
-                    event: "external_link_click",
-                    link_type: "donation",
-                    link_name: "cafecito",
-                  })
-                }
-              }}
             >
               <IconCoffee className="h-4 w-4" stroke={1.5} />
               Invitame un cafecito

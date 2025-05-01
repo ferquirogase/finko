@@ -23,16 +23,6 @@ export default function BottomNav() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [scrolled])
 
-  // Función para enviar evento al dataLayer cuando se navega usando el menú inferior
-  const handleNavClick = (itemName: string) => {
-    if (typeof window !== "undefined" && window.dataLayer) {
-      window.dataLayer.push({
-        event: "bottom_navigation",
-        nav_item: itemName,
-      })
-    }
-  }
-
   const navItems = [
     {
       name: "Inicio",
@@ -73,12 +63,7 @@ export default function BottomNav() {
           const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
 
           return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="flex flex-col items-center justify-center group"
-              onClick={() => handleNavClick(item.name)}
-            >
+            <Link key={item.name} href={item.href} className="flex flex-col items-center justify-center group">
               <div
                 className={cn(
                   "flex items-center justify-center mb-1 w-10 h-10 rounded-full transition-all duration-300 ease-in-out transform",

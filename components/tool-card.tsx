@@ -42,17 +42,6 @@ export default function ToolCard({ title, description, icon: Icon, href, color, 
     },
   }
 
-  // Función para enviar evento al dataLayer cuando se hace clic en una herramienta
-  const handleToolClick = () => {
-    if (typeof window !== "undefined" && window.dataLayer) {
-      window.dataLayer.push({
-        event: "tool_selection",
-        tool_name: title,
-        tool_path: href,
-      })
-    }
-  }
-
   return (
     <Link
       href={href}
@@ -63,7 +52,6 @@ export default function ToolCard({ title, description, icon: Icon, href, color, 
         colorClasses[color].hover,
         className,
       )}
-      onClick={handleToolClick}
     >
       <div className="flex items-center gap-3 mb-2">
         <div className={cn("flex h-10 w-10 items-center justify-center rounded-full", colorClasses[color].icon)}>

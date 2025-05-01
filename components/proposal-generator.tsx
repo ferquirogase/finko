@@ -82,15 +82,6 @@ TÉRMINOS Y CONDICIONES
     navigator.clipboard.writeText(proposalText)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-
-    // Enviar evento al dataLayer cuando se copia el texto del presupuesto
-    if (typeof window !== "undefined" && window.dataLayer) {
-      window.dataLayer.push({
-        event: "proposal_text_copied",
-        client_name: clientName || "sin_nombre",
-        project_title: projectTitle || "sin_titulo",
-      })
-    }
   }
 
   const exportToPDF = async () => {
@@ -129,15 +120,6 @@ TÉRMINOS Y CONDICIONES
 
       // Guardar el PDF
       pdf.save(`propuesta-${clientName || "proyecto"}.pdf`)
-
-      // Enviar evento al dataLayer cuando se exporta un presupuesto a PDF
-      if (typeof window !== "undefined" && window.dataLayer) {
-        window.dataLayer.push({
-          event: "proposal_exported",
-          client_name: clientName || "sin_nombre",
-          project_title: projectTitle || "sin_titulo",
-        })
-      }
 
       setIsExporting(false)
     } catch (error) {

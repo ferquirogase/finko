@@ -245,16 +245,16 @@ Basado en:
     setTimeout(() => setCopied(false), 2000)
 
     // Enviar evento al dataLayer cuando se copian los resultados
-    if (typeof window !== "undefined" && window.dataLayer) {
-      window.dataLayer.push({
-        event: "calculator_result_copied",
-        hourly_rate: recommendedRate,
-        project_total: recommendedTotal,
-        hours: hours,
-        experience_level: experience,
-        project_type: projectType,
-      })
-    }
+    // if (typeof window !== "undefined" && window.dataLayer) {
+    //   window.dataLayer.push({
+    //     event: "calculator_result_copied",
+    //     hourly_rate: recommendedRate,
+    //     project_total: recommendedTotal,
+    //     hours: hours,
+    //     experience_level: experience,
+    //     project_type: projectType,
+    //   })
+    // }
   }
 
   // Componente de control numérico mejorado
@@ -1043,13 +1043,13 @@ Basado en:
                     setActiveStep(Math.min(basicSteps.length - 1, activeStep + 1))
 
                     // Enviar evento al dataLayer cuando se avanza al siguiente paso
-                    if (typeof window !== "undefined" && window.dataLayer) {
-                      window.dataLayer.push({
-                        event: "calculator_step_completed",
-                        step_number: activeStep + 1,
-                        step_name: basicSteps[activeStep].title,
-                      })
-                    }
+                    // if (typeof window !== "undefined" && window.dataLayer) {
+                    //   window.dataLayer.push({
+                    //     event: "calculator_step_completed",
+                    //     step_number: activeStep + 1,
+                    //     step_name: basicSteps[activeStep].title,
+                    //   })
+                    // }
                   }}
                   className="rounded-xl bg-blue-600 hover:bg-blue-700"
                 >
