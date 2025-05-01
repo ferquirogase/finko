@@ -5,8 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select"
-import { Check, Info, Calculator, DollarSign, HelpCircle, ArrowRight, Search } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Check, Info, Calculator, HelpCircle, ArrowRight, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
@@ -117,29 +116,21 @@ export default function PricingCalculator() {
   const [profitMargin, setProfitMargin] = useState(20)
   const [includeExpenses, setIncludeExpenses] = useState(true)
 
-  // Estado para la calculadora de proyecto
-  const [projectBudget, setProjectBudget] = useState(5000)
-  const [projectDuration, setProjectDuration] = useState(4) // en semanas
-  const [revisionRounds, setRevisionRounds] = useState(2)
-  const [extraRevisionRate, setExtraRevisionRate] = useState(50)
-  const [maintenanceFee, setMaintenanceFee] = useState(10) // % del proyecto
-  const [includeRush, setIncludeRush] = useState(false)
-  const [rushFee, setRushFee] = useState(25) // % adicional
+  // Eliminar estos estados:
 
   const [copied, setCopied] = useState(false)
   const [activeStep, setActiveStep] = useState(0)
-  const [activeTab, setActiveTab] = useState("basic")
+  // Por:
+  const [activeTab, setActiveTab] = useState("calculator")
 
   useEffect(() => {
     // Asegurarse de que activeStep esté dentro de los límites válidos
     if (activeStep < 0) {
       setActiveStep(0)
-    } else if (activeTab === "basic" && activeStep >= basicSteps.length) {
+    } else if (activeStep >= basicSteps.length) {
       setActiveStep(basicSteps.length - 1)
-    } else if (activeTab === "project" && activeStep >= projectSteps.length) {
-      setActiveStep(projectSteps.length - 1)
     }
-  }, [activeStep, activeTab])
+  }, [activeStep])
 
   // Tarifas base por región (USD por hora)
   const baseRates = {
@@ -228,38 +219,10 @@ export default function PricingCalculator() {
     }
   }
 
-  // Cálculo de presupuesto de proyecto
-  const calculateProjectBudget = () => {
-    let totalBudget = projectBudget
-
-    // Añadir tarifa de urgencia si está seleccionada
-    if (includeRush) {
-      totalBudget += projectBudget * (rushFee / 100)
-    }
-
-    // Calcular tarifa por hora implícita
-    const hoursPerWeek = 40 // Asumimos semana laboral estándar
-    const totalHours = projectDuration * hoursPerWeek
-    const hourlyRate = Math.round(totalBudget / totalHours)
-
-    // Calcular costo de revisiones adicionales
-    const extraRevisionCost = extraRevisionRate * 2 // Asumimos 2 horas por revisión adicional
-
-    // Calcular tarifa de mantenimiento mensual
-    const monthlyMaintenance = Math.round((projectBudget * maintenanceFee) / 100)
-
-    return {
-      totalBudget,
-      hourlyRate,
-      totalHours,
-      extraRevisionCost,
-      monthlyMaintenance,
-    }
-  }
+  // Eliminar esta función:
 
   const marketRate = calculateMarketRate()
   const sustainableRate = calculateSustainableRate()
-  const projectBudgetDetails = calculateProjectBudget()
 
   // Calcular la tarifa recomendada (promedio ponderado entre mercado y sostenibilidad)
   const calculateRecommendedRate = () => {
@@ -271,23 +234,11 @@ export default function PricingCalculator() {
   const recommendedTotal = recommendedRate * hours
 
   const handleCopy = () => {
-    let text = ""
-
-    if (activeTab === "basic") {
-      text = `Tarifa recomendada: $${recommendedRate} USD por hora
+    const text = `Tarifa recomendada: $${recommendedRate} USD por hora
 Total del proyecto: $${recommendedTotal} USD (${hours} horas)
 Basado en:
 - Tarifa de mercado: $${marketRate.hourlyRate} USD
 - Tarifa sostenible: $${sustainableRate.hourlyRate} USD`
-    } else {
-      text = `Presupuesto total: $${projectBudgetDetails.totalBudget.toLocaleString()} USD
-Tarifa por hora implícita: $${projectBudgetDetails.hourlyRate} USD
-Basado en ${projectBudgetDetails.totalHours} horas totales (${projectDuration} semanas)
-Servicios adicionales:
-- Revisión adicional: $${projectBudgetDetails.extraRevisionCost} USD
-- Mantenimiento mensual: $${projectBudgetDetails.monthlyMaintenance} USD
-- Mantenimiento anual: $${(projectBudgetDetails.monthlyMaintenance * 12).toLocaleString()} USD`
-    }
 
     navigator.clipboard.writeText(text)
     setCopied(true)
@@ -501,20 +452,16 @@ Servicios adicionales:
                               <span className="text-xs text-gray-500 mr-1">Multiplicador:</span>
                               <span className="flex items-center">
                                 <span className="font-medium text-blue-600">{subcategory.multiplier.toFixed(2)}x</span>
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Info className="h-3.5 w-3.5 ml-1 text-gray-400" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs text-xs">
-                                      <p>
-                                        Este multiplicador afecta el cálculo de tu tarifa base según el tipo de
-                                        proyecto. Un valor mayor indica un tipo de proyecto que generalmente se cobra a
-                                        una tarifa más alta en el mercado.
-                                      </p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                                <HelpTooltip
+                                  content={
+                                    <p>
+                                      Este multiplicador afecta el cálculo de tu tarifa base según el tipo de proyecto.
+                                      Un valor mayor indica un tipo de proyecto que generalmente se cobra a una tarifa
+                                      más alta en el mercado.
+                                    </p>
+                                  }
+                                  className="ml-1"
+                                />
                               </span>
                             </div>
                           </button>
@@ -540,20 +487,16 @@ Servicios adicionales:
                   <span>Multiplicador seleccionado: </span>
                   <span className="flex items-center ml-1">
                     <span className="font-medium text-blue-600">{getProjectMultiplier(projectType).toFixed(2)}x</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-3.5 w-3.5 ml-1 text-gray-400 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs text-xs">
-                          <p>
-                            Este multiplicador afecta el cálculo de tu tarifa base según el tipo de proyecto
-                            seleccionado. Se aplica como un porcentaje sobre la tarifa base para reflejar el valor de
-                            mercado de este tipo de trabajo.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <HelpTooltip
+                      content={
+                        <p>
+                          Este multiplicador afecta el cálculo de tu tarifa base según el tipo de proyecto seleccionado.
+                          Se aplica como un porcentaje sobre la tarifa base para reflejar el valor de mercado de este
+                          tipo de trabajo.
+                        </p>
+                      }
+                      className="ml-1"
+                    />
                   </span>
                 </>
               ) : (
@@ -990,317 +933,6 @@ Servicios adicionales:
     },
   ]
 
-  // Pasos para la calculadora de proyecto
-  const projectSteps = [
-    {
-      title: "Presupuesto y Duración",
-      description: "Define el presupuesto y la duración del proyecto",
-      content: (
-        <div className="space-y-6">
-          <EnhancedNumericInput
-            label="Presupuesto del proyecto"
-            value={projectBudget}
-            onChange={setProjectBudget}
-            min={500}
-            max={50000}
-            step={500}
-            prefix="$"
-            suffix="USD"
-            tooltip="El monto total que cobrarás por el proyecto completo."
-          />
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <label className="text-sm font-medium">Duración del proyecto</label>
-                {false && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                          <HelpCircle className="h-3.5 w-3.5" />
-                          <span className="sr-only">Ayuda</span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs text-xs">
-                        <p>Tiempo estimado para completar el proyecto en semanas.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </div>
-              <span className="text-sm font-medium">{projectDuration} semanas</span>
-            </div>
-            <Slider
-              value={[projectDuration]}
-              onValueChange={(values) => setProjectDuration(values[0])}
-              min={1}
-              max={24}
-              step={1}
-            />
-            <div className="flex justify-between px-1 text-xs text-gray-500">
-              <span>1 sem.</span>
-              <span>12 sem.</span>
-              <span>24 sem.</span>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-amber-100 bg-amber-50 p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Switch id="include-rush" checked={includeRush} onCheckedChange={setIncludeRush} />
-                <Label htmlFor="include-rush" className="font-medium text-amber-800">
-                  Aplicar tarifa de urgencia
-                </Label>
-              </div>
-              <Badge variant="outline" className="bg-white text-amber-800">
-                +{rushFee}%
-              </Badge>
-            </div>
-
-            {includeRush && (
-              <div className="mt-4">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <label className="text-sm font-medium">Tarifa de urgencia</label>
-                      {false && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                                <HelpCircle className="h-3.5 w-3.5" />
-                                <span className="sr-only">Ayuda</span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs text-xs">
-                              <p></p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </div>
-                    <span className="text-sm font-medium">{rushFee}%</span>
-                  </div>
-                  <Slider
-                    value={[rushFee]}
-                    onValueChange={(values) => setRushFee(values[0])}
-                    min={5}
-                    max={100}
-                    step={5}
-                  />
-                  <div className="flex justify-between px-1 text-xs text-gray-500">
-                    <span>5%</span>
-                    <span>50%</span>
-                    <span>100%</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Revisiones y Mantenimiento",
-      description: "Define las revisiones incluidas y tarifas de mantenimiento",
-      content: (
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <label className="text-sm font-medium">Rondas de revisión incluidas</label>
-                {false && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                          <HelpCircle className="h-3.5 w-3.5" />
-                          <span className="sr-only">Ayuda</span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs text-xs">
-                        <p>Número de rondas de revisión incluidas en el precio base.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </div>
-              <span className="text-sm font-medium">{revisionRounds}</span>
-            </div>
-            <Slider
-              value={[revisionRounds]}
-              onValueChange={(values) => setRevisionRounds(values[0])}
-              min={1}
-              max={5}
-              step={1}
-            />
-            <div className="flex justify-between px-1 text-xs text-gray-500">
-              <span>1</span>
-              <span>3</span>
-              <span>5</span>
-            </div>
-          </div>
-
-          <EnhancedNumericInput
-            label="Tarifa por revisión adicional"
-            value={extraRevisionRate}
-            onChange={setExtraRevisionRate}
-            min={10}
-            max={200}
-            step={10}
-            prefix="$"
-            suffix="USD"
-            tooltip="Cuánto cobrarás por hora para revisiones adicionales no incluidas en el presupuesto inicial."
-          />
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-1.5">
-              <label className="text-sm font-medium">Tarifa de mantenimiento mensual</label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                      <HelpCircle className="h-3.5 w-3.5" />
-                      <span className="sr-only">Ayuda</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs text-xs">
-                    <p>
-                      Porcentaje del presupuesto total que cobrarás mensualmente por servicios de mantenimiento después
-                      de finalizar el proyecto.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <div className="flex items-center">
-              <div className="space-y-2 flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <label className="text-sm font-medium">Tarifa de mantenimiento mensual</label>
-                    {false && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                              <HelpCircle className="h-3.5 w-3.5" />
-                              <span className="sr-only">Ayuda</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs text-xs">
-                            <p></p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                  <span className="text-sm font-medium">{maintenanceFee}%</span>
-                </div>
-                <Slider
-                  value={[maintenanceFee]}
-                  onValueChange={(values) => setMaintenanceFee(values[0])}
-                  min={5}
-                  max={30}
-                  step={1}
-                />
-                <div className="flex justify-between px-1 text-xs text-gray-500">
-                  <span>5%</span>
-                  <span>15%</span>
-                  <span>30%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Resultados",
-      description: "Análisis detallado del presupuesto del proyecto",
-      content: (
-        <div className="space-y-4 rounded-3xl bg-gradient-to-r from-amber-500 to-amber-600 p-6 text-white">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <h3 className="text-sm font-medium text-amber-100">Presupuesto total</h3>
-              <div className="my-2 flex items-baseline">
-                <span className="text-xl font-medium">$</span>
-                <span className="text-5xl font-bold">{projectBudgetDetails.totalBudget.toLocaleString()}</span>
-                <span className="ml-1 text-xl font-medium">USD</span>
-              </div>
-              {includeRush && (
-                <p className="text-xs text-amber-200">
-                  Incluye {rushFee}% de tarifa de urgencia ($
-                  {Math.round(projectBudget * (rushFee / 100)).toLocaleString()} USD)
-                </p>
-              )}
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-amber-100">Tarifa por hora implícita</h3>
-              <div className="my-2 flex items-baseline">
-                <span className="text-xl font-medium">$</span>
-                <span className="text-5xl font-bold">{projectBudgetDetails.hourlyRate}</span>
-                <span className="ml-1 text-xl font-medium">USD</span>
-              </div>
-              <p className="text-xs text-amber-200">
-                Basado en {projectBudgetDetails.totalHours} horas totales ({projectDuration} semanas)
-              </p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-              <h4 className="mb-2 font-medium text-amber-100">Servicios adicionales</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Revisión adicional:</span>
-                  <span>${projectBudgetDetails.extraRevisionCost} USD</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Mantenimiento mensual:</span>
-                  <span>${projectBudgetDetails.monthlyMaintenance} USD</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Mantenimiento anual:</span>
-                  <span>${(projectBudgetDetails.monthlyMaintenance * 12).toLocaleString()} USD</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-              <h4 className="mb-2 font-medium text-amber-100">Cronograma del proyecto</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Duración:</span>
-                  <span>{projectDuration} semanas</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Horas totales:</span>
-                  <span>{projectBudgetDetails.totalHours} horas</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Rondas de revisión:</span>
-                  <span>{revisionRounds} incluidas</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-            <h4 className="mb-2 font-medium text-amber-100">Recomendaciones para el presupuesto</h4>
-            <ul className="list-inside list-disc space-y-1">
-              <li>Especifica claramente el alcance del proyecto y las entregas</li>
-              <li>Define el proceso de revisión y los costos adicionales</li>
-              <li>Establece un cronograma realista con hitos claros</li>
-              <li>Ofrece opciones de mantenimiento post-proyecto</li>
-              <li>Considera un depósito inicial del 30-50% antes de comenzar</li>
-            </ul>
-          </div>
-        </div>
-      ),
-    },
-  ]
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node
@@ -1337,174 +969,75 @@ Servicios adicionales:
         </div>
       </div>
 
-      <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 rounded-xl">
-          <TabsTrigger
-            value="basic"
-            className="rounded-l-xl"
-            onClick={() => {
-              setActiveStep(0)
-              setActiveTab("basic")
-            }}
-          >
-            <Calculator className="mr-2 h-4 w-4" />
-            Calculadora
-          </TabsTrigger>
-          <TabsTrigger
-            value="project"
-            className="rounded-r-xl"
-            onClick={() => {
-              setActiveStep(0)
-              setActiveTab("project")
-            }}
-          >
-            <DollarSign className="mr-2 h-4 w-4" />
-            Proyecto
-          </TabsTrigger>
-        </TabsList>
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 rounded-xl bg-blue-50 p-3 text-blue-800">
+          <Info className="h-5 w-5 flex-shrink-0" />
+          <p className="text-xs">
+            Esta calculadora combina factores de mercado y sostenibilidad para ayudarte a establecer una tarifa justa
+            que cubra tus necesidades y sea competitiva.
+          </p>
+        </div>
 
-        {/* Calculadora Unificada */}
-        <TabsContent value="basic" className="mt-6 space-y-6">
-          <div className="flex items-center gap-3 rounded-xl bg-blue-50 p-3 text-blue-800">
-            <Info className="h-5 w-5 flex-shrink-0" />
-            <p className="text-xs">
-              Esta calculadora combina factores de mercado y sostenibilidad para ayudarte a establecer una tarifa justa
-              que cubra tus necesidades y sea competitiva.
-            </p>
-          </div>
+        {/* Pasos de la calculadora */}
+        <div className="mb-4 flex flex-wrap gap-2">
+          {basicSteps.map((step, index) => (
+            <button
+              key={index}
+              onClick={() => setActiveStep(index)}
+              className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-all ${
+                activeStep === index
+                  ? "bg-blue-100 text-blue-800 font-medium"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-medium">
+                {index + 1}
+              </span>
+              <span>{step.title}</span>
+            </button>
+          ))}
+        </div>
 
-          {/* Pasos de la calculadora */}
-          <div className="mb-4 flex flex-wrap gap-2">
-            {basicSteps.map((step, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveStep(index)}
-                className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-all ${
-                  activeStep === index
-                    ? "bg-blue-100 text-blue-800 font-medium"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+        <Card className="border-blue-100">
+          <CardContent className="p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-medium text-gray-800">
+                {basicSteps[activeStep] ? basicSteps[activeStep].title : "Cargando..."}
+              </h3>
+              <p className="text-sm text-gray-500">
+                {basicSteps[activeStep] ? basicSteps[activeStep].description : ""}
+              </p>
+            </div>
+
+            {basicSteps[activeStep] && basicSteps[activeStep].content}
+
+            <div className="mt-6 flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
+                disabled={activeStep === 0}
+                className="rounded-xl"
               >
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-medium">
-                  {index + 1}
-                </span>
-                <span>{step.title}</span>
-              </button>
-            ))}
-          </div>
-
-          <Card className="border-blue-100">
-            <CardContent className="p-6">
-              <div className="mb-4">
-                <h3 className="text-lg font-medium text-gray-800">
-                  {basicSteps[activeStep] ? basicSteps[activeStep].title : "Cargando..."}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {basicSteps[activeStep] ? basicSteps[activeStep].description : ""}
-                </p>
-              </div>
-
-              {basicSteps[activeStep] && basicSteps[activeStep].content}
-
-              <div className="mt-6 flex justify-between">
-                <Button
-                  variant="outline"
-                  onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
-                  disabled={activeStep === 0}
-                  className="rounded-xl"
-                >
-                  Anterior
+                Anterior
+              </Button>
+              {activeStep === basicSteps.length - 1 ? (
+                <Button onClick={handleCopy} className="rounded-xl bg-blue-600 hover:bg-blue-700">
+                  {copied ? <Check className="mr-2 h-4 w-4" /> : null}
+                  {copied ? "¡Copiado!" : "Copiar resultados"}
                 </Button>
-                {activeStep === basicSteps.length - 1 ? (
-                  <Button onClick={handleCopy} className="rounded-xl bg-blue-600 hover:bg-blue-700">
-                    {copied ? <Check className="mr-2 h-4 w-4" /> : null}
-                    {copied ? "¡Copiado!" : "Copiar resultados"}
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => setActiveStep(Math.min(basicSteps.length - 1, activeStep + 1))}
-                    className="rounded-xl bg-blue-600 hover:bg-blue-700"
-                  >
-                    Siguiente
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Calculadora de Proyecto */}
-        <TabsContent value="project" className="mt-6 space-y-6">
-          <div className="flex items-center gap-3 rounded-xl bg-amber-50 p-3 text-amber-800">
-            <Info className="h-5 w-5 flex-shrink-0" />
-            <p className="text-xs">
-              Analiza un presupuesto de proyecto para entender su desglose, calcular tarifas adicionales y planificar
-              servicios de mantenimiento.
-            </p>
-          </div>
-
-          {/* Pasos de la calculadora de proyecto */}
-          <div className="mb-4 flex flex-wrap gap-2">
-            {projectSteps.map((step, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveStep(index)}
-                className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-all ${
-                  activeStep === index
-                    ? "bg-amber-100 text-amber-800 font-medium"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-medium">
-                  {index + 1}
-                </span>
-                <span>{step.title}</span>
-              </button>
-            ))}
-          </div>
-
-          <Card className="border-amber-100">
-            <CardContent className="p-6">
-              <div className="mb-4">
-                <h3 className="text-lg font-medium text-gray-800">
-                  {projectSteps[activeStep] ? projectSteps[activeStep].title : "Cargando..."}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {projectSteps[activeStep] ? projectSteps[activeStep].description : ""}
-                </p>
-              </div>
-
-              {projectSteps[activeStep] && projectSteps[activeStep].content}
-
-              <div className="mt-6 flex justify-between">
+              ) : (
                 <Button
-                  variant="outline"
-                  onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
-                  disabled={activeStep === 0}
-                  className="rounded-xl"
+                  onClick={() => setActiveStep(Math.min(basicSteps.length - 1, activeStep + 1))}
+                  className="rounded-xl bg-blue-600 hover:bg-blue-700"
                 >
-                  Anterior
+                  Siguiente
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                {activeStep === projectSteps.length - 1 ? (
-                  <Button onClick={handleCopy} className="rounded-xl bg-amber-500 hover:bg-amber-600">
-                    {copied ? <Check className="mr-2 h-4 w-4" /> : null}
-                    {copied ? "¡Copiado!" : "Copiar resultados"}
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => setActiveStep(Math.min(projectSteps.length - 1, activeStep + 1))}
-                    className="rounded-xl bg-amber-500 hover:bg-amber-600"
-                  >
-                    Siguiente
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
