@@ -1,6 +1,7 @@
 import type React from "react"
 import { Inclusive_Sans } from "next/font/google"
 import "./globals.css"
+import Script from "next/script"
 
 const inclusiveSans = Inclusive_Sans({
   subsets: ["latin"],
@@ -27,6 +28,17 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
+        {/* Google Analytics */}
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-WJQ2C9VR70" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-WJQ2C9VR70');
+          `}
+        </Script>
+
         {/* Schema.org markup para SEO */}
         <script
           type="application/ld+json"
