@@ -10,7 +10,7 @@ import Script from "next/script"
 
 const inclusiveSans = Inclusive_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: "400",
   display: "swap",
 })
 
