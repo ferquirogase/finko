@@ -52,7 +52,7 @@ export default function BottomNav() {
   ]
 
   return (
-    <div className="fixed bottom-4 left-0 right-0 z-50 mx-auto w-full max-w-sm px-4">
+    <div className="fixed bottom-4 left-0 right-0 z-50 mx-auto w-full max-w-3xl px-4">
       <div
         className={cn(
           "mx-auto grid h-18 grid-cols-5 rounded-full transition-all duration-300 py-1",
