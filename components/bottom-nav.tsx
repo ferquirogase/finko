@@ -12,6 +12,8 @@ export default function BottomNav() {
 
   // Detectar scroll para cambiar la apariencia
   useEffect(() => {
+    if (typeof window === "undefined") return
+
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10
       if (isScrolled !== scrolled) {

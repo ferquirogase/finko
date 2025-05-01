@@ -946,6 +946,8 @@ Basado en:
   ]
 
   useEffect(() => {
+    if (typeof window === "undefined") return
+
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node
       const searchInput = document.querySelector('input[placeholder="Buscar o seleccionar tipo de proyecto..."]')

@@ -16,6 +16,9 @@ export default function ParticlesBackground() {
   >([])
 
   useEffect(() => {
+    // Verificar que estamos en el cliente
+    if (typeof window === "undefined") return
+
     // Crear partículas solo en el cliente
     const particlesCount = window.innerWidth < 768 ? 40 : 70
 

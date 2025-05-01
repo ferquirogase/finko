@@ -58,9 +58,10 @@ export default function InvoiceTemplates() {
     return calculateSubtotal() + calculateTax()
   }
 
+  // Buscar y modificar la función exportToPDF para verificar window
   const exportToPDF = async () => {
-    if (!receiptRef.current) {
-      console.error("No se puede exportar: falta el elemento de referencia")
+    if (typeof window === "undefined" || !receiptRef.current) {
+      console.error("No se puede exportar: falta el elemento de referencia o estamos en el servidor")
       return
     }
 
@@ -102,8 +103,9 @@ export default function InvoiceTemplates() {
     }
   }
 
+  // Buscar y modificar la función printReceipt para verificar window
   const printReceipt = () => {
-    if (!receiptRef.current) return
+    if (typeof window === "undefined" || !receiptRef.current) return
 
     const printContent = receiptRef.current.innerHTML
     const originalContent = document.body.innerHTML

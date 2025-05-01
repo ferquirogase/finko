@@ -53,7 +53,10 @@ export default function ProposalGenerator() {
     return <ul className="list-disc pl-5 space-y-1">{listItems}</ul>
   }
 
+  // Buscar y modificar la función handleCopy para verificar window
   const handleCopy = () => {
+    if (typeof window === "undefined") return
+
     const proposalText = `
 PROPUESTA DE PROYECTO
 
@@ -84,9 +87,10 @@ TÉRMINOS Y CONDICIONES
     setTimeout(() => setCopied(false), 2000)
   }
 
+  // Buscar y modificar la función exportToPDF para verificar window
   const exportToPDF = async () => {
-    if (!proposalRef.current) {
-      console.error("No se puede exportar: falta el elemento de referencia")
+    if (typeof window === "undefined" || !proposalRef.current) {
+      console.error("No se puede exportar: falta el elemento de referencia o estamos en el servidor")
       return
     }
 

@@ -6,6 +6,9 @@ export function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    // Verificar que estamos en el cliente
+    if (typeof window === "undefined") return
+
     // Función para verificar si es un dispositivo móvil
     const checkMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera

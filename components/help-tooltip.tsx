@@ -19,13 +19,15 @@ export function HelpTooltip({ content, className = "" }: HelpTooltipProps) {
 
   // Detectar si es un dispositivo táctil
   useEffect(() => {
+    if (typeof window === "undefined") return
+
     const touchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0
     setIsTouchDevice(touchDevice)
   }, [])
 
   // Cerrar el tooltip cuando se hace clic fuera de él
   useEffect(() => {
-    if (!isTouchDevice) return
+    if (!isTouchDevice || typeof window === "undefined") return
 
     const handleClickOutside = (event: MouseEvent) => {
       if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
