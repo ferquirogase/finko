@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { Linkedin, Coffee } from "lucide-react"
 import Image from "next/image"
-import InstallPWA from "./install-pwa"
 
 export default function Footer() {
   return (
@@ -28,10 +27,6 @@ export default function Footer() {
                 <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </Link>
-              {/* Solo mostrar en móviles */}
-              <div className="md:hidden">
-                <InstallPWA />
-              </div>
             </div>
           </div>
 
