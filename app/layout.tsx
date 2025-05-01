@@ -26,7 +26,47 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <head>{/* Podemos añadir etiquetas adicionales aquí si es necesario */}</head>
+      <head>
+        {/* Schema.org markup para SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: "Finko - Herramientas para freelancers",
+              url: "https://finko.app/",
+              description: "Calcula tarifas, genera presupuestos y crea facturas profesionales fácilmente",
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD",
+              },
+              author: {
+                "@type": "Person",
+                name: "Fernando Quiroga",
+              },
+            }),
+          }}
+        />
+
+        {/* Schema.org markup para Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Finko",
+              url: "https://finko.app/",
+              logo: "https://finko.app/finko.png",
+              sameAs: ["https://www.linkedin.com/in/ferquirogase/"],
+            }),
+          }}
+        />
+      </head>
       <body className={inclusiveSans.className}>{children}</body>
     </html>
   )
