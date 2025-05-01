@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
+import { HelpTooltip } from "@/components/help-tooltip"
 
 // Añadir este objeto de categorías y subcategorías al inicio del componente, justo después de las importaciones
 const projectCategories = [
@@ -355,21 +356,7 @@ Servicios adicionales:
         {label && (
           <div className="flex items-center gap-1.5">
             <label className="text-sm font-medium">{label}</label>
-            {tooltip && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                      <HelpCircle className="h-3.5 w-3.5" />
-                      <span className="sr-only">Ayuda</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs text-xs">
-                    <p>{tooltip}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
+            {tooltip && <HelpTooltip content={<p>{tooltip}</p>} />}
           </div>
         )}
         <div className="relative">
@@ -450,22 +437,14 @@ Servicios adicionales:
           <div className="space-y-2">
             <div className="flex items-center gap-1.5">
               <label className="text-sm font-medium">Tipo de proyecto</label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                      <HelpCircle className="h-3.5 w-3.5" />
-                      <span className="sr-only">Ayuda</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs text-xs">
-                    <p>
-                      Cada tipo de proyecto tiene un multiplicador diferente basado en la complejidad y demanda del
-                      mercado.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <HelpTooltip
+                content={
+                  <p>
+                    Cada tipo de proyecto tiene un multiplicador diferente basado en la complejidad y demanda del
+                    mercado.
+                  </p>
+                }
+              />
             </div>
 
             <div className="relative">
@@ -586,22 +565,14 @@ Servicios adicionales:
           <div className="space-y-2">
             <div className="flex items-center gap-1.5">
               <label className="text-sm font-medium">Región</label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                      <HelpCircle className="h-3.5 w-3.5" />
-                      <span className="sr-only">Ayuda</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs text-xs">
-                    <p>
-                      Las tarifas varían significativamente según la región. Selecciona la región donde ofreces tus
-                      servicios.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <HelpTooltip
+                content={
+                  <p>
+                    Las tarifas varían significativamente según la región. Selecciona la región donde ofreces tus
+                    servicios.
+                  </p>
+                }
+              />
             </div>
             <Select value={region} onValueChange={setRegion}>
               <SelectTrigger className="rounded-lg">
@@ -641,22 +612,14 @@ Servicios adicionales:
           <div className="space-y-3">
             <div className="flex items-center gap-1.5">
               <label className="text-sm font-medium">Complejidad</label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                      <HelpCircle className="h-3.5 w-3.5" />
-                      <span className="sr-only">Ayuda</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs text-xs">
-                    <p>
-                      La complejidad técnica del proyecto afecta directamente a tu tarifa. Proyectos más complejos
-                      justifican tarifas más altas.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <HelpTooltip
+                content={
+                  <p>
+                    La complejidad técnica del proyecto afecta directamente a tu tarifa. Proyectos más complejos
+                    justifican tarifas más altas.
+                  </p>
+                }
+              />
             </div>
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -686,22 +649,14 @@ Servicios adicionales:
           <div className="space-y-2">
             <div className="flex items-center gap-1.5">
               <label className="text-sm font-medium">Urgencia</label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                      <HelpCircle className="h-3.5 w-3.5" />
-                      <span className="sr-only">Ayuda</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs text-xs">
-                    <p>
-                      Proyectos con plazos ajustados o que requieren trabajo en horarios no habituales justifican una
-                      tarifa de urgencia.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <HelpTooltip
+                content={
+                  <p>
+                    Proyectos con plazos ajustados o que requieren trabajo en horarios no habituales justifican una
+                    tarifa de urgencia.
+                  </p>
+                }
+              />
             </div>
             <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
               <div className="flex items-center justify-between">
@@ -776,22 +731,14 @@ Servicios adicionales:
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <h3 className="text-base font-medium text-blue-800">Gastos mensuales</h3>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-blue-400">
-                        <HelpCircle className="h-3.5 w-3.5" />
-                        <span className="sr-only">Ayuda</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs text-xs">
-                      <p>
-                        Incluye todos tus gastos mensuales relacionados con tu negocio: software, hardware, oficina,
-                        servicios, etc.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <HelpTooltip
+                  content={
+                    <p>
+                      Incluye todos tus gastos mensuales relacionados con tu negocio: software, hardware, oficina,
+                      servicios, etc.
+                    </p>
+                  }
+                />
               </div>
               <div className="flex items-center space-x-2">
                 <Switch id="include-expenses" checked={includeExpenses} onCheckedChange={setIncludeExpenses} />
