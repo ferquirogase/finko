@@ -51,6 +51,15 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        {/* Google Tag Manager */}
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-5FVQXSR8');`}
+        </Script>
+        {/* End Google Tag Manager */}
         {/* Favicon */}
         <link rel="icon" href="/finko-fav.png" />
 
@@ -154,6 +163,16 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inclusiveSans.className} bg-gradient-to-br from-[#f5f7fa] to-[#f0f2f8]`}>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-5FVQXSR8"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
         <ThemeProvider attribute="class" defaultTheme="light">
           <ParticlesBackground />
           <div className="mx-auto max-w-3xl px-4 py-8">
