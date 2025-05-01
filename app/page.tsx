@@ -1,5 +1,6 @@
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import BottomNav from "@/components/bottom-nav"
 import Link from "next/link"
 import { IconCalculator, IconFileText, IconCreditCard, IconCurrencyDollar } from "@tabler/icons-react"
 
@@ -108,6 +109,7 @@ export default function Home() {
         </div>
       </main>
       <Footer />
+      <BottomNav />
     </div>
   )
 }

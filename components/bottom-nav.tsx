@@ -12,6 +12,7 @@ export default function BottomNav() {
 
   // Detectar scroll para cambiar la apariencia
   useEffect(() => {
+    // Verificar que estamos en el cliente
     if (typeof window === "undefined") return
 
     const handleScroll = () => {
