@@ -4,7 +4,7 @@ import Image from "next/image"
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-white py-12">
+    <footer className="rounded-3xl border-t bg-white py-12 shadow-sm">
       <div className="mx-auto max-w-3xl px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="space-y-4">
@@ -22,7 +22,7 @@ export default function Footer() {
                 href="https://www.linkedin.com/in/ferquirogase/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-500 hover:text-purple-600"
+                className="text-gray-500 hover:text-brand-600"
               >
                 <IconBrandLinkedin className="h-5 w-5" stroke={1.5} />
                 <span className="sr-only">LinkedIn</span>
@@ -38,10 +38,10 @@ export default function Footer() {
               href="https://cafecito.app/ferquirogaux"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600"
+              className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
             >
               <IconCoffee className="h-4 w-4" stroke={1.5} />
-              Invitame un cafecito
+              Invitar un cafecito
             </a>
           </div>
         </div>

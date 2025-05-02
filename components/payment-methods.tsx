@@ -3,14 +3,7 @@
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  IconCurrencyDollar,
-  IconInfoCircle,
-  IconCheck,
-  IconX,
-  IconCreditCard,
-  IconArrowsExchange,
-} from "@tabler/icons-react"
+import { IconCurrencyDollar, IconInfoCircle, IconCheck, IconX } from "@tabler/icons-react"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 
@@ -109,17 +102,6 @@ export default function PaymentMethods() {
       </div>
 
       <Tabs defaultValue="platforms" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 rounded-xl">
-          <TabsTrigger value="platforms" className="rounded-l-xl">
-            <IconCreditCard className="mr-2 h-4 w-4" stroke={1.5} />
-            Plataformas de pago
-          </TabsTrigger>
-          <TabsTrigger value="saldoar" className="rounded-r-xl">
-            <IconArrowsExchange className="mr-2 h-4 w-4" stroke={1.5} />
-            Moneda local
-          </TabsTrigger>
-        </TabsList>
-
         {/* Contenido de la pestaña de plataformas de pago */}
         <TabsContent value="platforms" className="mt-6 space-y-6">
           <div className="grid gap-4 md:grid-cols-2">

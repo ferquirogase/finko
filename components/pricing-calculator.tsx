@@ -334,7 +334,7 @@ Basado en:
             onChange={handleInputChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            className={`rounded-lg text-center transition-all focus-within:ring-2 focus-within:ring-blue-500 ${
+            className={`rounded-lg text-center transition-all focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500 ${
               prefix ? "pl-7" : ""
             } ${suffix ? "pr-10" : ""}`}
             step={step}
@@ -447,8 +447,8 @@ Basado en:
                           <button
                             key={subcategory.id}
                             type="button"
-                            className={`flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-blue-50 ${
-                              projectType === subcategory.id ? "bg-blue-50 font-medium text-blue-600" : ""
+                            className={`flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-brand-50 ${
+                              projectType === subcategory.id ? "bg-brand-50 font-medium text-brand-600" : ""
                             }`}
                             onClick={() => {
                               setProjectType(subcategory.id)
@@ -457,13 +457,13 @@ Basado en:
                             }}
                           >
                             <div className="flex items-center">
-                              {projectType === subcategory.id && <Check className="mr-2 h-4 w-4 text-blue-600" />}
+                              {projectType === subcategory.id && <Check className="mr-2 h-4 w-4 text-brand-600" />}
                               <span>{subcategory.name}</span>
                             </div>
                             <div className="flex items-center">
                               <span className="text-xs text-gray-500 mr-1">Multiplicador:</span>
                               <span className="flex items-center">
-                                <span className="font-medium text-blue-600">{subcategory.multiplier.toFixed(2)}x</span>
+                                <span className="font-medium text-brand-600">{subcategory.multiplier.toFixed(2)}x</span>
                                 <HelpTooltip
                                   content={
                                     <p>
@@ -498,7 +498,7 @@ Basado en:
                 <>
                   <span>Multiplicador seleccionado: </span>
                   <span className="flex items-center ml-1">
-                    <span className="font-medium text-blue-600">{getProjectMultiplier(projectType).toFixed(2)}x</span>
+                    <span className="font-medium text-brand-600">{getProjectMultiplier(projectType).toFixed(2)}x</span>
                     <HelpTooltip
                       content={
                         <p>
@@ -587,13 +587,13 @@ Basado en:
                   onClick={() => setComplexity(option.value)}
                   className={`flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 transition-all hover:bg-gray-50 ${
                     complexity === option.value
-                      ? "border-blue-500 bg-blue-50 shadow-sm"
+                      ? "border-brand-500 bg-brand-50 shadow-sm"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <span className="text-base font-medium">{option.label}</span>
                   <span className="text-xs text-gray-500">{option.desc}</span>
-                  <span className="mt-2 text-xs font-medium text-blue-600">
+                  <span className="mt-2 text-xs font-medium text-brand-600">
                     {Math.round((0.8 + option.value * 0.35) * 100)}%
                   </span>
                 </button>
@@ -613,7 +613,7 @@ Basado en:
                 }
               />
             </div>
-            <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
+            <div className="rounded-xl border border-brand-100 bg-brand-50 p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -682,10 +682,10 @@ Basado en:
       description: "Información para calcular una tarifa sostenible a largo plazo",
       content: (
         <div className="space-y-6">
-          <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
+          <div className="rounded-xl border border-brand-100 bg-brand-50 p-4">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <h3 className="text-base font-medium text-blue-800">Gastos mensuales</h3>
+                <h3 className="text-base font-medium text-brand-800">Gastos mensuales</h3>
                 <HelpTooltip
                   content={
                     <p>
@@ -697,7 +697,7 @@ Basado en:
               </div>
               <div className="flex items-center space-x-2">
                 <Switch id="include-expenses" checked={includeExpenses} onCheckedChange={setIncludeExpenses} />
-                <Label htmlFor="include-expenses" className="text-sm text-blue-800">
+                <Label htmlFor="include-expenses" className="text-sm text-brand-800">
                   Incluir en cálculo
                 </Label>
               </div>
@@ -850,31 +850,31 @@ Basado en:
       title: "Resultados",
       description: "Tu tarifa recomendada basada en todos los factores",
       content: (
-        <div className="space-y-4 rounded-3xl bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+        <div className="space-y-4 rounded-3xl bg-gradient-to-r from-brand-500 to-brand-600 p-6 text-white">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <h3 className="text-sm font-medium text-blue-100">Tarifa recomendada por hora</h3>
+              <h3 className="text-sm font-medium text-brand-100">Tarifa recomendada por hora</h3>
               <div className="my-2 flex items-baseline">
                 <span className="text-xl font-medium">$</span>
                 <span className="text-5xl font-bold">{recommendedRate}</span>
                 <span className="ml-1 text-xl font-medium">USD</span>
               </div>
-              <p className="text-xs text-blue-200">Basado en factores de mercado y sostenibilidad</p>
+              <p className="text-xs text-brand-200">Basado en factores de mercado y sostenibilidad</p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-blue-100">Total del proyecto</h3>
+              <h3 className="text-sm font-medium text-brand-100">Total del proyecto</h3>
               <div className="my-2 flex items-baseline">
                 <span className="text-xl font-medium">$</span>
                 <span className="text-5xl font-bold">{recommendedTotal.toLocaleString()}</span>
                 <span className="ml-1 text-xl font-medium">USD</span>
               </div>
-              <p className="text-xs text-blue-200">Basado en {hours} horas totales</p>
+              <p className="text-xs text-brand-200">Basado en {hours} horas totales</p>
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-              <h4 className="mb-2 font-medium text-blue-100">Factores de mercado</h4>
+              <h4 className="mb-2 font-medium text-brand-100">Factores de mercado</h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Tarifa base:</span>
@@ -904,7 +904,7 @@ Basado en:
             </div>
 
             <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-              <h4 className="mb-2 font-medium text-blue-100">Factores de sostenibilidad</h4>
+              <h4 className="mb-2 font-medium text-brand-100">Factores de sostenibilidad</h4>
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Gastos anuales:</span>
@@ -931,7 +931,7 @@ Basado en:
           </div>
 
           <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-            <h4 className="mb-2 font-medium text-blue-100">Recomendaciones para establecer tarifas</h4>
+            <h4 className="mb-2 font-medium text-brand-100">Recomendaciones para establecer tarifas</h4>
             <ul className="list-inside list-disc space-y-1">
               <li>Comunica claramente el valor que aportas, no solo el tiempo que dedicas</li>
               <li>Considera diferentes estructuras de precios según el tipo de cliente</li>
@@ -974,7 +974,7 @@ Basado en:
   return (
     <div className="space-y-6 rounded-3xl bg-white p-6 shadow-sm">
       <div className="flex items-start gap-4">
-        <div className="rounded-full bg-blue-100 p-2 text-blue-600">
+        <div className="rounded-full bg-brand-100 p-2 text-brand-600">
           <Calculator className="h-5 w-5" />
         </div>
         <div>
@@ -984,7 +984,7 @@ Basado en:
       </div>
 
       <div className="space-y-6">
-        <div className="flex items-center gap-3 rounded-xl bg-blue-50 p-3 text-blue-800">
+        <div className="flex items-center gap-3 rounded-xl bg-brand-50 p-3 text-brand-800">
           <Info className="h-5 w-5 flex-shrink-0" />
           <p className="text-xs">
             Esta calculadora combina factores de mercado y sostenibilidad para ayudarte a establecer una tarifa justa
@@ -1000,7 +1000,7 @@ Basado en:
               onClick={() => setActiveStep(index)}
               className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-all ${
                 activeStep === index
-                  ? "bg-blue-100 text-blue-800 font-medium"
+                  ? "bg-brand-100 text-brand-800 font-medium"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -1012,7 +1012,7 @@ Basado en:
           ))}
         </div>
 
-        <Card className="border-blue-100">
+        <Card className="border-brand-100">
           <CardContent className="p-6">
             <div className="mb-4">
               <h3 className="text-lg font-medium text-gray-800">
@@ -1035,7 +1035,7 @@ Basado en:
                 Anterior
               </Button>
               {activeStep === basicSteps.length - 1 ? (
-                <Button onClick={handleCopy} className="rounded-xl bg-blue-600 hover:bg-blue-700">
+                <Button onClick={handleCopy} className="rounded-xl bg-brand-600 hover:bg-brand-700">
                   {copied ? <Check className="mr-2 h-4 w-4" /> : null}
                   {copied ? "¡Copiado!" : "Copiar resultados"}
                 </Button>
@@ -1053,7 +1053,7 @@ Basado en:
                     //   })
                     // }
                   }}
-                  className="rounded-xl bg-blue-600 hover:bg-blue-700"
+                  className="rounded-xl bg-brand-600 hover:bg-brand-700"
                 >
                   Siguiente
                   <ArrowRight className="ml-2 h-4 w-4" />

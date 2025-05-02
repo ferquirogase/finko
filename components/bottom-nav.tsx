@@ -55,38 +55,32 @@ export default function BottomNav() {
   ]
 
   return (
-    <div className="fixed bottom-4 left-0 right-0 z-50 mx-auto w-full max-w-3xl px-4">
+    <div className="fixed bottom-6 left-0 right-0 z-50 mx-auto w-full max-w-md px-4">
       <div
         className={cn(
-          "mx-auto grid h-18 grid-cols-5 rounded-full transition-all duration-300 py-1",
-          scrolled ? "bg-white/90 backdrop-blur-md shadow-lg" : "bg-white/70 backdrop-blur-sm shadow-sm",
+          "mx-auto grid h-16 grid-cols-5 rounded-2xl border border-white/20 py-1 backdrop-blur-md transition-all duration-300",
+          scrolled ? "bg-white/85 shadow-lg" : "bg-white/75 shadow-md",
         )}
       >
         {navItems.map((item) => {
           const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
 
           return (
-            <Link key={item.name} href={item.href} className="flex flex-col items-center justify-center group">
+            <Link key={item.name} href={item.href} className="group flex flex-col items-center justify-center">
               <div
                 className={cn(
-                  "flex items-center justify-center mb-1 w-10 h-10 rounded-full transition-all duration-300 ease-in-out transform",
+                  "flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200",
                   isActive
-                    ? "bg-purple-600 scale-100"
-                    : "bg-transparent hover:bg-purple-100 scale-90 group-hover:scale-95",
+                    ? "bg-brand-600 text-white shadow-sm"
+                    : "text-gray-500 group-hover:bg-brand-50 group-hover:text-brand-500",
                 )}
               >
-                <item.icon
-                  className={cn(
-                    "h-5 w-5 transition-all duration-300 ease-in-out",
-                    isActive ? "text-white" : "text-gray-500 group-hover:text-purple-500",
-                  )}
-                  stroke={1.5}
-                />
+                <item.icon className="h-[18px] w-[18px]" stroke={isActive ? 2 : 1.5} />
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-medium leading-tight transition-colors duration-300 ease-in-out",
-                  isActive ? "text-purple-600" : "text-gray-500 group-hover:text-purple-400",
+                  "mt-1 text-[10px] font-medium transition-colors duration-200",
+                  isActive ? "text-brand-600" : "text-gray-500 group-hover:text-brand-400",
                 )}
               >
                 {item.name}

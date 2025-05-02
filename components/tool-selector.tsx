@@ -18,7 +18,7 @@ export default function ToolSelector({ activeTab, setActiveTab }: ToolSelectorPr
           onClick={() => setActiveTab("pricing")}
           className={cn(
             "flex flex-col items-center justify-center rounded-2xl p-4 transition-all",
-            activeTab === "pricing" ? "bg-blue-100 text-blue-600" : "bg-gray-50 text-gray-600 hover:bg-gray-100",
+            activeTab === "pricing" ? "bg-brand-100 text-brand-600" : "bg-gray-50 text-gray-600 hover:bg-gray-100",
           )}
         >
           <Calculator className="mb-2 h-8 w-8" />
@@ -28,7 +28,7 @@ export default function ToolSelector({ activeTab, setActiveTab }: ToolSelectorPr
           onClick={() => setActiveTab("proposals")}
           className={cn(
             "flex flex-col items-center justify-center rounded-2xl p-4 transition-all",
-            activeTab === "proposals" ? "bg-green-100 text-green-600" : "bg-gray-50 text-gray-600 hover:bg-gray-100",
+            activeTab === "proposals" ? "bg-brand-100 text-brand-600" : "bg-gray-50 text-gray-600 hover:bg-gray-100",
           )}
         >
           <FileText className="mb-2 h-8 w-8" />
@@ -38,7 +38,7 @@ export default function ToolSelector({ activeTab, setActiveTab }: ToolSelectorPr
           onClick={() => setActiveTab("invoices")}
           className={cn(
             "flex flex-col items-center justify-center rounded-2xl p-4 transition-all",
-            activeTab === "invoices" ? "bg-purple-100 text-purple-600" : "bg-gray-50 text-gray-600 hover:bg-gray-100",
+            activeTab === "invoices" ? "bg-brand-100 text-brand-600" : "bg-gray-50 text-gray-600 hover:bg-gray-100",
           )}
         >
           <CreditCard className="mb-2 h-8 w-8" />

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 
 export default function CTA() {
   return (
-    <section className="bg-gradient-to-br from-purple-500 to-purple-700 py-20 text-white">
+    <section className="bg-gradient-to-br from-brand-500 to-brand-700 py-20 text-white">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
@@ -15,7 +15,7 @@ export default function CTA() {
             </p>
           </div>
           <div className="flex flex-col gap-2 min-[400px]:flex-row">
-            <Button size="lg" className="bg-white text-purple-700 hover:bg-white/90">
+            <Button size="lg" className="bg-white text-brand-700 hover:bg-white/90">
               Comenzar Ahora
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20">

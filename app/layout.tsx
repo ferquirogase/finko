@@ -1,11 +1,11 @@
 import type React from "react"
-import { Inclusive_Sans } from "next/font/google"
+import { Outfit } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
 
-const inclusiveSans = Inclusive_Sans({
+const outfit = Outfit({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 })
 
@@ -79,7 +79,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inclusiveSans.className}>{children}</body>
+      <body className={outfit.className}>{children}</body>
     </html>
   )
 }

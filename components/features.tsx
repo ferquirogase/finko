@@ -6,10 +6,8 @@ export default function Features() {
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
-            <div className="inline-block rounded-lg bg-purple-100 px-3 py-1 text-sm text-purple-800">
-              Características
-            </div>
-            <h2 className="text-3xl font-bold tracking-tighter text-purple-900 sm:text-4xl md:text-5xl">
+            <div className="inline-block rounded-lg bg-brand-100 px-3 py-1 text-sm text-brand-800">Características</div>
+            <h2 className="text-3xl font-bold tracking-tighter text-gray-900 sm:text-4xl md:text-5xl">
               Todo lo que necesitas para gestionar tu negocio freelance
             </h2>
             <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -18,11 +16,11 @@ export default function Features() {
           </div>
         </div>
         <div className="mx-auto mt-16 grid max-w-5xl gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-3">
-          <div className="flex flex-col items-center space-y-2 rounded-lg border border-purple-100 p-4 text-center">
-            <div className="rounded-full bg-purple-100 p-2 text-purple-600">
+          <div className="flex flex-col items-center space-y-2 rounded-lg border border-gray-200 p-4 text-center">
+            <div className="rounded-full bg-brand-100 p-2 text-brand-600">
               <IconCalculator className="h-6 w-6" stroke={1.5} />
             </div>
-            <h3 className="text-xl font-bold text-purple-900">Calculadora de Tarifas</h3>
+            <h3 className="text-xl font-bold text-gray-900">Calculadora de Tarifas</h3>
             <p className="text-sm text-gray-600">
               Determina cuánto cobrar por tus servicios basado en tu experiencia, ubicación y tipo de proyecto.
             </p>
