@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select"
-import { Check, Info, Calculator, HelpCircle, ArrowRight, Search } from "lucide-react"
+import { Check, Info, HelpCircle, ArrowRight, Search, Calculator } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
@@ -972,18 +972,18 @@ Basado en:
   }, [openProjectSelector])
 
   return (
-    <div className="space-y-6 rounded-3xl bg-white p-6 shadow-sm">
-      <div className="flex items-start gap-4">
-        <div className="rounded-full bg-brand-100 p-2 text-brand-600">
-          <Calculator className="h-5 w-5" />
+    <div className="space-y-6">
+      <div className="space-y-6 rounded-3xl bg-white p-6 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="rounded-full bg-brand-100 p-2 text-brand-600">
+            <Calculator className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800">Calculadora de Tarifas</h2>
+            <p className="text-sm text-gray-500">Calcula cuánto deberías cobrar por tus servicios como freelancer</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800">Calculadora de Tarifas</h2>
-          <p className="text-sm text-gray-500">Calcula cuánto deberías cobrar por tus servicios</p>
-        </div>
-      </div>
 
-      <div className="space-y-6">
         <div className="flex items-center gap-3 rounded-xl bg-brand-50 p-3 text-brand-800">
           <Info className="h-5 w-5 flex-shrink-0" />
           <p className="text-xs">
@@ -1043,15 +1043,6 @@ Basado en:
                 <Button
                   onClick={() => {
                     setActiveStep(Math.min(basicSteps.length - 1, activeStep + 1))
-
-                    // Enviar evento al dataLayer cuando se avanza al siguiente paso
-                    // if (typeof window !== "undefined" && window.dataLayer) {
-                    //   window.dataLayer.push({
-                    //     event: "calculator_step_completed",
-                    //     step_number: activeStep + 1,
-                    //     step_name: basicSteps[activeStep].title,
-                    //   })
-                    // }
                   }}
                   className="rounded-xl bg-brand-600 hover:bg-brand-700"
                 >

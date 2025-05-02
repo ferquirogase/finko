@@ -24,11 +24,6 @@ export default function PresupuestosPage() {
             </Link>
           </div>
 
-          <div className="rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 p-8 text-white">
-            <h1 className="mb-4 text-3xl font-bold">Generador de Presupuestos</h1>
-            <p className="mb-6 text-lg text-white/90">Crea presupuestos profesionales para tus clientes</p>
-          </div>
-
           <ProposalGenerator />
         </div>
         <Footer />

@@ -5,6 +5,7 @@ import SubtleBackground from "@/components/subtle-background"
 import Link from "next/link"
 import { IconCalculator, IconFileText, IconCreditCard, IconCurrencyDollar } from "@tabler/icons-react"
 import Hero from "@/components/hero"
+import Image from "next/image"
 
 export default function Home() {
   return (
@@ -78,22 +79,63 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-xl font-semibold text-gray-800">¿Por qué usar nuestras herramientas?</h2>
+          {/* Banner publicitario con imagen de fondo y logo de Saldo */}
+          <a
+            href="https://saldo.com.ar/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block rounded-xl overflow-hidden relative transition-transform hover:scale-[1.02] hover:shadow-lg"
+            style={{ minHeight: "160px" }}
+          >
+            {/* Imagen de fondo */}
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-emerald-500 to-teal-600">
+              <Image
+                src="/green-gradient-texture.png"
+                alt="Fondo verde texturizado"
+                fill
+                style={{ objectFit: "cover", opacity: 0.8 }}
+                priority
+              />
+            </div>
+
+            {/* Contenido del banner */}
+            <div className="relative z-10 py-8 px-5 flex flex-col items-center justify-center text-center">
+              {/* Logo de Saldo */}
+              <div className="mb-3">
+                <Image
+                  src="/logo-saldo.png"
+                  alt="Logo Saldo"
+                  width={120}
+                  height={60}
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+
+              <div className="max-w-md">
+                <h3 className="text-xl font-bold text-white whitespace-nowrap">
+                  Convierte y envía dinero digital en 3 simples pasos
+                </h3>
+                <p className="mt-1 text-white/90">Rápido, seguro y con las mejores tasas del mercado</p>
+              </div>
+            </div>
+          </a>
+
+          <div className="mt-8">
+            <h2 className="mb-6 text-xl font-semibold text-gray-800">¿Por qué usar nuestras herramientas?</h2>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-lg border border-gray-200 p-4">
+              <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <h3 className="mb-2 font-medium text-gray-900">Ahorra tiempo</h3>
                 <p className="text-sm text-gray-600">
                   Automatiza tareas administrativas para enfocarte en lo que realmente importa: tu trabajo.
                 </p>
               </div>
-              <div className="rounded-lg border border-gray-200 p-4">
+              <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <h3 className="mb-2 font-medium text-gray-900">Aumenta tus ingresos</h3>
                 <p className="text-sm text-gray-600">
                   Establece tarifas justas y crea documentos profesionales que justifiquen tu valor.
                 </p>
               </div>
-              <div className="rounded-lg border border-gray-200 p-4">
+              <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <h3 className="mb-2 font-medium text-gray-900">Profesionaliza tu negocio</h3>
                 <p className="text-sm text-gray-600">
                   Impresiona a tus clientes con documentos bien diseñados y procesos eficientes.

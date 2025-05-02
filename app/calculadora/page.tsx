@@ -24,13 +24,6 @@ export default function CalculadoraPage() {
             </Link>
           </div>
 
-          <div className="rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 p-8 text-white">
-            <h1 className="mb-4 text-3xl font-bold">Calculadora de Tarifas</h1>
-            <p className="mb-6 text-lg text-white/90">
-              Calcula cuánto deberías cobrar por tus servicios como freelancer
-            </p>
-          </div>
-
           <PricingCalculator />
         </div>
         <Footer />
