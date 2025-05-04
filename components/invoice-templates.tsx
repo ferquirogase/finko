@@ -58,7 +58,7 @@ export default function InvoiceTemplates() {
     return calculateSubtotal() + calculateTax()
   }
 
-  // Buscar y modificar la función exportToPDF para verificar window
+  // Función actualizada para exportar a PDF
   const exportToPDF = async () => {
     if (typeof window === "undefined" || !receiptRef.current) {
       console.error("No se puede exportar: falta el elemento de referencia o estamos en el servidor")
@@ -74,24 +74,58 @@ export default function InvoiceTemplates() {
       const jsPDF = jsPDFModule.default
       const html2canvas = html2canvasModule.default
 
-      // Crear el canvas a partir del elemento HTML
-      const canvas = await html2canvas(receiptRef.current, {
-        scale: 2,
+      // Crear una copia del elemento para manipularlo sin afectar la UI
+      const element = receiptRef.current.cloneNode(true) as HTMLElement
+
+      // Aplicar estilos específicos para la exportación
+      element.style.width = "210mm" // Ancho A4
+      element.style.padding = "20mm 15mm" // Márgenes
+      element.style.backgroundColor = "white"
+      element.style.position = "absolute"
+      element.style.left = "-9999px"
+      document.body.appendChild(element)
+
+      // Crear el canvas a partir del elemento HTML con escala fija
+      const canvas = await html2canvas(element, {
+        scale: 2, // Escala fija para mejor calidad
         useCORS: true,
         logging: false,
+        windowWidth: 1200, // Ancho fijo para renderizado consistente
       })
 
-      // Crear el PDF
-      const pdf = new jsPDF("p", "mm", "a4")
+      // Eliminar el elemento temporal
+      document.body.removeChild(element)
 
-      // Dimensiones del PDF
+      // Crear el PDF en formato A4
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      })
+
+      // Dimensiones del PDF A4 en mm
       const imgWidth = 210 // A4 width in mm
       const pageHeight = 297 // A4 height in mm
+
+      // Calcular la altura proporcional de la imagen
       const imgHeight = (canvas.height * imgWidth) / canvas.width
 
       // Añadir la imagen del canvas al PDF
       const imgData = canvas.toDataURL("image/png")
       pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
+
+      // Si el contenido es más largo que una página, añadir páginas adicionales
+      if (imgHeight > pageHeight) {
+        let remainingHeight = imgHeight
+        let position = -pageHeight
+
+        while (remainingHeight > pageHeight) {
+          position -= pageHeight
+          remainingHeight -= pageHeight
+          pdf.addPage()
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
+        }
+      }
 
       // Guardar el PDF
       pdf.save(`recibo-${invoiceNumber || "001"}.pdf`)
