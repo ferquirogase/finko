@@ -99,23 +99,26 @@ export default function Home() {
             </div>
 
             {/* Contenido del banner */}
-            <div className="relative z-10 py-8 px-5 flex flex-col items-center justify-center text-center">
+            <div className="relative z-10 py-6 px-4 sm:py-8 sm:px-5 flex flex-col items-center justify-center text-center">
               {/* Logo de Saldo */}
-              <div className="mb-3">
+              <div className="mb-2 sm:mb-3">
                 <Image
                   src="/logo-saldo.png"
                   alt="Logo Saldo"
-                  width={120}
-                  height={60}
+                  width={100}
+                  height={50}
+                  className="sm:w-[120px] h-auto"
                   style={{ objectFit: "contain" }}
                 />
               </div>
 
-              <div className="max-w-md">
-                <h3 className="text-xl font-bold text-white whitespace-nowrap">
+              <div className="max-w-[280px] sm:max-w-md">
+                <h3 className="text-lg sm:text-xl font-bold text-white break-words sm:whitespace-nowrap">
                   Convierte y envía dinero digital en 3 simples pasos
                 </h3>
-                <p className="mt-1 text-white/90">Rápido, seguro y con las mejores tasas del mercado</p>
+                <p className="mt-1 text-sm sm:text-base text-white/90">
+                  Rápido, seguro y con las mejores tasas del mercado
+                </p>
               </div>
             </div>
           </a>
