@@ -15,7 +15,7 @@ export default function Hero() {
             </p>
           </div>
         </div>
-        <div className="relative h-[300px] md:h-auto">
+        <div className="relative hidden md:block h-[300px] md:h-auto">
           <Image
             src="/freelancer.png"
             alt="Freelancer con herramientas digitales"
