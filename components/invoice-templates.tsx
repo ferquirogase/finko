@@ -436,7 +436,7 @@ export default function InvoiceTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">CBU/CVU/Alias</label>
+                  <label className="text-sm font-medium">N° de la cuenta</label>
                   <Input
                     placeholder="Ej: 0000000000000000000000 o mi.alias.simple"
                     value={accountIdentifier}
