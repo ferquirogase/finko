@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://finko.app/sitemap.xml
+Sitemap: https://finkoapp.online/sitemap.xml
