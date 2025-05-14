@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileText, Copy, Check, HelpCircle, FileDown } from "lucide-react"
+import { FileText, Copy, Check, HelpCircle, FileDown, Palette } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function ProposalGenerator() {
@@ -17,6 +17,63 @@ export default function ProposalGenerator() {
   const [budget, setBudget] = useState("")
   const [copied, setCopied] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [activeTab, setActiveTab] = useState("editor")
+  const [proposalColor, setProposalColor] = useState("green")
+
+  // Colores predefinidos para el presupuesto
+  const colorOptions = [
+    {
+      id: "green",
+      name: "Verde",
+      primary: "text-green-800",
+      secondary: "text-green-700",
+      border: "border-green-100",
+      bg: "bg-green-50",
+    },
+    {
+      id: "blue",
+      name: "Azul",
+      primary: "text-blue-800",
+      secondary: "text-blue-700",
+      border: "border-blue-100",
+      bg: "bg-blue-50",
+    },
+    {
+      id: "purple",
+      name: "Púrpura",
+      primary: "text-purple-800",
+      secondary: "text-purple-700",
+      border: "border-purple-100",
+      bg: "bg-purple-50",
+    },
+    {
+      id: "amber",
+      name: "Ámbar",
+      primary: "text-amber-800",
+      secondary: "text-amber-700",
+      border: "border-amber-100",
+      bg: "bg-amber-50",
+    },
+    {
+      id: "red",
+      name: "Rojo",
+      primary: "text-red-800",
+      secondary: "text-red-700",
+      border: "border-red-100",
+      bg: "bg-red-50",
+    },
+    {
+      id: "gray",
+      name: "Gris",
+      primary: "text-gray-800",
+      secondary: "text-gray-700",
+      border: "border-gray-200",
+      bg: "bg-gray-50",
+    },
+  ]
+
+  // Obtener el objeto de color seleccionado
+  const selectedColor = colorOptions.find((color) => color.id === proposalColor) || colorOptions[0]
 
   const proposalRef = useRef<HTMLDivElement>(null)
 
@@ -147,14 +204,26 @@ TÉRMINOS Y CONDICIONES
       if (imgHeight > pageHeight) {
         let remainingHeight = imgHeight
         let position = -pageHeight
+        let pageCount = 1
 
         while (remainingHeight > pageHeight) {
+          pageCount++
           position -= pageHeight
           remainingHeight -= pageHeight
           pdf.addPage()
           pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
+
+          // Añadir marca de agua en cada página adicional
+          pdf.setTextColor(150, 150, 150) // Color gris claro
+          pdf.setFontSize(8)
+          pdf.text("Hecho con finkoapp.online", imgWidth / 2, pageHeight - 5, { align: "center" })
         }
       }
+
+      // Añadir marca de agua en la primera página
+      pdf.setTextColor(150, 150, 150) // Color gris claro
+      pdf.setFontSize(8)
+      pdf.text("Hecho con finkoapp.online", imgWidth / 2, pageHeight - 5, { align: "center" })
 
       // Guardar el PDF
       pdf.save(`propuesta-${clientName || "proyecto"}.pdf`)
@@ -179,7 +248,7 @@ TÉRMINOS Y CONDICIONES
           </div>
         </div>
 
-        <Tabs defaultValue="editor" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 rounded-xl">
             <TabsTrigger value="editor" className="rounded-l-xl">
               Editor
@@ -338,44 +407,91 @@ TÉRMINOS Y CONDICIONES
                 </p>
               </div>
             </div>
+            <div className="mt-6 flex justify-end">
+              <Button
+                onClick={() => setActiveTab("preview")}
+                className="rounded-xl bg-green-600 hover:bg-green-700 flex items-center gap-2"
+              >
+                Ir a vista previa
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="preview" className="mt-6">
-            <div ref={proposalRef} className="rounded-3xl border border-green-100 bg-white p-6">
-              <div className="mb-8 border-b border-green-100 pb-4">
+            {/* Selector de colores para el presupuesto */}
+            <div className="mb-4 rounded-xl border border-gray-200 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Palette className="h-5 w-5 text-gray-600" />
+                <h3 className="text-sm font-medium text-gray-700">Personalizar colores del presupuesto</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {colorOptions.map((color) => (
+                  <button
+                    key={color.id}
+                    onClick={() => setProposalColor(color.id)}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all ${
+                      proposalColor === color.id
+                        ? `border-${color.id}-600 ring-2 ring-${color.id}-200`
+                        : "border-gray-200"
+                    }`}
+                    title={color.name}
+                  >
+                    <div className={`h-6 w-6 rounded-full bg-${color.id}-500`}></div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div ref={proposalRef} className={`rounded-3xl border ${selectedColor.border} bg-white p-6`}>
+              <div className={`mb-8 border-b ${selectedColor.border} pb-4`}>
                 <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-green-800">PROPUESTA DE PROYECTO</h3>
-                  <FileText className="h-8 w-8 text-green-600" />
+                  <h3 className={`text-2xl font-bold ${selectedColor.primary}`}>PROPUESTA DE PROYECTO</h3>
+                  <FileText className={`h-8 w-8 ${selectedColor.secondary}`} />
                 </div>
                 <p className="text-sm text-gray-500">Para: {clientName || "Nombre del cliente"}</p>
-                <p className="text-lg font-medium text-green-700">{projectTitle || "Título del proyecto"}</p>
+                <p className={`text-lg font-medium ${selectedColor.secondary}`}>
+                  {projectTitle || "Título del proyecto"}
+                </p>
               </div>
 
               <div className="mb-6 space-y-4">
                 <div>
-                  <h4 className="mb-2 font-bold uppercase text-green-700">Alcance del proyecto</h4>
+                  <h4 className={`mb-2 font-bold uppercase ${selectedColor.secondary}`}>Alcance del proyecto</h4>
                   <p className="text-sm text-gray-700">
                     {projectScope || "Descripción detallada del proyecto y sus objetivos..."}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="mb-2 font-bold uppercase text-green-700">Entregables</h4>
+                  <h4 className={`mb-2 font-bold uppercase ${selectedColor.secondary}`}>Entregables</h4>
                   {formatListItems(deliverables)}
                 </div>
 
                 <div>
-                  <h4 className="mb-2 font-bold uppercase text-green-700">Cronograma</h4>
+                  <h4 className={`mb-2 font-bold uppercase ${selectedColor.secondary}`}>Cronograma</h4>
                   {formatListItems(timeline)}
                 </div>
 
                 <div>
-                  <h4 className="mb-2 font-bold uppercase text-green-700">Presupuesto</h4>
+                  <h4 className={`mb-2 font-bold uppercase ${selectedColor.secondary}`}>Presupuesto</h4>
                   {formatListItems(budget)}
                 </div>
               </div>
 
-              <div className="rounded-xl bg-green-50 p-4">
-                <h4 className="mb-2 font-bold uppercase text-green-700">Términos y condiciones</h4>
+              <div className={`rounded-xl ${selectedColor.bg} p-4`}>
+                <h4 className={`mb-2 font-bold uppercase ${selectedColor.secondary}`}>Términos y condiciones</h4>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
                   <li>50% de pago inicial para comenzar el proyecto</li>
                   <li>50% al finalizar y entregar el proyecto</li>
@@ -391,7 +507,7 @@ TÉRMINOS Y CONDICIONES
                 {copied ? "¡Copiado!" : "Copiar texto"}
               </Button>
               <Button
-                className="gap-2 rounded-xl bg-green-600 hover:bg-green-700"
+                className={`gap-2 rounded-xl bg-${proposalColor}-600 hover:bg-${proposalColor}-700`}
                 onClick={exportToPDF}
                 disabled={isExporting}
               >

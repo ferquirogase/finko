@@ -4,9 +4,10 @@ import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreditCard, Plus, Trash2, FileDown, HelpCircle, Printer } from "lucide-react"
+import { CreditCard, Plus, Trash2, HelpCircle, Printer, FileDown, Palette } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
 
 export default function InvoiceTemplates() {
   // Datos del cliente y recibo
@@ -17,6 +18,7 @@ export default function InvoiceTemplates() {
   const [dueDate, setDueDate] = useState("")
   const [items, setItems] = useState([{ description: "", quantity: 1, price: 0 }])
   const [isExporting, setIsExporting] = useState(false)
+  const [activeTab, setActiveTab] = useState("editor")
 
   // Datos bancarios
   const [bankName, setBankName] = useState("")
@@ -28,7 +30,72 @@ export default function InvoiceTemplates() {
   const [issuerEmail, setIssuerEmail] = useState("")
   const [issuerTaxId, setIssuerTaxId] = useState("")
 
+  // Estados para controlar qué campos mostrar
+  const [showIssuerEmail, setShowIssuerEmail] = useState(true)
+  const [showIssuerTaxId, setShowIssuerTaxId] = useState(true)
+  const [showClientEmail, setShowClientEmail] = useState(true)
+  const [showDueDate, setShowDueDate] = useState(true)
+  const [showTax, setShowTax] = useState(true)
+
+  // Estado para el color del recibo
+  const [receiptColor, setReceiptColor] = useState("purple")
+
   const receiptRef = useRef<HTMLDivElement>(null)
+
+  // Colores predefinidos para el recibo
+  const colorOptions = [
+    {
+      id: "purple",
+      name: "Púrpura",
+      primary: "text-purple-700",
+      secondary: "text-purple-600",
+      border: "border-purple-100",
+      bg: "bg-purple-50",
+    },
+    {
+      id: "blue",
+      name: "Azul",
+      primary: "text-blue-700",
+      secondary: "text-blue-600",
+      border: "border-blue-100",
+      bg: "bg-blue-50",
+    },
+    {
+      id: "green",
+      name: "Verde",
+      primary: "text-green-700",
+      secondary: "text-green-600",
+      border: "border-green-100",
+      bg: "bg-green-50",
+    },
+    {
+      id: "amber",
+      name: "Ámbar",
+      primary: "text-amber-700",
+      secondary: "text-amber-600",
+      border: "border-amber-100",
+      bg: "bg-amber-50",
+    },
+    {
+      id: "red",
+      name: "Rojo",
+      primary: "text-red-700",
+      secondary: "text-red-600",
+      border: "border-red-100",
+      bg: "bg-red-50",
+    },
+    {
+      id: "gray",
+      name: "Gris",
+      primary: "text-gray-700",
+      secondary: "text-gray-600",
+      border: "border-gray-200",
+      bg: "bg-gray-50",
+    },
+  ]
+
+  // Obtener el objeto de color seleccionado
+  const selectedColor = colorOptions.find((color) => color.id === receiptColor) || colorOptions[0]
 
   const addItem = () => {
     setItems([...items, { description: "", quantity: 1, price: 0 }])
@@ -51,7 +118,7 @@ export default function InvoiceTemplates() {
   }
 
   const calculateTax = () => {
-    return calculateSubtotal() * 0.21 // 21% IVA
+    return showTax ? calculateSubtotal() * 0.21 : 0 // 21% IVA solo si está activado
   }
 
   const calculateTotal = () => {
@@ -118,14 +185,26 @@ export default function InvoiceTemplates() {
       if (imgHeight > pageHeight) {
         let remainingHeight = imgHeight
         let position = -pageHeight
+        let pageCount = 1
 
         while (remainingHeight > pageHeight) {
+          pageCount++
           position -= pageHeight
           remainingHeight -= pageHeight
           pdf.addPage()
           pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
+
+          // Añadir marca de agua en cada página adicional
+          pdf.setTextColor(150, 150, 150) // Color gris claro
+          pdf.setFontSize(8)
+          pdf.text("Hecho con finkoapp.online", imgWidth / 2, pageHeight - 5, { align: "center" })
         }
       }
+
+      // Añadir marca de agua en la primera página
+      pdf.setTextColor(150, 150, 150) // Color gris claro
+      pdf.setFontSize(8)
+      pdf.text("Hecho con finkoapp.online", imgWidth / 2, pageHeight - 5, { align: "center" })
 
       // Guardar el PDF
       pdf.save(`recibo-${invoiceNumber || "001"}.pdf`)
@@ -150,6 +229,31 @@ export default function InvoiceTemplates() {
     window.location.reload()
   }
 
+  // Componente para el switch de visibilidad
+  const VisibilitySwitch = ({
+    checked,
+    onChange,
+    label,
+  }: { checked: boolean; onChange: (checked: boolean) => void; label: string }) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="bg-gray-100 rounded-full p-0.5">
+            <Switch
+              id={`show-${label.toLowerCase().replace(/\s/g, "-")}`}
+              checked={checked}
+              onCheckedChange={onChange}
+              className="h-[18px] w-[34px] data-[state=checked]:bg-purple-600 data-[state=unchecked]:bg-gray-300"
+            />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs">
+          {checked ? "Campo visible en el recibo" : "Campo oculto en el recibo"}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+
   return (
     <div className="space-y-6">
       <div className="space-y-6 rounded-3xl bg-white p-6 shadow-sm">
@@ -163,7 +267,7 @@ export default function InvoiceTemplates() {
           </div>
         </div>
 
-        <Tabs defaultValue="editor" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 rounded-xl">
             <TabsTrigger value="editor" className="rounded-l-xl">
               Editor
@@ -206,22 +310,28 @@ export default function InvoiceTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Tu email</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">Tu email</label>
+                    <VisibilitySwitch checked={showIssuerEmail} onChange={setShowIssuerEmail} label="Email" />
+                  </div>
                   <Input
                     placeholder="Ej: tu@email.com"
                     type="email"
                     value={issuerEmail}
                     onChange={(e) => setIssuerEmail(e.target.value)}
-                    className="mt-1 rounded-xl"
+                    className={`mt-1 rounded-xl ${!showIssuerEmail ? "opacity-50" : ""}`}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">CUIT/CUIL</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">CUIT/CUIL</label>
+                    <VisibilitySwitch checked={showIssuerTaxId} onChange={setShowIssuerTaxId} label="CUIT" />
+                  </div>
                   <Input
                     placeholder="Ej: 20-12345678-9"
                     value={issuerTaxId}
                     onChange={(e) => setIssuerTaxId(e.target.value)}
-                    className="mt-1 rounded-xl"
+                    className={`mt-1 rounded-xl ${!showIssuerTaxId ? "opacity-50" : ""}`}
                   />
                 </div>
               </div>
@@ -243,12 +353,15 @@ export default function InvoiceTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Email del cliente</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">Email del cliente</label>
+                    <VisibilitySwitch checked={showClientEmail} onChange={setShowClientEmail} label="ClientEmail" />
+                  </div>
                   <Input
                     placeholder="cliente@empresa.com"
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
-                    className="mt-1 rounded-xl"
+                    className={`mt-1 rounded-xl ${!showClientEmail ? "opacity-50" : ""}`}
                   />
                 </div>
               </div>
@@ -273,12 +386,15 @@ export default function InvoiceTemplates() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Fecha de vencimiento</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">Fecha de vencimiento</label>
+                    <VisibilitySwitch checked={showDueDate} onChange={setShowDueDate} label="DueDate" />
+                  </div>
                   <Input
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="mt-1 rounded-xl"
+                    className={`mt-1 rounded-xl ${!showDueDate ? "opacity-50" : ""}`}
                   />
                 </div>
               </div>
@@ -387,8 +503,11 @@ export default function InvoiceTemplates() {
                       <span>Subtotal:</span>
                       <span>${calculateSubtotal().toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>IVA (21%):</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span>IVA (21%):</span>
+                        <VisibilitySwitch checked={showTax} onChange={setShowTax} label="Tax" />
+                      </div>
                       <span>${calculateTax().toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between border-t border-gray-200 pt-1 font-medium">
@@ -455,94 +574,135 @@ export default function InvoiceTemplates() {
                 </div>
               </div>
             </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button
+                onClick={() => setActiveTab("preview")}
+                className="rounded-xl bg-purple-600 hover:bg-purple-700 flex items-center gap-2"
+              >
+                Ir a vista previa
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </Button>
+            </div>
           </TabsContent>
+
           <TabsContent value="preview" className="mt-6">
-            <div ref={receiptRef} className="rounded-3xl border border-purple-100 bg-white p-6">
-              <div className="mb-8 flex items-start justify-between">
+            {/* Selector de colores para el recibo */}
+            <div className="mb-4 rounded-xl border border-gray-200 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Palette className="h-5 w-5 text-gray-600" />
+                <h3 className="text-sm font-medium text-gray-700">Personalizar colores del recibo</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {colorOptions.map((color) => (
+                  <button
+                    key={color.id}
+                    onClick={() => setReceiptColor(color.id)}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all ${
+                      receiptColor === color.id
+                        ? `border-${color.id}-600 ring-2 ring-${color.id}-200`
+                        : "border-gray-200"
+                    }`}
+                    title={color.name}
+                  >
+                    <div className={`h-6 w-6 rounded-full bg-${color.id}-500`}></div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div ref={receiptRef} className={`rounded-3xl border ${selectedColor.border} bg-white p-6`}>
+              {/* Datos del emisor */}
+              <div className="mb-8 flex justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-purple-900">RECIBO</h3>
-                  <p className="text-sm text-gray-500">Nº {invoiceNumber || "001"}</p>
+                  <h1 className={`text-2xl font-bold ${selectedColor.primary}`}>
+                    {issuerName || "Tu Nombre o Empresa"}
+                  </h1>
+                  {showIssuerEmail && <p className="text-gray-600">{issuerEmail || "tu@email.com"}</p>}
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-purple-800">{issuerName || "Tu Nombre"}</p>
-                  <p className="text-sm text-gray-500">{issuerEmail || "tu@email.com"}</p>
-                  <p className="text-sm text-gray-500">CUIT/CUIL: {issuerTaxId || "XX-XXXXXXXX-X"}</p>
+                  <p className={`font-bold ${selectedColor.primary}`}>Recibo N°: {invoiceNumber || "001"}</p>
+                  <p>Fecha de emisión: {issueDate || new Date().toLocaleDateString()}</p>
+                  {showDueDate && <p>Fecha de vencimiento: {dueDate || "No especificada"}</p>}
+                  {showIssuerTaxId && <p>CUIT/CUIL: {issuerTaxId || "20-XXXXXXXX-X"}</p>}
                 </div>
               </div>
 
-              <div className="mb-8 grid gap-8 md:grid-cols-2">
-                <div>
-                  <h4 className="mb-2 font-bold uppercase text-purple-800">Cliente</h4>
-                  <p className="font-medium">{clientName || "Nombre del cliente"}</p>
-                  <p className="text-sm text-gray-500">{clientEmail || "Email del cliente"}</p>
-                </div>
-                <div className="text-right">
-                  <h4 className="mb-2 font-bold uppercase text-purple-800">Detalles</h4>
-                  <p className="text-sm">
-                    <span className="font-medium">Fecha de emisión:</span> {issueDate || "DD/MM/AAAA"}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-medium">Fecha de vencimiento:</span> {dueDate || "DD/MM/AAAA"}
-                  </p>
-                </div>
+              {/* Datos del cliente */}
+              <div className="mb-8">
+                <h2 className={`text-xl font-semibold ${selectedColor.primary}`}>Cliente</h2>
+                <p>Nombre: {clientName || "Nombre del cliente"}</p>
+                {showClientEmail && <p>Email: {clientEmail || "cliente@email.com"}</p>}
               </div>
 
-              <div className="mb-8 overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="border-b border-purple-200 text-left">
-                      <th className="pb-2 text-sm font-bold uppercase text-purple-800">Descripción</th>
-                      <th className="pb-2 text-right text-sm font-bold uppercase text-purple-800">Cantidad</th>
-                      <th className="pb-2 text-right text-sm font-bold uppercase text-purple-800">Precio</th>
-                      <th className="pb-2 text-right text-sm font-bold uppercase text-purple-800">Total</th>
+              {/* Tabla de conceptos */}
+              <table className="w-full mb-8">
+                <thead>
+                  <tr className={selectedColor.secondary}>
+                    <th className="text-left font-semibold">Descripción</th>
+                    <th className="text-center font-semibold">Cantidad</th>
+                    <th className="text-right font-semibold">Precio Unitario</th>
+                    <th className="text-right font-semibold">Importe</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.description || "Descripción del servicio"}</td>
+                      <td className="text-center">{item.quantity}</td>
+                      <td className="text-right">${item.price?.toFixed(2) || "0.00"}</td>
+                      <td className="text-right">${(item.quantity * item.price)?.toFixed(2) || "0.00"}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((item, index) => (
-                      <tr key={index} className="border-b border-purple-100">
-                        <td className="py-3 text-sm">{item.description || "Descripción del servicio"}</td>
-                        <td className="py-3 text-right text-sm">{item.quantity}</td>
-                        <td className="py-3 text-right text-sm">${item.price.toFixed(2)}</td>
-                        <td className="py-3 text-right text-sm">${(item.quantity * item.price).toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
 
-              <div className="mb-8 flex justify-end">
-                <div className="w-64 space-y-2">
-                  <div className="flex justify-between border-b border-purple-100 py-1 text-sm">
+              {/* Totales */}
+              <div className="flex justify-end">
+                <div className={`w-64 ${selectedColor.bg} p-4 rounded-lg`}>
+                  <div className="flex justify-between">
                     <span>Subtotal:</span>
                     <span>${calculateSubtotal().toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between border-b border-purple-100 py-1 text-sm">
-                    <span>IVA (21%):</span>
-                    <span>${calculateTax().toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between py-1 text-lg font-bold">
+                  {showTax && (
+                    <div className="flex justify-between">
+                      <span>IVA (21%):</span>
+                      <span>${calculateTax().toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div
+                    className={`flex justify-between border-t border-${selectedColor.id}-200 pt-2 font-bold ${selectedColor.primary}`}
+                  >
                     <span>Total:</span>
                     <span>${calculateTotal().toFixed(2)}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-xl bg-purple-50 p-4 text-sm">
-                <h4 className="mb-2 font-bold uppercase text-purple-800">Instrucciones de pago</h4>
-                <p className="mb-2">Por favor, realiza el pago a la siguiente cuenta:</p>
-                <p>
-                  <span className="font-medium">Banco/Billetera:</span> {bankName || "Nombre del Banco/Billetera"}
-                </p>
-                <p>
-                  <span className="font-medium">CBU/CVU/Alias:</span>{" "}
-                  {accountIdentifier || "0000000000000000000000 o alias.ejemplo"}
-                </p>
-                <p>
-                  <span className="font-medium">Titular:</span> {accountHolder || "Tu Nombre"}
-                </p>
-                <p className="mt-2">
-                  <span className="font-medium">Referencia:</span> Recibo #{invoiceNumber || "001"}
-                </p>
+              {/* Datos bancarios */}
+              <div className="mt-8">
+                <h2 className={`text-xl font-semibold ${selectedColor.primary}`}>Datos bancarios</h2>
+                <p>Banco: {bankName || "No especificado"}</p>
+                <p>Cuenta: {accountIdentifier || "No especificado"}</p>
+                <p>Titular: {accountHolder || "No especificado"}</p>
+              </div>
+
+              {/* Footer */}
+              <div className={`mt-12 text-center ${selectedColor.secondary}`}>
+                <p>Gracias por tu preferencia!</p>
               </div>
             </div>
 
@@ -552,7 +712,7 @@ export default function InvoiceTemplates() {
                 Imprimir
               </Button>
               <Button
-                className="gap-2 rounded-xl bg-purple-600 hover:bg-purple-700"
+                className={`gap-2 rounded-xl bg-${receiptColor}-600 hover:bg-${receiptColor}-700`}
                 onClick={exportToPDF}
                 disabled={isExporting}
               >
