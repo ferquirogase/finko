@@ -449,7 +449,25 @@ TÉRMINOS Y CONDICIONES
                     }`}
                     title={color.name}
                   >
-                    <div className={`h-6 w-6 rounded-full bg-${color.id}-500`}></div>
+                    <div
+                      className={`h-6 w-6 rounded-full`}
+                      style={{
+                        backgroundColor:
+                          color.id === "green"
+                            ? "#10b981"
+                            : color.id === "blue"
+                              ? "#3b82f6"
+                              : color.id === "purple"
+                                ? "#8b5cf6"
+                                : color.id === "amber"
+                                  ? "#f59e0b"
+                                  : color.id === "red"
+                                    ? "#ef4444"
+                                    : color.id === "gray"
+                                      ? "#6b7280"
+                                      : "#10b981",
+                      }}
+                    ></div>
                   </button>
                 ))}
               </div>
@@ -504,15 +522,32 @@ TÉRMINOS Y CONDICIONES
             <div className="mt-4 flex justify-end gap-2">
               <Button variant="outline" className="gap-2 rounded-xl" onClick={handleCopy}>
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                {copied ? "¡Copiado!" : "Copiar texto"}
+                <span>{copied ? "¡Copiado!" : "Copiar texto"}</span>
               </Button>
               <Button
-                className={`gap-2 rounded-xl bg-${proposalColor}-600 hover:bg-${proposalColor}-700`}
+                className="gap-2 rounded-xl"
+                style={{
+                  backgroundColor:
+                    proposalColor === "green"
+                      ? "#10b981"
+                      : proposalColor === "blue"
+                        ? "#3b82f6"
+                        : proposalColor === "purple"
+                          ? "#8b5cf6"
+                          : proposalColor === "amber"
+                            ? "#f59e0b"
+                            : proposalColor === "red"
+                              ? "#ef4444"
+                              : proposalColor === "gray"
+                                ? "#6b7280"
+                                : "#10b981",
+                  color: "white",
+                }}
                 onClick={exportToPDF}
                 disabled={isExporting}
               >
                 <FileDown className="h-4 w-4" />
-                {isExporting ? "Exportando..." : "Exportar PDF"}
+                <span>{isExporting ? "Exportando..." : "Exportar PDF"}</span>
               </Button>
             </div>
           </TabsContent>

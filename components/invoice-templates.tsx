@@ -618,7 +618,25 @@ export default function InvoiceTemplates() {
                     }`}
                     title={color.name}
                   >
-                    <div className={`h-6 w-6 rounded-full bg-${color.id}-500`}></div>
+                    <div
+                      className={`h-6 w-6 rounded-full`}
+                      style={{
+                        backgroundColor:
+                          color.id === "purple"
+                            ? "#8b5cf6"
+                            : color.id === "blue"
+                              ? "#3b82f6"
+                              : color.id === "green"
+                                ? "#10b981"
+                                : color.id === "amber"
+                                  ? "#f59e0b"
+                                  : color.id === "red"
+                                    ? "#ef4444"
+                                    : color.id === "gray"
+                                      ? "#6b7280"
+                                      : "#8b5cf6",
+                      }}
+                    ></div>
                   </button>
                 ))}
               </div>
@@ -709,15 +727,33 @@ export default function InvoiceTemplates() {
             <div className="mt-4 flex justify-end gap-2">
               <Button variant="outline" className="gap-2 rounded-xl" onClick={printReceipt}>
                 <Printer className="h-4 w-4" />
-                Imprimir
+                <span className="hidden sm:inline">Imprimir</span>
+                <span className="sm:hidden">Imprimir</span>
               </Button>
               <Button
-                className={`gap-2 rounded-xl bg-${receiptColor}-600 hover:bg-${receiptColor}-700`}
+                className="gap-2 rounded-xl"
+                style={{
+                  backgroundColor:
+                    receiptColor === "purple"
+                      ? "#8b5cf6"
+                      : receiptColor === "blue"
+                        ? "#3b82f6"
+                        : receiptColor === "green"
+                          ? "#10b981"
+                          : receiptColor === "amber"
+                            ? "#f59e0b"
+                            : receiptColor === "red"
+                              ? "#ef4444"
+                              : receiptColor === "gray"
+                                ? "#6b7280"
+                                : "#8b5cf6",
+                  color: "white",
+                }}
                 onClick={exportToPDF}
                 disabled={isExporting}
               >
                 <FileDown className="h-4 w-4" />
-                {isExporting ? "Exportando..." : "Exportar PDF"}
+                <span>{isExporting ? "Exportando..." : "Exportar PDF"}</span>
               </Button>
             </div>
           </TabsContent>
