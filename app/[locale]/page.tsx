@@ -6,7 +6,7 @@ import Footer from "@/components/footer"
 import BottomNav from "@/components/bottom-nav"
 import Image from "next/image"
 
-const SubtleBackground = dynamic(() => import("@/components/subtle-background"), { ssr: false })
+const SubtleBackground = dynamic(() => import("@/components/subtle-background"))
 const Hero = dynamic(() => import("@/components/hero"))
 import {
   IconCalculator,

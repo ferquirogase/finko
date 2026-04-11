@@ -9,7 +9,7 @@ import Footer from "@/components/footer"
 import BottomNav from "@/components/bottom-nav"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const SubtleBackground = dynamic(() => import("@/components/subtle-background"), { ssr: false })
+const SubtleBackground = dynamic(() => import("@/components/subtle-background"))
 const InvoiceTemplates = dynamic(() => import("@/components/invoice-templates"))
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
