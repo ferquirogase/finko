@@ -1,6 +1,3 @@
-import type React from "react"
-import { IconTrendingUp, IconCurrencyDollar } from "@tabler/icons-react"
-
 async function getFiatRates(): Promise<Record<string, number> | null> {
   try {
     const res = await fetch("https://open.er-api.com/v6/latest/USD", {
@@ -55,6 +52,7 @@ export default async function InfoBar() {
 
   if (arsBlue != null) items.push({ label: "ARS (blue)", value: `$${fmt(arsBlue)}`, flag: "🇦🇷" })
   if (fiat?.COP != null) items.push({ label: "COP", value: `$${fmt(fiat.COP)}`, flag: "🇨🇴" })
+  if (fiat?.MXN != null) items.push({ label: "MXN", value: `$${fmt(fiat.MXN)}`, flag: "🇲🇽" })
   if (fiat?.VES != null) items.push({ label: "VES", value: `Bs.${fmt(fiat.VES)}`, flag: "🇻🇪" })
   if (usdt != null) items.push({ label: "USDT", value: `$${fmt(usdt)}`, flag: "₮" })
 
@@ -62,19 +60,19 @@ export default async function InfoBar() {
 
   return (
     <div className="w-full border-b border-white/5 bg-white/[0.03] backdrop-blur-sm">
-      <div className="mx-auto flex max-w-3xl items-center overflow-x-auto px-4 py-2 scrollbar-none">
-        <span className="mr-4 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
+      <div className="mx-auto flex max-w-3xl items-center justify-center gap-6 overflow-x-auto px-4 py-2 scrollbar-none">
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
           1 USD =
         </span>
-        <div className="flex items-center gap-5">
-          {items.map((item) => (
-            <div key={item.label} className="flex shrink-0 items-center gap-1.5">
+        {items.map((item, i) => (
+          <div key={item.label} className="flex shrink-0 items-center gap-4">
+            {i > 0 && <span className="text-white/10">·</span>}
+            <div className="flex items-center gap-1.5">
               <span className="text-sm leading-none">{item.flag}</span>
-              <span className="text-[11px] font-medium text-gray-400">{item.label}</span>
               <span className="text-[11px] font-semibold text-white">{item.value}</span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   )
