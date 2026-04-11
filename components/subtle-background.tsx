@@ -1,107 +1,60 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-
 export default function SubtleBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-
-  useEffect(() => {
-    if (typeof window === "undefined") return
-
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    // Configurar el canvas para que ocupe toda la pantalla
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-
-    resizeCanvas()
-    window.addEventListener("resize", resizeCanvas)
-
-    // Crear el degradado de fondo
-    const createGradient = () => {
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
-      gradient.addColorStop(0, "#09090b")   // zinc-950
-      gradient.addColorStop(0.6, "#0c0b12") // zinc-950 con tinte púrpura
-      gradient.addColorStop(1, "#0f0b1a")   // zinc-950 con más tinte púrpura
-      return gradient
-    }
-
-    // Configuración de las ondas
-    const waves = [
-      {
-        y: canvas.height * 0.5,
-        length: 0.01,
-        amplitude: 20,
-        frequency: 0.01,
-        color: "rgba(139, 92, 246, 0.07)", // brand-500
-        speed: 0.005,
-      },
-      {
-        y: canvas.height * 0.7,
-        length: 0.008,
-        amplitude: 25,
-        frequency: 0.015,
-        color: "rgba(109, 40, 217, 0.05)", // brand-700
-        speed: 0.003,
-      },
-      {
-        y: canvas.height * 0.9,
-        length: 0.015,
-        amplitude: 15,
-        frequency: 0.02,
-        color: "rgba(167, 139, 250, 0.04)", // brand-400
-        speed: 0.007,
-      },
-    ]
-
-    let animationFrameId: number
-    let time = 0
-
-    // Función para dibujar el fondo y las ondas
-    const draw = () => {
-      // Dibujar el fondo con degradado
-      ctx.fillStyle = createGradient()
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      // Dibujar las ondas
-      waves.forEach((wave) => {
-        ctx.fillStyle = wave.color
-        ctx.beginPath()
-
-        // Dibujar la onda
-        ctx.moveTo(0, wave.y)
-
-        for (let x = 0; x < canvas.width; x++) {
-          const dx = x * wave.length
-          const dy = Math.sin(dx + time * wave.speed) * wave.amplitude * Math.sin(time * wave.frequency)
-          ctx.lineTo(x, wave.y + dy)
-        }
-
-        // Completar el path para rellenar
-        ctx.lineTo(canvas.width, canvas.height)
-        ctx.lineTo(0, canvas.height)
-        ctx.closePath()
-        ctx.fill()
-      })
-
-      time += 0.05
-      animationFrameId = requestAnimationFrame(draw)
-    }
-
-    draw()
-
-    // Limpieza al desmontar
-    return () => {
-      window.removeEventListener("resize", resizeCanvas)
-      cancelAnimationFrame(animationFrameId)
-    }
-  }, [])
-
-  return <canvas ref={canvasRef} className="fixed inset-0 -z-10 h-full w-full pointer-events-none" />
+  return (
+    <div className="fixed inset-0 -z-10 overflow-hidden bg-[#07070f]" aria-hidden="true">
+      {/* Orb 1 — violeta, arriba izquierda */}
+      <div
+        className="aurora-orb"
+        style={{
+          width: "60vw",
+          height: "60vw",
+          top: "-20vw",
+          left: "-15vw",
+          background: "radial-gradient(circle, rgba(124,58,237,0.35) 0%, transparent 70%)",
+          animationDuration: "18s",
+          animationDelay: "0s",
+        }}
+      />
+      {/* Orb 2 — índigo, arriba derecha */}
+      <div
+        className="aurora-orb"
+        style={{
+          width: "55vw",
+          height: "55vw",
+          top: "-10vw",
+          right: "-20vw",
+          background: "radial-gradient(circle, rgba(79,70,229,0.25) 0%, transparent 70%)",
+          animationDuration: "24s",
+          animationDelay: "-6s",
+        }}
+      />
+      {/* Orb 3 — violeta claro, centro */}
+      <div
+        className="aurora-orb"
+        style={{
+          width: "50vw",
+          height: "50vw",
+          top: "30vh",
+          left: "25vw",
+          background: "radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%)",
+          animationDuration: "30s",
+          animationDelay: "-12s",
+        }}
+      />
+      {/* Orb 4 — azul profundo, abajo derecha */}
+      <div
+        className="aurora-orb"
+        style={{
+          width: "45vw",
+          height: "45vw",
+          bottom: "-15vw",
+          right: "-10vw",
+          background: "radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)",
+          animationDuration: "22s",
+          animationDelay: "-9s",
+        }}
+      />
+    </div>
+  )
 }
