@@ -1,9 +1,9 @@
 import type React from "react"
-import { Space_Grotesk } from "next/font/google"
+import { Geist } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
 
-const spaceGrotesk = Space_Grotesk({
+const geist = Geist({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -59,7 +59,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={spaceGrotesk.className} suppressHydrationWarning>
+      <body className={geist.className} suppressHydrationWarning>
         {children}
       </body>
     </html>
