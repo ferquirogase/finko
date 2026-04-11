@@ -15,7 +15,7 @@ async function getFiatRates(): Promise<Record<string, number> | null> {
 async function getArsBlue(): Promise<number | null> {
   try {
     const res = await fetch("https://api.bluelytics.com.ar/v2/latest", {
-      next: { revalidate: 3600 },
+      next: { revalidate: 300 },
     })
     if (!res.ok) return null
     const data = await res.json()
