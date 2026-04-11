@@ -1,9 +1,9 @@
 import type React from "react"
-import { Outfit } from "next/font/google"
+import { Space_Grotesk } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
 
-const outfit = Outfit({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -59,7 +59,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={outfit.className} suppressHydrationWarning>
+      <body className={spaceGrotesk.className} suppressHydrationWarning>
         {children}
       </body>
     </html>
