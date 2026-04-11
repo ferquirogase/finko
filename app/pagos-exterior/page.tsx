@@ -11,14 +11,14 @@ import PaymentFAQ from "@/components/payment-faq"
 
 export default function PagosExteriorPage() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light">
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <SubtleBackground />
       <div className="mx-auto max-w-3xl px-4 py-8">
         <Navbar />
         <div className="space-y-6 pb-20">
           <div className="mb-6 flex items-center">
             <Link href="/">
-              <Button variant="ghost" className="gap-2 text-brand-600 hover:bg-brand-50 hover:text-brand-700">
+              <Button variant="ghost" className="gap-2 text-brand-400 hover:bg-brand-500/10 hover:text-brand-300">
                 <IconArrowLeft className="h-4 w-4" stroke={1.5} />
                 Volver a herramientas
               </Button>

@@ -1,223 +1,279 @@
 "use client"
 
-import { useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
-import { IconCurrencyDollar, IconInfoCircle, IconCheck, IconX } from "@tabler/icons-react"
-import Image from "next/image"
+import { useState, useMemo } from "react"
+import { IconCurrencyDollar, IconCheck, IconX, IconTrophy, IconClock, IconArrowUpRight } from "@tabler/icons-react"
 import { Input } from "@/components/ui/input"
 
+// ── Datos de plataformas ───────────────────────────────────────────────────
+const platforms = [
+  {
+    id: "wise",
+    name: "Wise",
+    tagline: "La más barata para transferencias",
+    color: "#10b981",
+    fee: 0.01,
+    fixedFee: 0,
+    exchangeRate: 0.995,
+    withdrawalFee: 1.5,
+    minWithdrawal: 20,
+    processingTime: "1-2 días hábiles",
+    pros: [
+      "Comisiones más bajas del mercado",
+      "Tipo de cambio muy cercano al oficial",
+      "Transparencia total en costos",
+    ],
+    cons: [
+      "Menos conocida que PayPal",
+      "Sin protección al comprador",
+      "Verificación más estricta",
+    ],
+    url: "https://wise.com",
+  },
+  {
+    id: "payoneer",
+    name: "Payoneer",
+    tagline: "Ideal para marketplaces y freelancers",
+    color: "#f97316",
+    fee: 0.03,
+    fixedFee: 0,
+    exchangeRate: 0.985,
+    withdrawalFee: 3,
+    minWithdrawal: 30,
+    processingTime: "2-5 días hábiles",
+    pros: [
+      "Tarjeta de débito disponible",
+      "Muy usada en marketplaces globales",
+      "Cubre más de 200 países",
+    ],
+    cons: [
+      "Comisiones moderadas",
+      "Atención al cliente variable",
+      "Cargos por inactividad",
+    ],
+    url: "https://payoneer.com",
+  },
+  {
+    id: "skrill",
+    name: "Skrill",
+    tagline: "Buena relación comisión / velocidad",
+    color: "#8b5cf6",
+    fee: 0.025,
+    fixedFee: 0.25,
+    exchangeRate: 0.982,
+    withdrawalFee: 4,
+    minWithdrawal: 10,
+    processingTime: "1-3 días hábiles",
+    pros: [
+      "Transferencias rápidas",
+      "Tarjeta prepagada disponible",
+      "Amplia aceptación global",
+    ],
+    cons: [
+      "Comisiones por inactividad",
+      "Verificación de identidad estricta",
+      "Soporte al cliente limitado",
+    ],
+    url: "https://skrill.com",
+  },
+  {
+    id: "paypal",
+    name: "PayPal",
+    tagline: "El más conocido, pero el más caro",
+    color: "#0070ba",
+    fee: 0.055,
+    fixedFee: 0.3,
+    exchangeRate: 0.98,
+    withdrawalFee: 5,
+    minWithdrawal: 50,
+    processingTime: "2-3 días hábiles",
+    pros: [
+      "Ampliamente aceptado globalmente",
+      "Fácil de usar",
+      "Reconocimiento de marca",
+    ],
+    cons: [
+      "Las comisiones más altas",
+      "Retención de fondos ocasional",
+      "Tipo de cambio desfavorable",
+    ],
+    url: "https://paypal.com",
+  },
+]
+
+type Platform = typeof platforms[number] & { final: number; pctLost: number }
+
+function calcFinal(p: typeof platforms[number], amount: number) {
+  const fee    = amount * p.fee + p.fixedFee
+  const after  = (amount - fee) * p.exchangeRate - p.withdrawalFee
+  return Math.max(after, 0)
+}
+
+// ── Componente principal ───────────────────────────────────────────────────
 export default function PaymentMethods() {
-  const [selectedAmount, setSelectedAmount] = useState(1000)
+  const [amount, setAmount] = useState(1000)
 
-  // Datos de comisiones y tasas de cambio (simulados)
-  const paymentPlatforms = [
-    {
-      id: "paypal",
-      name: "PayPal",
-      logo: "/paypal-logo.png",
-      fee: 0.055, // 5.5%
-      fixedFee: 0.3, // $0.30 USD
-      exchangeRate: 0.98, // 2% menos que el oficial
-      withdrawalFee: 5, // $5 USD
-      minWithdrawal: 50, // $50 USD
-      processingTime: "2-3 días hábiles",
-      countries: "Casi todos los países",
-      pros: ["Ampliamente aceptado", "Fácil de usar", "Protección al comprador"],
-      cons: ["Comisiones altas", "Retención de fondos ocasional", "Tipo de cambio desfavorable"],
-    },
-    {
-      id: "wise",
-      name: "Wise (Transferwise)",
-      logo: "/wise-logo.png",
-      fee: 0.01, // 1%
-      fixedFee: 0,
-      exchangeRate: 0.995, // 0.5% menos que el oficial
-      withdrawalFee: 1.5, // $1.50 USD
-      minWithdrawal: 20, // $20 USD
-      processingTime: "1-2 días hábiles",
-      countries: "Más de 80 países",
-      pros: ["Bajas comisiones", "Tipo de cambio favorable", "Transparencia en costos"],
-      cons: ["Menos conocido que PayPal", "Sin protección al comprador", "Verificación más estricta"],
-    },
-    {
-      id: "payoneer",
-      name: "Payoneer",
-      logo: "/payoneer-logo.png",
-      fee: 0.03, // 3%
-      fixedFee: 0,
-      exchangeRate: 0.985, // 1.5% menos que el oficial
-      withdrawalFee: 3, // $3 USD
-      minWithdrawal: 30, // $30 USD
-      processingTime: "2-5 días hábiles",
-      countries: "Más de 200 países",
-      pros: ["Tarjeta de débito disponible", "Buena para marketplaces", "Pagos masivos"],
-      cons: ["Comisiones moderadas", "Atención al cliente variable", "Cargos por inactividad"],
-    },
-    {
-      id: "skrill",
-      name: "Skrill",
-      logo: "/skrill-logo.png",
-      fee: 0.025, // 2.5%
-      fixedFee: 0.25, // $0.25 USD
-      exchangeRate: 0.982, // 1.8% menos que el oficial
-      withdrawalFee: 4, // $4 USD
-      minWithdrawal: 10, // $10 USD
-      processingTime: "1-3 días hábiles",
-      countries: "Más de 120 países",
-      pros: ["Transferencias rápidas", "Tarjeta prepagada disponible", "Amplia aceptación global"],
-      cons: ["Comisiones por inactividad", "Verificación de identidad estricta", "Soporte al cliente limitado"],
-    },
-  ]
-
-  // Calcular el monto final después de comisiones
-  const calculateFinalAmount = (platform: any, amount: number) => {
-    const feeAmount = amount * platform.fee
-    const totalFee = feeAmount + platform.fixedFee
-    const amountAfterFee = amount - totalFee
-    const amountAfterExchange = amountAfterFee * platform.exchangeRate
-    const finalAmount = amountAfterExchange - platform.withdrawalFee
-    return finalAmount > 0 ? finalAmount : 0
-  }
+  const ranked = useMemo<Platform[]>(() => {
+    return platforms
+      .map((p) => {
+        const final   = calcFinal(p, amount)
+        const pctLost = amount > 0 ? ((amount - final) / amount) * 100 : 0
+        return { ...p, final, pctLost }
+      })
+      .sort((a, b) => b.final - a.final)
+  }, [amount])
 
   return (
     <div className="space-y-6">
-      <div className="space-y-6 rounded-3xl bg-white p-6 shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="rounded-full bg-amber-100 p-2 text-amber-600">
+      <div className="rounded-3xl bg-gray-900 p-6">
+
+        {/* Header */}
+        <div className="mb-6 flex items-start gap-4">
+          <div className="rounded-full bg-amber-500/15 p-2 text-amber-400">
             <IconCurrencyDollar className="h-5 w-5" stroke={1.5} />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-800">Cómo cobrar del exterior</h2>
+            <h2 className="text-xl font-semibold text-gray-100">Cómo cobrar del exterior</h2>
             <p className="text-sm text-gray-500">
-              Compara plataformas de pago y aprende a convertir tus ingresos a moneda local
+              Ingresá el monto a cobrar y te mostramos cuánto te llega con cada plataforma, ordenado de mejor a peor
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 rounded-xl bg-amber-50 p-3 text-amber-800">
-          <IconInfoCircle className="h-5 w-5 flex-shrink-0" stroke={1.5} />
-          <p className="text-xs">
-            Elige la mejor forma de recibir pagos internacionales y convertirlos a tu moneda local con las mejores
-            tasas.
+        {/* Calculadora */}
+        <div className="mb-8 rounded-2xl bg-amber-500/10 p-5">
+          <label className="mb-3 block text-sm font-semibold text-amber-300">
+            ¿Cuánto vas a cobrar?
+          </label>
+          <div className="relative max-w-xs">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-medium text-gray-500">$</span>
+            <Input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(Math.max(0, Number(e.target.value)))}
+              min={1}
+              className="rounded-xl pl-8 pr-14 text-lg font-semibold"
+              placeholder="1000"
+            />
+            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500">
+              USD
+            </span>
+          </div>
+          <p className="mt-2 text-xs text-amber-500/80">
+            El resultado incluye comisión de transacción, tipo de cambio y costo de retiro
           </p>
         </div>
 
-        <Tabs defaultValue="platforms" className="w-full">
-          {/* Contenido de la pestaña de plataformas de pago */}
-          <TabsContent value="platforms" className="mt-6 space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="text-sm font-medium">Monto a recibir (USD)</label>
-                <Input
-                  className="mt-1 w-full rounded-xl border border-gray-300 p-2"
-                  type="number"
-                  value={selectedAmount}
-                  onChange={(e) => {
-                    const newAmount = Number(e.target.value)
-                    setSelectedAmount(newAmount)
-                  }}
-                  min={1}
-                  placeholder="Ingresa el monto"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Moneda de destino</label>
-                <div className="mt-1 flex h-10 w-full items-center rounded-xl border border-gray-300 bg-gray-50 px-3 text-gray-500">
-                  Dólar Estadounidense (USD)
+        {/* Tarjetas de plataformas ordenadas */}
+        <div className="space-y-4">
+          {ranked.map((platform, i) => {
+            const isBest = i === 0
+
+            return (
+              <div
+                key={platform.id}
+                className={`relative rounded-2xl border-2 p-5 transition-all ${
+                  isBest ? "shadow-md shadow-black/20" : "border-gray-800"
+                }`}
+                style={isBest ? { borderColor: platform.color } : {}}
+              >
+                {/* Badge "mejor opción" */}
+                {isBest && (
+                  <div
+                    className="absolute -top-3 left-5 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white"
+                    style={{ backgroundColor: platform.color }}
+                  >
+                    <IconTrophy className="h-3.5 w-3.5" stroke={1.5} />
+                    Mejor opción para este monto
+                  </div>
+                )}
+
+                {/* Fila superior: nombre + monto */}
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    {/* Nombre y tagline */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className="rounded-lg px-3 py-1 text-sm font-bold text-white"
+                        style={{ backgroundColor: platform.color }}
+                      >
+                        {platform.name}
+                      </span>
+                      <span className="text-xs text-gray-500">{platform.tagline}</span>
+                    </div>
+
+                    {/* Fees y detalles */}
+                    <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                      <span>
+                        Comisión:{" "}
+                        <span className="font-medium text-gray-300">
+                          {platform.fee * 100}%
+                          {platform.fixedFee > 0 && ` + $${platform.fixedFee}`}
+                        </span>
+                      </span>
+                      <span>
+                        Retiro:{" "}
+                        <span className="font-medium text-gray-300">${platform.withdrawalFee} USD</span>
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <IconClock className="h-3.5 w-3.5" stroke={1.5} />
+                        <span className="font-medium text-gray-300">{platform.processingTime}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Monto que recibís */}
+                  <div className="text-right">
+                    <p className="text-xs text-gray-600">Recibís</p>
+                    <p className="text-3xl font-bold tabular-nums" style={{ color: platform.color }}>
+                      ${platform.final.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      perdés {platform.pctLost.toFixed(1)}% ({((amount - platform.final)).toFixed(2)} USD)
+                    </p>
+                  </div>
+                </div>
+
+                {/* Pros / Cons */}
+                <div className="mt-4 grid grid-cols-1 gap-3 border-t border-gray-800 pt-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    {platform.pros.map((pro, j) => (
+                      <div key={j} className="flex items-start gap-2 text-xs text-gray-400">
+                        <IconCheck className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-green-500" stroke={2.5} />
+                        {pro}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="space-y-1.5">
+                    {platform.cons.map((con, j) => (
+                      <div key={j} className="flex items-start gap-2 text-xs text-gray-400">
+                        <IconX className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-red-400" stroke={2.5} />
+                        {con}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Link a la plataforma */}
+                <div className="mt-3 flex justify-end">
+                  <a
+                    href={platform.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs font-medium transition-colors hover:underline"
+                    style={{ color: platform.color }}
+                  >
+                    Ir a {platform.name}
+                    <IconArrowUpRight className="h-3.5 w-3.5" stroke={2} />
+                  </a>
                 </div>
               </div>
-            </div>
+            )
+          })}
+        </div>
 
-            <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-gray-800">Comparativa de plataformas</h3>
-
-              <div className="grid gap-4">
-                {paymentPlatforms.map((platform) => (
-                  <Card key={platform.id} className="overflow-hidden">
-                    <CardContent className="p-0">
-                      <div className="flex flex-col md:flex-row">
-                        <div className="flex items-center justify-center border-b border-gray-100 bg-gray-50 p-4 md:w-1/4 md:border-b-0 md:border-r">
-                          <div className="text-center">
-                            <div className="mb-2 flex justify-center">
-                              <Image
-                                src={platform.logo || "/placeholder.svg"}
-                                alt={`${platform.name} logo`}
-                                width={120}
-                                height={40}
-                                className="h-10 w-auto object-contain"
-                              />
-                            </div>
-                            <div className="rounded-full bg-amber-100 px-3 py-1 text-center text-xs font-medium text-amber-800">
-                              Comisión: {platform.fee * 100}%
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex-1 p-4">
-                          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                            <h4 className="text-lg font-bold">{platform.name}</h4>
-                            <div className="rounded-xl bg-amber-500 px-4 py-1 text-lg font-bold text-white">
-                              ${calculateFinalAmount(platform, selectedAmount).toFixed(2)}
-                            </div>
-                          </div>
-
-                          <div className="mb-4 grid gap-2 text-sm md:grid-cols-2">
-                            <div>
-                              <span className="font-medium">Comisión:</span> {platform.fee * 100}% + $
-                              {platform.fixedFee.toFixed(2)}
-                            </div>
-                            <div>
-                              <span className="font-medium">Tipo de cambio:</span>{" "}
-                              {((1 - platform.exchangeRate) * 100).toFixed(1)}% debajo del oficial
-                            </div>
-                            <div>
-                              <span className="font-medium">Comisión de retiro:</span> ${platform.withdrawalFee}
-                            </div>
-                            <div>
-                              <span className="font-medium">Tiempo de procesamiento:</span> {platform.processingTime}
-                            </div>
-                          </div>
-
-                          <Tabs defaultValue="pros" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 rounded-xl">
-                              <TabsTrigger value="pros" className="rounded-l-xl">
-                                Ventajas
-                              </TabsTrigger>
-                              <TabsTrigger value="cons" className="rounded-r-xl">
-                                Desventajas
-                              </TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="pros" className="mt-2">
-                              <ul className="space-y-1 text-sm">
-                                {platform.pros.map((pro, index) => (
-                                  <li key={index} className="flex items-center gap-2">
-                                    <IconCheck className="h-4 w-4 text-green-500" stroke={1.5} />
-                                    {pro}
-                                  </li>
-                                ))}
-                              </ul>
-                            </TabsContent>
-                            <TabsContent value="cons" className="mt-2">
-                              <ul className="space-y-1 text-sm">
-                                {platform.cons.map((con, index) => (
-                                  <li key={index} className="flex items-center gap-2">
-                                    <IconX className="h-4 w-4 text-red-500" stroke={1.5} />
-                                    {con}
-                                  </li>
-                                ))}
-                              </ul>
-                            </TabsContent>
-                          </Tabs>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+        <p className="mt-6 text-center text-xs text-gray-600">
+          Las comisiones son aproximadas y pueden variar según el país, el método de retiro y el volumen de transacciones.
+        </p>
       </div>
     </div>
   )

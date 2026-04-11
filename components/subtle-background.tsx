@@ -26,9 +26,9 @@ export default function SubtleBackground() {
     // Crear el degradado de fondo
     const createGradient = () => {
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
-      gradient.addColorStop(0, "rgba(250, 250, 255, 1)") // Casi blanco en la parte superior
-      gradient.addColorStop(0.7, "rgba(243, 238, 255, 1)") // Tono muy suave de violeta
-      gradient.addColorStop(1, "rgba(237, 233, 254, 1)") // brand-100 en la parte inferior
+      gradient.addColorStop(0, "#09090b")   // zinc-950
+      gradient.addColorStop(0.6, "#0c0b12") // zinc-950 con tinte púrpura
+      gradient.addColorStop(1, "#0f0b1a")   // zinc-950 con más tinte púrpura
       return gradient
     }
 
@@ -39,7 +39,7 @@ export default function SubtleBackground() {
         length: 0.01,
         amplitude: 20,
         frequency: 0.01,
-        color: "rgba(124, 58, 237, 0.03)", // brand-600 con baja opacidad
+        color: "rgba(139, 92, 246, 0.07)", // brand-500
         speed: 0.005,
       },
       {
@@ -47,7 +47,7 @@ export default function SubtleBackground() {
         length: 0.008,
         amplitude: 25,
         frequency: 0.015,
-        color: "rgba(109, 40, 217, 0.025)", // brand-700 con baja opacidad
+        color: "rgba(109, 40, 217, 0.05)", // brand-700
         speed: 0.003,
       },
       {
@@ -55,7 +55,7 @@ export default function SubtleBackground() {
         length: 0.015,
         amplitude: 15,
         frequency: 0.02,
-        color: "rgba(139, 92, 246, 0.02)", // brand-500 con baja opacidad
+        color: "rgba(167, 139, 250, 0.04)", // brand-400
         speed: 0.007,
       },
     ]

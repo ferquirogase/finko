@@ -1,23 +1,22 @@
 import Link from "next/link"
-import Image from "next/image"
-import { Dancing_Script } from "next/font/google"
+import { Space_Grotesk } from "next/font/google"
 
-const dancingScript = Dancing_Script({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["700"],
   display: "swap",
 })
 
 export default function Navbar() {
   return (
     <nav className="mb-8 flex items-center">
-      <Link href="/" className="flex items-center">
-        <div className="relative h-8 w-32">
-          <Image src="/finko.png" alt="finko logo" fill style={{ objectFit: "contain" }} priority />
-        </div>
-        <div className={`${dancingScript.className} ml-2 text-brand-600 text-lg italic`}>
+      <Link href="/" className="flex items-center gap-3">
+        <span className={`${spaceGrotesk.className} text-2xl font-bold tracking-tight text-white`}>
+          finko
+        </span>
+        <span className="hidden text-xs text-gray-600 sm:block">
           hecho por freelancers, para freelancers
-        </div>
+        </span>
       </Link>
     </nav>
   )

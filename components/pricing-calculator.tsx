@@ -1,21 +1,16 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select"
-import { Check, Info, HelpCircle, ArrowRight, Search, Calculator } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
+import { Check, Search, Calculator, Copy, ChevronDown, ChevronUp, Settings2, FileText } from "lucide-react"
 import { HelpTooltip } from "@/components/help-tooltip"
 
-// Añadir este objeto de categorías y subcategorías al inicio del componente, justo después de las importaciones
 const projectCategories = [
   {
     id: "development",
@@ -74,985 +69,533 @@ const projectCategories = [
   },
 ]
 
-// Función para obtener todas las subcategorías en un array plano
-const getAllSubcategories = () => {
-  return projectCategories.flatMap((category) =>
-    category.subcategories.map((subcategory) => ({
-      ...subcategory,
-      categoryName: category.name,
-    })),
+const allSubcategories = projectCategories.flatMap((cat) =>
+  cat.subcategories.map((sub) => ({ ...sub, categoryName: cat.name }))
+)
+
+function getProjectMultiplier(projectId: string) {
+  return allSubcategories.find((s) => s.id === projectId)?.multiplier ?? 1
+}
+
+function getProjectName(projectId: string) {
+  return allSubcategories.find((s) => s.id === projectId)?.name ?? "Selecciona el tipo de trabajo"
+}
+
+const baseRates = { latam: 15, europe: 35, usa: 50, asia: 20 }
+const defaultTaxRates = { latam: 20, europe: 35, usa: 30, asia: 15 }
+
+function NumericInput({
+  value,
+  onChange,
+  min,
+  max,
+  step = 1,
+  prefix,
+  suffix,
+}: {
+  value: number
+  onChange: (v: number) => void
+  min: number
+  max: number
+  step?: number
+  prefix?: string
+  suffix?: string
+}) {
+  const [local, setLocal] = useState(value.toString())
+
+  useEffect(() => {
+    setLocal(value.toString())
+  }, [value])
+
+  const commit = () => {
+    const n = local === "" ? min : Number(local)
+    const clamped = Math.min(Math.max(isNaN(n) ? min : n, min), max)
+    onChange(clamped)
+    setLocal(clamped.toString())
+  }
+
+  return (
+    <div className="relative flex items-center">
+      {prefix && (
+        <span className="absolute left-3 text-sm text-gray-500 pointer-events-none">{prefix}</span>
+      )}
+      <Input
+        type="text"
+        inputMode="numeric"
+        value={local}
+        onChange={(e) => setLocal(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => e.key === "Enter" && commit()}
+        className={`rounded-lg text-center ${prefix ? "pl-7" : ""} ${suffix ? "pr-14" : ""}`}
+      />
+      {suffix && (
+        <span className="absolute right-3 text-sm text-gray-500 pointer-events-none">{suffix}</span>
+      )}
+    </div>
   )
 }
 
 export default function PricingCalculator() {
-  // Estado para la calculadora
+  // Perfil
   const [experience, setExperience] = useState(3)
   const [projectType, setProjectType] = useState("web")
   const [region, setRegion] = useState("latam")
+
+  // Proyecto
   const [hours, setHours] = useState(40)
-  const [complexity, setComplexity] = useState(1) // 0.8 - 1.5
-  const [urgency, setUrgency] = useState(1) // 1 - 1.5
-  const [urgencyFee, setUrgencyFee] = useState(50) // Porcentaje de urgencia
+  const [complexity, setComplexity] = useState(1)
+  const [urgent, setUrgent] = useState(false)
 
-  // Estado para el selector de proyecto con búsqueda
-  const [openProjectSelector, setOpenProjectSelector] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-
-  // Obtener todas las subcategorías para la búsqueda
-  const allSubcategories = getAllSubcategories()
-
-  // Obtener el nombre del proyecto seleccionado
-  const getSelectedProjectName = () => {
-    const subcategory = allSubcategories.find((sub) => sub.id === projectType)
-    return subcategory ? subcategory.name : "Selecciona el tipo de proyecto"
-  }
-
-  // Estado para factores de sostenibilidad
-  const [monthlyExpenses, setMonthlyExpenses] = useState(1000)
-  const [desiredSalary, setDesiredSalary] = useState(2000)
-  const [billableHoursPerWeek, setBillableHoursPerWeek] = useState(20)
-  const [vacationWeeks, setVacationWeeks] = useState(4)
+  // Mis números
+  const [monthlyTarget, setMonthlyTarget] = useState(3000)
+  const [billableHours, setBillableHours] = useState(20)
+  const [workWeeks, setWorkWeeks] = useState(48)
   const [taxRate, setTaxRate] = useState(20)
-  const [profitMargin, setProfitMargin] = useState(20)
-  const [includeExpenses, setIncludeExpenses] = useState(true)
+  const [profitMargin, setProfitMargin] = useState(15)
 
-  // Eliminar estos estados:
-
+  // UI
+  const [searchTerm, setSearchTerm] = useState("Desarrollo Web")
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [advancedOpen, setAdvancedOpen] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [activeStep, setActiveStep] = useState(0)
-  // Por:
-  const [activeTab, setActiveTab] = useState("calculator")
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Asegurarse de que activeStep esté dentro de los límites válidos
-    if (activeStep < 0) {
-      setActiveStep(0)
-    } else if (activeStep >= basicSteps.length) {
-      setActiveStep(basicSteps.length - 1)
-    }
-  }, [activeStep])
-
-  // Tarifas base por región (USD por hora)
-  const baseRates = {
-    latam: 15,
-    europe: 35,
-    usa: 50,
-    asia: 20,
-  }
-
-  // Ahora, reemplazamos el objeto projectMultipliers existente con una función que busque el multiplicador
-  const getProjectMultiplier = (projectId: string) => {
-    for (const category of projectCategories) {
-      for (const subcategory of category.subcategories) {
-        if (subcategory.id === projectId) {
-          return subcategory.multiplier
-        }
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
       }
     }
-    return 1 // Valor por defecto si no se encuentra
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [])
+
+  const handleRegionChange = (r: string) => {
+    setRegion(r)
+    setTaxRate(defaultTaxRates[r as keyof typeof defaultTaxRates])
   }
 
-  // Cálculo de tarifa basada en el mercado
-  const calculateMarketRate = () => {
-    // Tarifa base por región
-    const baseRate = baseRates[region as keyof typeof baseRates]
+  // Cálculos
+  const baseRate = baseRates[region as keyof typeof baseRates]
+  const expMultiplier = 0.7 + (experience / 10) * 1.3
+  const projMultiplier = getProjectMultiplier(projectType)
+  const complexMultiplier = 0.8 + complexity * 0.35
+  const urgencyMultiplier = urgent ? 1.3 : 1
 
-    // Multiplicador por experiencia (0.7 a 2.0)
-    const experienceMultiplier = 0.7 + (experience / 10) * 1.3
+  const marketRate = Math.round(baseRate * expMultiplier * projMultiplier * complexMultiplier * urgencyMultiplier)
 
-    // Luego, en la función calculateMarketRate, reemplazamos:
-    // const projectMultiplier = projectMultipliers[projectType as keyof typeof projectMultipliers]
-    // por:
-    const projectMultiplier = getProjectMultiplier(projectType)
+  const annualTarget = monthlyTarget * 12
+  const withProfit = annualTarget * (1 + profitMargin / 100)
+  const withTaxes = withProfit * (1 + taxRate / 100)
+  const annualBillableHours = workWeeks * billableHours
+  const sustainableRate = annualBillableHours > 0 ? Math.round(withTaxes / annualBillableHours) : 0
 
-    // Multiplicadores adicionales
-    const complexityMultiplier = 0.8 + complexity * 0.35 // 0.8 - 1.5
-    const urgencyMultiplier = urgency // 1 - 1.5
+  const recommendedRate = Math.round(marketRate * 0.4 + sustainableRate * 0.6)
+  const projectTotal = recommendedRate * hours
 
-    // Tarifa por hora calculada
-    const hourlyRate = Math.round(
-      baseRate * experienceMultiplier * projectMultiplier * complexityMultiplier * urgencyMultiplier,
-    )
+  const router = useRouter()
 
-    // Total del proyecto
-    const projectTotal = hourlyRate * hours
-
-    return {
-      hourlyRate,
-      projectTotal,
-      baseRate,
-      experienceMultiplier,
-      projectMultiplier,
-      complexityMultiplier,
-      urgencyMultiplier,
-    }
+  const handleSendToProposal = () => {
+    const params = new URLSearchParams({
+      rate: recommendedRate.toString(),
+      hours: hours.toString(),
+      total: projectTotal.toString(),
+      type: getProjectName(projectType),
+    })
+    router.push(`/presupuestos?${params.toString()}`)
   }
-
-  // Cálculo de tarifa sostenible
-  const calculateSustainableRate = () => {
-    // Calcular gastos anuales
-    const annualExpenses = includeExpenses ? monthlyExpenses * 12 : 0
-    const annualSalary = desiredSalary * 12
-    const annualTotal = annualExpenses + annualSalary
-
-    // Añadir margen de beneficio
-    const withProfit = annualTotal * (1 + profitMargin / 100)
-
-    // Añadir impuestos
-    const withTaxes = withProfit * (1 + taxRate / 100)
-
-    // Calcular horas facturables al año
-    const weeksPerYear = 52 - vacationWeeks
-    const billableHoursPerYear = weeksPerYear * billableHoursPerWeek
-
-    // Calcular tarifa por hora
-    const hourlyRate = Math.round(withTaxes / billableHoursPerYear)
-
-    return {
-      hourlyRate,
-      annualRevenue: withTaxes,
-      billableHoursPerYear,
-      effectiveTaxAmount: withTaxes - withProfit,
-      effectiveProfitAmount: withProfit - annualTotal,
-      annualExpenses,
-      annualSalary,
-    }
-  }
-
-  // Eliminar esta función:
-
-  const marketRate = calculateMarketRate()
-  const sustainableRate = calculateSustainableRate()
-
-  // Calcular la tarifa recomendada (promedio ponderado entre mercado y sostenibilidad)
-  const calculateRecommendedRate = () => {
-    // Damos más peso a la tarifa sostenible (60%) que a la de mercado (40%)
-    return Math.round(marketRate.hourlyRate * 0.4 + sustainableRate.hourlyRate * 0.6)
-  }
-
-  const recommendedRate = calculateRecommendedRate()
-  const recommendedTotal = recommendedRate * hours
 
   const handleCopy = () => {
-    const text = `Tarifa recomendada: $${recommendedRate} USD por hora
-Total del proyecto: $${recommendedTotal} USD (${hours} horas)
-Basado en:
-- Tarifa de mercado: $${marketRate.hourlyRate} USD
-- Tarifa sostenible: $${sustainableRate.hourlyRate} USD`
-
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(
+      `Tarifa recomendada: $${recommendedRate} USD/hora\nTotal del proyecto: $${projectTotal.toLocaleString()} USD (${hours} horas)\nTarifa de mercado: $${marketRate} USD/hora\nTarifa sostenible: $${sustainableRate} USD/hora`
+    )
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-
-    // Enviar evento al dataLayer cuando se copian los resultados
-    // if (typeof window !== "undefined" && window.dataLayer) {
-    //   window.dataLayer.push({
-    //     event: "calculator_result_copied",
-    //     hourly_rate: recommendedRate,
-    //     project_total: recommendedTotal,
-    //     hours: hours,
-    //     experience_level: experience,
-    //     project_type: projectType,
-    //   })
-    // }
   }
 
-  // Componente de control numérico mejorado
-  const EnhancedNumericInput = ({
-    value,
-    onChange,
-    min,
-    max,
-    step = 1,
-    label,
-    suffix,
-    prefix,
-    tooltip,
-    className = "",
-  }: {
-    value: number
-    onChange: (value: number) => void
-    min: number
-    max: number
-    step?: number
-    label?: string
-    suffix?: string
-    prefix?: string
-    tooltip?: string
-    className?: string
-  }) => {
-    // Estado interno para manejar el valor durante la edición
-    const [inputValue, setInputValue] = useState(value.toString())
-
-    // Actualizar el estado interno cuando cambia el valor externo
-    useEffect(() => {
-      setInputValue(value.toString())
-    }, [value])
-
-    // Manejar cambios en el input
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value
-      setInputValue(newValue) // Actualizar el estado interno sin restricciones
-    }
-
-    // Cuando el input pierde el foco, actualizar el valor externo
-    const handleBlur = () => {
-      const numValue = inputValue === "" ? min : Number(inputValue)
-      const validValue = Math.min(Math.max(numValue, min), max)
-      onChange(validValue)
-      setInputValue(validValue.toString()) // Sincronizar con el valor validado
-    }
-
-    // Cuando se presiona Enter, actualizar el valor externo
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        const numValue = inputValue === "" ? min : Number(inputValue)
-        const validValue = Math.min(Math.max(numValue, min), max)
-        onChange(validValue)
-        setInputValue(validValue.toString())
-        e.currentTarget.blur() // Quitar el foco del input
-      }
-    }
-
-    return (
-      <div className={`space-y-2 ${className}`}>
-        {label && (
-          <div className="flex items-center gap-1.5">
-            <label className="text-sm font-medium">{label}</label>
-            {tooltip && <HelpTooltip content={<p>{tooltip}</p>} />}
-          </div>
-        )}
-        <div className="relative">
-          {prefix && (
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-              <span className="text-gray-500">{prefix}</span>
-            </div>
-          )}
-          <Input
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            className={`rounded-lg text-center transition-all focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500 ${
-              prefix ? "pl-7" : ""
-            } ${suffix ? "pr-10" : ""}`}
-            step={step}
-          />
-          {suffix && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <span className="text-gray-500">{suffix}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  // Componente de slider personalizado desde cero
-
-  // Pasos para la calculadora básica
-  const basicSteps = [
-    {
-      title: "Perfil Profesional",
-      description: "Información sobre tu experiencia y especialidad",
-      content: (
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <label className="text-sm font-medium">Años de experiencia</label>
-                {false && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                          <HelpCircle className="h-3.5 w-3.5" />
-                          <span className="sr-only">Ayuda</span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs text-xs">
-                        <p>
-                          Indica cuántos años de experiencia tienes en tu campo. Esto afecta directamente a tu tarifa
-                          recomendada.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </div>
-              <span className="text-sm font-medium">{experience}</span>
-            </div>
-            <Slider
-              value={[experience]}
-              onValueChange={(values) => setExperience(values[0])}
-              min={0}
-              max={10}
-              step={1}
-            />
-            <div className="flex justify-between px-1 text-xs text-gray-500">
-              <span>Principiante</span>
-              <span>Intermedio</span>
-              <span>Experto</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5">
-              <label className="text-sm font-medium">Tipo de proyecto</label>
-              <HelpTooltip
-                content={
-                  <p>
-                    Cada tipo de proyecto tiene un multiplicador diferente basado en la complejidad y demanda del
-                    mercado.
-                  </p>
-                }
-              />
-            </div>
-
-            <div className="relative">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Buscar o seleccionar tipo de proyecto..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="rounded-lg pr-10"
-                  onFocus={() => setOpenProjectSelector(true)}
-                  onClick={() => setOpenProjectSelector(true)}
-                />
-                <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              </div>
-
-              {openProjectSelector && (
-                <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
-                  {projectCategories.map((category) => {
-                    // Filtrar subcategorías que coincidan con la búsqueda
-                    const filteredSubcategories = category.subcategories.filter(
-                      (subcategory) =>
-                        searchTerm === "" ||
-                        subcategory.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        category.name.toLowerCase().includes(searchTerm.toLowerCase()),
-                    )
-
-                    // Solo mostrar categorías que tengan subcategorías que coincidan con la búsqueda
-                    if (filteredSubcategories.length === 0) return null
-
-                    return (
-                      <div key={category.id}>
-                        <div className="sticky top-0 bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500">
-                          {category.name}
-                        </div>
-                        {filteredSubcategories.map((subcategory) => (
-                          <button
-                            key={subcategory.id}
-                            type="button"
-                            className={`flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-brand-50 ${
-                              projectType === subcategory.id ? "bg-brand-50 font-medium text-brand-600" : ""
-                            }`}
-                            onClick={() => {
-                              setProjectType(subcategory.id)
-                              setSearchTerm(subcategory.name)
-                              setOpenProjectSelector(false)
-                            }}
-                          >
-                            <div className="flex items-center">
-                              {projectType === subcategory.id && <Check className="mr-2 h-4 w-4 text-brand-600" />}
-                              <span>{subcategory.name}</span>
-                            </div>
-                            <div className="flex items-center">
-                              <span className="text-xs text-gray-500 mr-1">Multiplicador:</span>
-                              <span className="flex items-center">
-                                <span className="font-medium text-brand-600">{subcategory.multiplier.toFixed(2)}x</span>
-                                <HelpTooltip
-                                  content={
-                                    <p>
-                                      Este multiplicador afecta el cálculo de tu tarifa base según el tipo de proyecto.
-                                      Un valor mayor indica un tipo de proyecto que generalmente se cobra a una tarifa
-                                      más alta en el mercado.
-                                    </p>
-                                  }
-                                  className="ml-1"
-                                />
-                              </span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )
-                  })}
-                  {!projectCategories.some((category) =>
-                    category.subcategories.some(
-                      (subcategory) =>
-                        searchTerm === "" ||
-                        subcategory.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        category.name.toLowerCase().includes(searchTerm.toLowerCase()),
-                    ),
-                  ) && <div className="px-3 py-2 text-center text-sm text-gray-500">No se encontraron resultados.</div>}
-                </div>
-              )}
-            </div>
-
-            <div className="mt-1 flex items-center text-xs text-gray-500">
-              {projectType ? (
-                <>
-                  <span>Multiplicador seleccionado: </span>
-                  <span className="flex items-center ml-1">
-                    <span className="font-medium text-brand-600">{getProjectMultiplier(projectType).toFixed(2)}x</span>
-                    <HelpTooltip
-                      content={
-                        <p>
-                          Este multiplicador afecta el cálculo de tu tarifa base según el tipo de proyecto seleccionado.
-                          Se aplica como un porcentaje sobre la tarifa base para reflejar el valor de mercado de este
-                          tipo de trabajo.
-                        </p>
-                      }
-                      className="ml-1"
-                    />
-                  </span>
-                </>
-              ) : (
-                "Selecciona un tipo de proyecto para ver su multiplicador"
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5">
-              <label className="text-sm font-medium">Región</label>
-              <HelpTooltip
-                content={
-                  <p>
-                    Las tarifas varían significativamente según la región. Selecciona la región donde ofreces tus
-                    servicios.
-                  </p>
-                }
-              />
-            </div>
-            <Select value={region} onValueChange={setRegion}>
-              <SelectTrigger className="rounded-lg">
-                <SelectValue placeholder="Selecciona tu región" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="latam">Latinoamérica</SelectItem>
-                  <SelectItem value="europe">Europa</SelectItem>
-                  <SelectItem value="usa">Estados Unidos</SelectItem>
-                  <SelectItem value="asia">Asia</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <div className="mt-1 text-xs text-gray-500">
-              Tarifa base para esta región: ${baseRates[region as keyof typeof baseRates]} USD/hora
-            </div>
-          </div>
-        </div>
+  const filtered = projectCategories
+    .map((cat) => ({
+      ...cat,
+      subcategories: cat.subcategories.filter(
+        (s) =>
+          searchTerm === "" ||
+          s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          cat.name.toLowerCase().includes(searchTerm.toLowerCase())
       ),
-    },
-    {
-      title: "Detalles del Proyecto",
-      description: "Información sobre el proyecto actual",
-      content: (
-        <div className="space-y-6">
-          <EnhancedNumericInput
-            label="Horas estimadas"
-            value={hours}
-            onChange={setHours}
-            min={1}
-            max={500}
-            step={1}
-            tooltip="Número total de horas que estimas que te llevará completar el proyecto."
-          />
+    }))
+    .filter((cat) => cat.subcategories.length > 0)
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-1.5">
-              <label className="text-sm font-medium">Complejidad</label>
-              <HelpTooltip
-                content={
-                  <p>
-                    La complejidad técnica del proyecto afecta directamente a tu tarifa. Proyectos más complejos
-                    justifican tarifas más altas.
-                  </p>
-                }
-              />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { value: 0, label: "Baja", desc: "Simple" },
-                { value: 1, label: "Media", desc: "Estándar" },
-                { value: 2, label: "Alta", desc: "Avanzado" },
-              ].map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => setComplexity(option.value)}
-                  className={`flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 transition-all hover:bg-gray-50 ${
-                    complexity === option.value
-                      ? "border-brand-500 bg-brand-50 shadow-sm"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  <span className="text-base font-medium">{option.label}</span>
-                  <span className="text-xs text-gray-500">{option.desc}</span>
-                  <span className="mt-2 text-xs font-medium text-brand-600">
-                    {Math.round((0.8 + option.value * 0.35) * 100)}%
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5">
-              <label className="text-sm font-medium">Urgencia</label>
-              <HelpTooltip
-                content={
-                  <p>
-                    Proyectos con plazos ajustados o que requieren trabajo en horarios no habituales justifican una
-                    tarifa de urgencia.
-                  </p>
-                }
-              />
-            </div>
-            <div className="rounded-xl border border-brand-100 bg-brand-50 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="include-urgency"
-                    checked={urgency > 1}
-                    onCheckedChange={(checked) => setUrgency(checked ? 1 + urgencyFee / 100 : 1)}
-                  />
-                  <Label htmlFor="include-urgency" className="font-medium">
-                    Aplicar tarifa de urgencia
-                  </Label>
-                </div>
-                <Badge variant="outline" className="bg-white">
-                  +{urgencyFee}%
-                </Badge>
-              </div>
-
-              {urgency > 1 && (
-                <div className="mt-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <label className="text-sm font-medium">Tarifa de urgencia</label>
-                        {false && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                                  <HelpCircle className="h-3.5 w-3.5" />
-                                  <span className="sr-only">Ayuda</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-xs text-xs">
-                                <p></p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-                      </div>
-                      <span className="text-sm font-medium">{urgencyFee}%</span>
-                    </div>
-                    <Slider
-                      value={[urgencyFee]}
-                      onValueChange={(values) => {
-                        setUrgencyFee(values[0])
-                        setUrgency(1 + values[0] / 100)
-                      }}
-                      min={5}
-                      max={100}
-                      step={5}
-                    />
-                    <div className="flex justify-between px-1 text-xs text-gray-500">
-                      <span>5%</span>
-                      <span>50%</span>
-                      <span>100%</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Factores de Sostenibilidad",
-      description: "Información para calcular una tarifa sostenible a largo plazo",
-      content: (
-        <div className="space-y-6">
-          <div className="rounded-xl border border-brand-100 bg-brand-50 p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <h3 className="text-base font-medium text-brand-800">Gastos mensuales</h3>
-                <HelpTooltip
-                  content={
-                    <p>
-                      Incluye todos tus gastos mensuales relacionados con tu negocio: software, hardware, oficina,
-                      servicios, etc.
-                    </p>
-                  }
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch id="include-expenses" checked={includeExpenses} onCheckedChange={setIncludeExpenses} />
-                <Label htmlFor="include-expenses" className="text-sm text-brand-800">
-                  Incluir en cálculo
-                </Label>
-              </div>
-            </div>
-
-            <EnhancedNumericInput
-              value={monthlyExpenses}
-              onChange={setMonthlyExpenses}
-              min={0}
-              max={10000}
-              step={100}
-              prefix="$"
-              suffix="USD"
-              className={includeExpenses ? "" : "opacity-50"}
-            />
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2">
-            <EnhancedNumericInput
-              label="Salario mensual deseado"
-              value={desiredSalary}
-              onChange={setDesiredSalary}
-              min={0}
-              max={20000}
-              step={100}
-              prefix="$"
-              suffix="USD"
-              tooltip="El salario mensual que deseas obtener después de cubrir todos tus gastos."
-            />
-
-            <EnhancedNumericInput
-              label="Horas facturables por semana"
-              value={billableHoursPerWeek}
-              onChange={setBillableHoursPerWeek}
-              min={5}
-              max={40}
-              step={1}
-              suffix="horas"
-              tooltip="Horas que realmente puedes facturar cada semana. Considera que no todo tu tiempo es facturable."
-            />
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-3">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <label className="text-sm font-medium">Semanas de vacaciones</label>
-                  {false && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                            <HelpCircle className="h-3.5 w-3.5" />
-                            <span className="sr-only">Ayuda</span>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs text-xs">
-                          <p>Número de semanas al año que planeas tomar como vacaciones (sin ingresos).</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
-                </div>
-                <span className="text-sm font-medium">{vacationWeeks} semanas</span>
-              </div>
-              <Slider
-                value={[vacationWeeks]}
-                onValueChange={(values) => setVacationWeeks(values[0])}
-                min={0}
-                max={8}
-                step={1}
-              />
-              <div className="flex justify-between px-1 text-xs text-gray-500">
-                <span>0</span>
-                <span>4</span>
-                <span>8</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <label className="text-sm font-medium">Tasa de impuestos</label>
-                  {false && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                            <HelpCircle className="h-3.5 w-3.5" />
-                            <span className="sr-only">Ayuda</span>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs text-xs">
-                          <p>Porcentaje aproximado que pagas en impuestos sobre tus ingresos.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
-                </div>
-                <span className="text-sm font-medium">{taxRate}%</span>
-              </div>
-              <Slider value={[taxRate]} onValueChange={(values) => setTaxRate(values[0])} min={0} max={50} step={5} />
-              <div className="flex justify-between px-1 text-xs text-gray-500">
-                <span>0%</span>
-                <span>25%</span>
-                <span>50%</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <label className="text-sm font-medium">Margen de beneficio</label>
-                  {false && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-gray-400">
-                            <HelpCircle className="h-3.5 w-3.5" />
-                            <span className="sr-only">Ayuda</span>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs text-xs">
-                          <p>Margen adicional para crecimiento, inversiones y contingencias.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
-                </div>
-                <span className="text-sm font-medium">{profitMargin}%</span>
-              </div>
-              <Slider
-                value={[profitMargin]}
-                onValueChange={(values) => setProfitMargin(values[0])}
-                min={0}
-                max={50}
-                step={5}
-              />
-              <div className="flex justify-between px-1 text-xs text-gray-500">
-                <span>0%</span>
-                <span>25%</span>
-                <span>50%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Resultados",
-      description: "Tu tarifa recomendada basada en todos los factores",
-      content: (
-        <div className="space-y-4 rounded-3xl bg-gradient-to-r from-brand-500 to-brand-600 p-6 text-white">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <h3 className="text-sm font-medium text-brand-100">Tarifa recomendada por hora</h3>
-              <div className="my-2 flex items-baseline">
-                <span className="text-xl font-medium">$</span>
-                <span className="text-5xl font-bold">{recommendedRate}</span>
-                <span className="ml-1 text-xl font-medium">USD</span>
-              </div>
-              <p className="text-xs text-brand-200">Basado en factores de mercado y sostenibilidad</p>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-brand-100">Total del proyecto</h3>
-              <div className="my-2 flex items-baseline">
-                <span className="text-xl font-medium">$</span>
-                <span className="text-5xl font-bold">{recommendedTotal.toLocaleString()}</span>
-                <span className="ml-1 text-xl font-medium">USD</span>
-              </div>
-              <p className="text-xs text-brand-200">Basado en {hours} horas totales</p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-              <h4 className="mb-2 font-medium text-brand-100">Factores de mercado</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Tarifa base:</span>
-                  <span>${marketRate.baseRate} USD</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Experiencia:</span>
-                  <span>{Math.round(marketRate.experienceMultiplier * 100)}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Tipo de proyecto:</span>
-                  <span>{Math.round(marketRate.projectMultiplier * 100)}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Complejidad:</span>
-                  <span>{Math.round(marketRate.complexityMultiplier * 100)}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Urgencia:</span>
-                  <span>{Math.round(marketRate.urgencyMultiplier * 100)}%</span>
-                </div>
-                <div className="flex justify-between border-t border-white/20 pt-1 font-medium">
-                  <span>Tarifa de mercado:</span>
-                  <span>${marketRate.hourlyRate} USD/hora</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-              <h4 className="mb-2 font-medium text-brand-100">Factores de sostenibilidad</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Gastos anuales:</span>
-                  <span>${sustainableRate.annualExpenses.toLocaleString()} USD</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Salario anual:</span>
-                  <span>${sustainableRate.annualSalary.toLocaleString()} USD</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Margen de beneficio:</span>
-                  <span>{profitMargin}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Impuestos:</span>
-                  <span>{taxRate}%</span>
-                </div>
-                <div className="flex justify-between border-t border-white/20 pt-1 font-medium">
-                  <span>Tarifa sostenible:</span>
-                  <span>${sustainableRate.hourlyRate} USD/hora</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-white/10 p-4 text-sm backdrop-blur-sm">
-            <h4 className="mb-2 font-medium text-brand-100">Recomendaciones para establecer tarifas</h4>
-            <ul className="list-inside list-disc space-y-1">
-              <li>Comunica claramente el valor que aportas, no solo el tiempo que dedicas</li>
-              <li>Considera diferentes estructuras de precios según el tipo de cliente</li>
-              <li>Revisa y ajusta tus tarifas periódicamente (cada 6-12 meses)</li>
-              <li>Incluye cláusulas de cambio de alcance en tus contratos</li>
-              <li>No tengas miedo de negociar: las tarifas bajas pueden transmitir baja calidad</li>
-            </ul>
-          </div>
-        </div>
-      ),
-    },
-  ]
-
-  useEffect(() => {
-    if (typeof window === "undefined") return
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node
-      const searchInput = document.querySelector('input[placeholder="Buscar o seleccionar tipo de proyecto..."]')
-      const dropdown = document.querySelector(".absolute.z-50.mt-1")
-
-      // Solo cerrar si el clic no fue en el input ni en el dropdown
-      if (
-        searchInput &&
-        dropdown &&
-        !searchInput.contains(target) &&
-        !dropdown.contains(target) &&
-        openProjectSelector
-      ) {
-        setOpenProjectSelector(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [openProjectSelector])
+  const experienceLabel =
+    experience <= 2 ? "Junior" : experience <= 5 ? "Semi-senior" : experience <= 8 ? "Senior" : "Experto"
 
   return (
     <div className="space-y-6">
-      <div className="space-y-6 rounded-3xl bg-white p-6 shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="rounded-full bg-brand-100 p-2 text-brand-600">
+      <div className="rounded-3xl bg-gray-900 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="rounded-full bg-brand-500/15 p-2 text-brand-400">
             <Calculator className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-800">Calculadora de Tarifas</h2>
-            <p className="text-sm text-gray-500">Calcula cuánto deberías cobrar por tus servicios como freelancer</p>
+            <h2 className="text-xl font-semibold text-gray-100">Calculadora de Tarifas</h2>
+            <p className="text-sm text-gray-500">Calculá cuánto cobrar por tus servicios freelance</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 rounded-xl bg-brand-50 p-3 text-brand-800">
-          <Info className="h-5 w-5 flex-shrink-0" />
-          <p className="text-xs">
-            Esta calculadora combina factores de mercado y sostenibilidad para ayudarte a establecer una tarifa justa
-            que cubra tus necesidades y sea competitiva.
-          </p>
-        </div>
+        <div className="grid gap-8 lg:grid-cols-5">
+          {/* ── Columna de inputs ── */}
+          <div className="space-y-8 lg:col-span-3">
 
-        {/* Pasos de la calculadora */}
-        <div className="mb-4 flex flex-wrap gap-2">
-          {basicSteps.map((step, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveStep(index)}
-              className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition-all ${
-                activeStep === index
-                  ? "bg-brand-100 text-brand-800 font-medium"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-medium">
-                {index + 1}
-              </span>
-              <span>{step.title}</span>
-            </button>
-          ))}
-        </div>
+            {/* Sección: Tu perfil */}
+            <section className="space-y-5">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">Tu perfil</h3>
 
-        <Card className="border-brand-100">
-          <CardContent className="p-6">
-            <div className="mb-4">
-              <h3 className="text-lg font-medium text-gray-800">
-                {basicSteps[activeStep] ? basicSteps[activeStep].title : "Cargando..."}
-              </h3>
-              <p className="text-sm text-gray-500">
-                {basicSteps[activeStep] ? basicSteps[activeStep].description : ""}
+              {/* Tipo de trabajo */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Tipo de trabajo</label>
+                <div className="relative" ref={dropdownRef}>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                    <Input
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value)
+                        setDropdownOpen(true)
+                      }}
+                      onFocus={() => setDropdownOpen(true)}
+                      placeholder="Buscar tipo de trabajo..."
+                      className="rounded-lg pl-9 pr-9"
+                    />
+                    <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                  </div>
+
+                  {dropdownOpen && (
+                    <div className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-gray-700 bg-gray-800 py-1 shadow-lg shadow-black/40">
+                      {filtered.length === 0 && (
+                        <p className="px-3 py-2 text-center text-sm text-gray-500">Sin resultados</p>
+                      )}
+                      {filtered.map((cat) => (
+                        <div key={cat.id}>
+                          <div className="sticky top-0 bg-gray-700 px-3 py-1 text-xs font-semibold text-gray-400">
+                            {cat.name}
+                          </div>
+                          {cat.subcategories.map((sub) => (
+                            <button
+                              key={sub.id}
+                              type="button"
+                              onClick={() => {
+                                setProjectType(sub.id)
+                                setSearchTerm(sub.name)
+                                setDropdownOpen(false)
+                              }}
+                              className={`flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-brand-500/10 ${
+                                projectType === sub.id ? "bg-brand-500/10 font-medium text-brand-400" : "text-gray-300"
+                              }`}
+                            >
+                              <span>{sub.name}</span>
+                              {projectType === sub.id && <Check className="h-4 w-4 text-brand-400" />}
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Experiencia */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-gray-300">Experiencia</label>
+                  <span className="text-sm font-semibold text-brand-400">
+                    {experience} {experience === 1 ? "año" : "años"} · {experienceLabel}
+                  </span>
+                </div>
+                <Slider
+                  value={[experience]}
+                  onValueChange={(v) => setExperience(v[0])}
+                  min={0}
+                  max={10}
+                  step={1}
+                />
+                <div className="flex justify-between px-0.5 text-xs text-gray-600">
+                  <span>Sin experiencia</span>
+                  <span>Experto</span>
+                </div>
+              </div>
+
+              {/* Región */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Mercado donde ofrecés tus servicios</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: "latam", label: "Latinoamérica" },
+                    { id: "usa", label: "Estados Unidos" },
+                    { id: "europe", label: "Europa" },
+                    { id: "asia", label: "Asia" },
+                  ].map((r) => (
+                    <button
+                      key={r.id}
+                      onClick={() => handleRegionChange(r.id)}
+                      className={`rounded-xl border-2 px-3 py-2.5 text-sm font-medium text-center leading-tight whitespace-normal transition-all ${
+                        region === r.id
+                          ? "border-brand-400 bg-brand-500/10 text-brand-300"
+                          : "border-gray-800 text-gray-400 hover:border-gray-700"
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Sección: Este proyecto */}
+            <section className="space-y-5">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">Este proyecto</h3>
+
+              {/* Horas estimadas */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <label className="text-sm font-medium text-gray-300">Horas estimadas</label>
+                  <HelpTooltip content={<p>Total de horas que dedicarás al proyecto.</p>} />
+                </div>
+                <NumericInput
+                  value={hours}
+                  onChange={setHours}
+                  min={1}
+                  max={2000}
+                  suffix="horas"
+                />
+              </div>
+
+              {/* Complejidad */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Complejidad</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { value: 0, label: "Baja", desc: "Tarea simple" },
+                    { value: 1, label: "Media", desc: "Estándar" },
+                    { value: 2, label: "Alta", desc: "Técnicamente complejo" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setComplexity(opt.value)}
+                      className={`flex flex-col items-center rounded-xl border-2 px-3 py-3 text-sm transition-all ${
+                        complexity === opt.value
+                          ? "border-brand-400 bg-brand-500/10 text-brand-300"
+                          : "border-gray-800 text-gray-400 hover:border-gray-700"
+                      }`}
+                    >
+                      <span className="font-semibold">{opt.label}</span>
+                      <span className="mt-0.5 text-xs opacity-70">{opt.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Urgencia */}
+              <div className={`flex items-center justify-between rounded-xl border-2 px-4 py-3 transition-all ${
+                urgent ? "border-amber-500/50 bg-amber-500/10" : "border-gray-800"
+              }`}>
+                <div>
+                  <p className="text-sm font-medium text-gray-300">Entrega urgente</p>
+                  <p className="text-xs text-gray-500">Suma un 30% a la tarifa de mercado</p>
+                </div>
+                <Switch
+                  checked={urgent}
+                  onCheckedChange={setUrgent}
+                  id="urgency"
+                />
+              </div>
+            </section>
+
+            {/* Sección: Mis números */}
+            <section className="space-y-5">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">Mis números</h3>
+
+              {/* Ingreso mensual deseado */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <label className="text-sm font-medium text-gray-300">Ingreso mensual que necesitás</label>
+                  <HelpTooltip content={<p>Incluí tu sueldo deseado más tus gastos fijos (herramientas, servicios, etc.).</p>} />
+                </div>
+                <NumericInput
+                  value={monthlyTarget}
+                  onChange={setMonthlyTarget}
+                  min={0}
+                  max={50000}
+                  step={100}
+                  prefix="$"
+                  suffix="USD/mes"
+                />
+              </div>
+
+              {/* Horas facturables por semana */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <label className="text-sm font-medium text-gray-300">Horas facturables por semana</label>
+                  <HelpTooltip content={<p>Horas reales que podés cobrar. No todo tu tiempo de trabajo es facturable.</p>} />
+                </div>
+                <NumericInput
+                  value={billableHours}
+                  onChange={setBillableHours}
+                  min={1}
+                  max={60}
+                  suffix="hs/sem"
+                />
+              </div>
+
+              {/* Configuración avanzada */}
+              <div className="rounded-xl border border-gray-800 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setAdvancedOpen((v) => !v)}
+                  className="flex w-full items-center justify-between px-4 py-3 text-sm text-gray-400 hover:bg-gray-800 transition-colors"
+                >
+                  <span className="flex items-center gap-2 font-medium">
+                    <Settings2 className="h-4 w-4 text-gray-600" />
+                    Configuración avanzada
+                  </span>
+                  {advancedOpen ? (
+                    <ChevronUp className="h-4 w-4 text-gray-600" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-gray-600" />
+                  )}
+                </button>
+
+                {advancedOpen && (
+                  <div className="border-t border-gray-800 px-4 py-4 space-y-4 bg-gray-800/50">
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      {/* Semanas trabajadas */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5">
+                          <label className="text-sm font-medium text-gray-300">Semanas/año</label>
+                          <HelpTooltip content={<p>Semanas que trabajás al año. 52 menos tus vacaciones.</p>} />
+                        </div>
+                        <NumericInput
+                          value={workWeeks}
+                          onChange={setWorkWeeks}
+                          min={1}
+                          max={52}
+                          suffix="sem"
+                        />
+                      </div>
+
+                      {/* Impuestos */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5">
+                          <label className="text-sm font-medium text-gray-300">Impuestos</label>
+                          <HelpTooltip content={<p>Estimación según tu región. Podés ajustarlo a tu situación real.</p>} />
+                        </div>
+                        <NumericInput
+                          value={taxRate}
+                          onChange={setTaxRate}
+                          min={0}
+                          max={60}
+                          suffix="%"
+                        />
+                        <p className="text-xs text-gray-600">Sugerido para tu región</p>
+                      </div>
+
+                      {/* Margen */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5">
+                          <label className="text-sm font-medium text-gray-300">Margen</label>
+                          <HelpTooltip content={<p>Porcentaje extra para ahorro, inversión o imprevistos.</p>} />
+                        </div>
+                        <NumericInput
+                          value={profitMargin}
+                          onChange={setProfitMargin}
+                          min={0}
+                          max={100}
+                          suffix="%"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+
+          {/* ── Panel de resultados ── */}
+          <div className="lg:col-span-2">
+            <div className="sticky top-6 space-y-4">
+              {/* Tarifa recomendada */}
+              <div className="rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 p-6 text-white">
+                <p className="text-sm font-medium text-brand-100 mb-1">Tarifa recomendada</p>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-lg font-medium">$</span>
+                  <span className="text-6xl font-bold">{recommendedRate}</span>
+                  <span className="text-lg font-medium">USD/h</span>
+                </div>
+                <p className="text-xs text-brand-200">Combinación de tarifa de mercado y sostenible</p>
+
+                <div className="mt-5 border-t border-white/20 pt-4">
+                  <p className="text-sm font-medium text-brand-100 mb-1">Total del proyecto</p>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-sm font-medium">$</span>
+                    <span className="text-3xl font-bold">{projectTotal.toLocaleString()}</span>
+                    <span className="text-sm font-medium">USD</span>
+                  </div>
+                  <p className="text-xs text-brand-200 mt-0.5">Por {hours} {hours === 1 ? "hora" : "horas"} de trabajo</p>
+                </div>
+              </div>
+
+              {/* Desglose */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-800/50 p-5 space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-600">Desglose</p>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Tarifa de mercado</span>
+                    <span className="font-semibold text-gray-200">${marketRate} / hora</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Tarifa sostenible</span>
+                    <span className="font-semibold text-gray-200">${sustainableRate} / hora</span>
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-700 pt-3 space-y-1.5 text-xs text-gray-500">
+                  <div className="flex justify-between">
+                    <span>Horas facturables/año</span>
+                    <span className="font-medium text-gray-400">{annualBillableHours.toLocaleString()} hs</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Ingreso anual necesario</span>
+                    <span className="font-medium text-gray-400">${Math.round(withTaxes).toLocaleString()} USD</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Acciones */}
+              <Button
+                onClick={handleSendToProposal}
+                className="w-full rounded-xl bg-brand-600 hover:bg-brand-700 gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                Armar presupuesto con esta tarifa
+              </Button>
+
+              <Button
+                onClick={handleCopy}
+                variant="outline"
+                className="w-full rounded-xl"
+              >
+                {copied ? (
+                  <><Check className="mr-2 h-4 w-4 text-green-500" /> Copiado</>
+                ) : (
+                  <><Copy className="mr-2 h-4 w-4" /> Copiar resultados</>
+                )}
+              </Button>
+
+              <p className="text-center text-xs text-gray-600">
+                La tarifa recomendada pondera 40% mercado + 60% sostenibilidad
               </p>
             </div>
-
-            {basicSteps[activeStep] && basicSteps[activeStep].content}
-
-            <div className="mt-6 flex justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
-                disabled={activeStep === 0}
-                className="rounded-xl"
-              >
-                Anterior
-              </Button>
-              {activeStep === basicSteps.length - 1 ? (
-                <Button onClick={handleCopy} className="rounded-xl bg-brand-600 hover:bg-brand-700">
-                  {copied ? <Check className="mr-2 h-4 w-4" /> : null}
-                  {copied ? "¡Copiado!" : "Copiar resultados"}
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => {
-                    setActiveStep(Math.min(basicSteps.length - 1, activeStep + 1))
-                  }}
-                  className="rounded-xl bg-brand-600 hover:bg-brand-700"
-                >
-                  Siguiente
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
