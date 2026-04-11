@@ -15,6 +15,19 @@ async function getFiatRates(): Promise<Record<string, number> | null> {
   }
 }
 
+async function getArsBlue(): Promise<number | null> {
+  try {
+    const res = await fetch("https://api.bluelytics.com.ar/v2/latest", {
+      next: { revalidate: 3600 },
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    return data?.blue?.value_avg ?? null
+  } catch {
+    return null
+  }
+}
+
 async function getUsdtPrice(): Promise<number | null> {
   try {
     const res = await fetch(
@@ -36,11 +49,11 @@ function fmt(value: unknown): string {
 }
 
 export default async function InfoBar() {
-  const [fiat, usdt] = await Promise.all([getFiatRates(), getUsdtPrice()])
+  const [fiat, arsBlue, usdt] = await Promise.all([getFiatRates(), getArsBlue(), getUsdtPrice()])
 
   const items: { label: string; value: string; flag: string }[] = []
 
-  if (fiat?.ARS != null) items.push({ label: "ARS", value: `$${fmt(fiat.ARS)}`, flag: "🇦🇷" })
+  if (arsBlue != null) items.push({ label: "ARS (blue)", value: `$${fmt(arsBlue)}`, flag: "🇦🇷" })
   if (fiat?.COP != null) items.push({ label: "COP", value: `$${fmt(fiat.COP)}`, flag: "🇨🇴" })
   if (fiat?.VES != null) items.push({ label: "VES", value: `Bs.${fmt(fiat.VES)}`, flag: "🇻🇪" })
   if (usdt != null) items.push({ label: "USDT", value: `$${fmt(usdt)}`, flag: "₮" })
