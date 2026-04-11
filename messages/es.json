@@ -390,6 +390,22 @@
   },
   "metadata": {
     "title": "finko - Herramientas para freelancers",
-    "description": "Calcula tarifas, genera presupuestos y crea facturas profesionales fácilmente"
+    "description": "Calcula tarifas, genera presupuestos y crea facturas profesionales fácilmente",
+    "calculadora": {
+      "title": "Calculadora de tarifas freelance",
+      "description": "Calculá cuánto cobrar por hora o proyecto según tu categoría, gastos y margen de ganancia"
+    },
+    "presupuestos": {
+      "title": "Generador de presupuestos",
+      "description": "Creá presupuestos profesionales en PDF para enviarte a tus clientes en segundos"
+    },
+    "recibos": {
+      "title": "Generador de facturas",
+      "description": "Generá facturas y recibos profesionales en PDF con tu logo y datos"
+    },
+    "pagos": {
+      "title": "Comparador de plataformas de cobro internacional",
+      "description": "Comparà Wise, Payoneer, PayPal y más para elegir cómo cobrar del exterior con menos comisiones"
+    }
   }
 }

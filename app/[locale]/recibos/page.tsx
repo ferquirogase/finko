@@ -1,5 +1,26 @@
 import { getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
 import { Link } from "@/i18n/navigation"
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "metadata.recibos" })
+  const baseUrl = "https://finkoapp.online"
+  const path = locale === "en" ? "/en/recibos" : "/recibos"
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: {
+      canonical: `${baseUrl}${path}`,
+      languages: { es: `${baseUrl}/recibos`, en: `${baseUrl}/en/recibos` },
+    },
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      url: `${baseUrl}${path}`,
+    },
+  }
+}
 import { IconArrowLeft } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import InvoiceTemplates from "@/components/invoice-templates"

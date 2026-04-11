@@ -1,5 +1,26 @@
 import { getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
 import { Link } from "@/i18n/navigation"
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "metadata.calculadora" })
+  const baseUrl = "https://finkoapp.online"
+  const path = locale === "en" ? "/en/calculadora" : "/calculadora"
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: {
+      canonical: `${baseUrl}${path}`,
+      languages: { es: `${baseUrl}/calculadora`, en: `${baseUrl}/en/calculadora` },
+    },
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      url: `${baseUrl}${path}`,
+    },
+  }
+}
 import { IconArrowLeft } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import PricingCalculator from "@/components/pricing-calculator"

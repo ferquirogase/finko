@@ -1,5 +1,26 @@
 import { getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
 import { Link } from "@/i18n/navigation"
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "metadata.pagos" })
+  const baseUrl = "https://finkoapp.online"
+  const path = locale === "en" ? "/en/pagos-exterior" : "/pagos-exterior"
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: {
+      canonical: `${baseUrl}${path}`,
+      languages: { es: `${baseUrl}/pagos-exterior`, en: `${baseUrl}/en/pagos-exterior` },
+    },
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      url: `${baseUrl}${path}`,
+    },
+  }
+}
 import { IconArrowLeft } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import PaymentMethods from "@/components/payment-methods"

@@ -390,6 +390,22 @@
   },
   "metadata": {
     "title": "finko - Tools for freelancers",
-    "description": "Calculate rates, generate proposals, and create professional invoices easily"
+    "description": "Calculate rates, generate proposals, and create professional invoices easily",
+    "calculadora": {
+      "title": "Freelance rate calculator",
+      "description": "Calculate how much to charge per hour or project based on your category, expenses, and profit margin"
+    },
+    "presupuestos": {
+      "title": "Proposal generator",
+      "description": "Create professional PDF proposals to send to your clients in seconds"
+    },
+    "recibos": {
+      "title": "Invoice generator",
+      "description": "Generate professional PDF invoices and receipts with your logo and details"
+    },
+    "pagos": {
+      "title": "International payment platform comparison",
+      "description": "Compare Wise, Payoneer, PayPal and more to choose how to get paid from abroad with lower fees"
+    }
   }
 }
