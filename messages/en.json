@@ -1,0 +1,395 @@
+{
+  "common": {
+    "backToTools": "Back to tools",
+    "open": "Open",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyText": "Copy text",
+    "copiedText": "Copied!",
+    "exportPDF": "Export PDF",
+    "exporting": "Exporting...",
+    "addItem": "Add item",
+    "noResults": "No results",
+    "preview": "Preview"
+  },
+  "nav": {
+    "tagline": "made by freelancers, for freelancers",
+    "home": "Home",
+    "calculator": "Calculator",
+    "budgets": "Proposals",
+    "receipts": "Invoices",
+    "payments": "Payments"
+  },
+  "hero": {
+    "badge": "100% free · No sign-up required",
+    "title1": "Manage your",
+    "titleHighlight": "freelance",
+    "title2": "career with confidence",
+    "subtitle": "Calculate fair rates, generate professional proposals, and manage your international payments. All in one place.",
+    "ctaCalculate": "Calculate my rate",
+    "ctaBudget": "Create proposal"
+  },
+  "home": {
+    "toolsTitle": "Tools",
+    "whyTitle": "Why use them",
+    "saldo": {
+      "title": "Convert and send digital money in 3 simple steps",
+      "subtitle": "Fast, secure and with the best rates on the market",
+      "bgAlt": "Green textured background"
+    },
+    "tools": {
+      "calculator": {
+        "title": "Rate Calculator",
+        "description": "Determine how much to charge for your services based on your experience, location, and project type."
+      },
+      "proposals": {
+        "title": "Proposal Generator",
+        "description": "Create professional proposals with customizable templates that will impress your clients."
+      },
+      "receipts": {
+        "title": "Invoice Generator",
+        "description": "Generate professional invoices in seconds, ready to send to your clients."
+      },
+      "payments": {
+        "title": "International Payments",
+        "description": "Compare the best platforms to receive international payments and maximize your income."
+      }
+    },
+    "benefits": {
+      "time": {
+        "title": "Save time",
+        "description": "Automate administrative tasks so you can focus on your work."
+      },
+      "income": {
+        "title": "Increase your income",
+        "description": "Set fair rates and justify your value with professional documents."
+      },
+      "professional": {
+        "title": "Professionalize your business",
+        "description": "Impress your clients with well-designed documents and efficient processes."
+      }
+    }
+  },
+  "footer": {
+    "description": "Tools for freelancers that simplify your business. Calculate rates, generate proposals, and create professional invoices.",
+    "coffee": "Did our tools help you? Support us with a coffee!",
+    "coffeeBtn": "Buy us a coffee",
+    "rights": "All rights reserved."
+  },
+  "calculator": {
+    "title": "Rate Calculator",
+    "subtitle": "Calculate how much to charge for your freelance services",
+    "sectionProfile": "Your profile",
+    "workType": "Work type",
+    "searchPlaceholder": "Search work type...",
+    "experience": "Experience",
+    "year": "year",
+    "years": "years",
+    "noExperience": "No experience",
+    "expertLabel": "Expert",
+    "marketLabel": "Market where you offer your services",
+    "sectionProject": "This project",
+    "estimatedHours": "Estimated hours",
+    "estimatedHoursHelp": "Total hours you will dedicate to the project.",
+    "hoursUnit": "hours",
+    "complexity": "Complexity",
+    "complexityLow": "Low",
+    "complexityLowDesc": "Simple task",
+    "complexityMid": "Medium",
+    "complexityMidDesc": "Standard",
+    "complexityHigh": "High",
+    "complexityHighDesc": "Technically complex",
+    "urgent": "Urgent delivery",
+    "urgentDesc": "Adds 30% to the market rate",
+    "sectionNumbers": "My numbers",
+    "monthlyTarget": "Monthly income you need",
+    "monthlyTargetHelp": "Include your desired salary plus fixed expenses (tools, services, etc.).",
+    "usdMonth": "USD/mo",
+    "billableHours": "Billable hours per week",
+    "billableHoursHelp": "Real hours you can charge for. Not all your work time is billable.",
+    "hsSem": "hrs/wk",
+    "advanced": "Advanced settings",
+    "weeksYear": "Weeks/year",
+    "weeksHelp": "Weeks you work per year. 52 minus your vacation time.",
+    "weekUnit": "wk",
+    "taxes": "Taxes",
+    "taxesHelp": "Estimate based on your region. You can adjust to your actual situation.",
+    "suggestedRegion": "Suggested for your region",
+    "margin": "Margin",
+    "marginHelp": "Extra percentage for savings, investment, or unexpected costs.",
+    "recommendedRate": "Recommended rate",
+    "combination": "Combination of market rate and sustainable rate",
+    "projectTotal": "Project total",
+    "forHours": "For {hours} hour of work",
+    "forHoursPlural": "For {hours} hours of work",
+    "breakdown": "Breakdown",
+    "marketRate": "Market rate",
+    "sustainableRate": "Sustainable rate",
+    "perHour": "/ hour",
+    "billableHoursYear": "Billable hours/year",
+    "annualIncome": "Required annual income",
+    "makeProposal": "Create proposal with this rate",
+    "copyResults": "Copy results",
+    "rateNote": "Recommended rate weighs 40% market + 60% sustainability",
+    "selectWork": "Select work type",
+    "regions": {
+      "latam": "Latin America",
+      "usa": "United States",
+      "europe": "Europe",
+      "asia": "Asia"
+    },
+    "expLabels": {
+      "junior": "Junior",
+      "semiSenior": "Mid-level",
+      "senior": "Senior",
+      "expert": "Expert"
+    },
+    "categories": {
+      "development": {
+        "name": "Development",
+        "web": "Web Development",
+        "mobile": "Mobile Development",
+        "software": "Software Development",
+        "game": "Game Development",
+        "blockchain": "Blockchain / Web3"
+      },
+      "design": {
+        "name": "Design",
+        "ui": "UI/UX Design",
+        "graphic": "Graphic Design",
+        "brand": "Branding",
+        "illustration": "Illustration",
+        "animation": "Animation"
+      },
+      "content": {
+        "name": "Content",
+        "writing": "Writing",
+        "translation": "Translation",
+        "editing": "Editing",
+        "audiovisual": "Audiovisual Content",
+        "social": "Social Media"
+      },
+      "marketing": {
+        "name": "Marketing",
+        "digital": "Digital Marketing",
+        "seo": "SEO",
+        "sem": "SEM / Ads",
+        "email": "Email Marketing",
+        "strategy": "Marketing Strategy"
+      },
+      "business": {
+        "name": "Business",
+        "consulting": "Consulting",
+        "analysis": "Data Analysis",
+        "finance": "Finance",
+        "legal": "Legal",
+        "project": "Project Management"
+      }
+    }
+  },
+  "proposals": {
+    "title": "Proposal Generator",
+    "subtitle": "Fill in the fields and download your proposal as PDF",
+    "fieldsOf6": "{filled} of 6 fields completed",
+    "logo": "Your company logo",
+    "logoLoaded": "Logo loaded · saved automatically",
+    "uploadLogo": "Upload logo",
+    "uploadLogoDesc": "PNG, JPG or SVG · Saved in your browser",
+    "clientName": "Client name",
+    "clientNameEx": "E.g.: Company ABC",
+    "projectTitle": "Project title",
+    "projectTitleEx": "E.g.: Website design",
+    "scope": "Project scope",
+    "scopeDesc": "Describe what is included and not included in the project...",
+    "deliverables": "Deliverables",
+    "deliverablesEx": "E.g.: Responsive website",
+    "timeline": "Timeline",
+    "timelineEx": "E.g.: Designs — May 30",
+    "budget": "Budget",
+    "budgetEx": "E.g.: Total cost: $2,500 USD",
+    "terms": "Terms and conditions",
+    "termsEx": "E.g.: 50% upfront to start",
+    "exportPDF": "Export PDF",
+    "exporting": "Exporting...",
+    "previewBtn": "Preview proposal",
+    "previewTitle": "Proposal preview",
+    "previewSubtitle": "This is how your PDF will look when exported",
+    "copyText": "Copy text",
+    "copiedText": "Copied!",
+    "copy": "Copy",
+    "copied": "Copied",
+    "docTitle": "PROJECT PROPOSAL",
+    "docFor": "To:",
+    "docScopeTitle": "Project scope",
+    "docDeliverables": "Deliverables",
+    "docTimeline": "Timeline",
+    "docBudget": "Budget",
+    "docTerms": "Terms and conditions",
+    "docEmpty": "Not specified.",
+    "docClientPlaceholder": "Client name",
+    "docProjectPlaceholder": "Project title",
+    "docScopePlaceholder": "Detailed project description...",
+    "defaultTerms": {
+      "t1": "50% upfront payment to start the project",
+      "t2": "50% upon completion and delivery of the project",
+      "t3": "Includes 2 rounds of revisions",
+      "t4": "Additional changes will be billed hourly"
+    },
+    "prefillType": "Work type: {type}",
+    "prefillRate": "Recommended rate: ${rate} USD/hour",
+    "prefillHours": "Estimated hours: {hours} hours",
+    "prefillTotal": "Project total: ${total} USD",
+    "colors": {
+      "green": "Green",
+      "blue": "Blue",
+      "purple": "Purple",
+      "amber": "Amber",
+      "red": "Red",
+      "gray": "Gray"
+    }
+  },
+  "receipts": {
+    "title": "Invoice Generator",
+    "subtitle": "Fill in the details and download your invoice as PDF",
+    "logo": "Your company logo",
+    "logoLoaded": "Logo loaded · saved automatically",
+    "uploadLogo": "Upload logo",
+    "uploadLogoDesc": "PNG, JPG or SVG · Saved in your browser",
+    "yourData": "Your details",
+    "yourDataAuto": "Saved automatically for next time",
+    "nameOrCompany": "Name or company",
+    "nameEx": "E.g.: John Smith",
+    "yourEmail": "Your email",
+    "taxId": "Tax ID",
+    "client": "Client",
+    "clientName": "Client name",
+    "clientNameEx": "Company ABC",
+    "clientEmail": "Client email",
+    "receiptDetail": "Invoice details",
+    "receiptNumber": "Invoice number",
+    "issueDate": "Issue date",
+    "dueDate": "Due date",
+    "items": "Line items",
+    "addItem": "Add item",
+    "description": "Description",
+    "qty": "Qty.",
+    "unitPrice": "Unit price",
+    "itemDescEx": "E.g.: Logo design",
+    "subtotal": "Subtotal",
+    "vat": "Tax",
+    "total": "Total",
+    "paymentData": "Payment details",
+    "paymentDataAuto": "Saved automatically for next time",
+    "bankOrWallet": "Bank or wallet",
+    "bankEx": "E.g.: PayPal",
+    "accountNumber": "Account No. / Alias",
+    "accountEx": "IBAN, routing or alias",
+    "accountHolder": "Account holder",
+    "holderEx": "E.g.: John Smith",
+    "previewBtn": "Preview invoice",
+    "previewTitle": "Invoice preview",
+    "previewSubtitle": "This is how your PDF will look when exported",
+    "exportPDF": "Export PDF",
+    "exporting": "Exporting...",
+    "progressOf5": "{filled} of 5 fields completed",
+    "docReceipt": "Invoice",
+    "docIssuedTo": "Billed to",
+    "docIssueDate": "Issued:",
+    "docDueDate": "Due:",
+    "docDescriptionHeader": "Description",
+    "docQtyHeader": "Qty.",
+    "docUnitPriceHeader": "Unit price",
+    "docAmountHeader": "Amount",
+    "docBank": "Bank / Wallet:",
+    "docAccount": "Account:",
+    "docHolder": "Holder:",
+    "docPaymentData": "Payment details",
+    "docThankYou": "Thank you for your business!",
+    "docDescPlaceholder": "Service description",
+    "docClientPlaceholder": "Client name",
+    "docIssuerPlaceholder": "Your Name or Company",
+    "colors": {
+      "purple": "Purple",
+      "blue": "Blue",
+      "green": "Green",
+      "amber": "Amber",
+      "red": "Red",
+      "gray": "Gray"
+    }
+  },
+  "payments": {
+    "title": "How to receive international payments",
+    "subtitle": "Enter the amount to receive and we'll show you how much arrives with each platform, sorted from best to worst",
+    "howMuch": "How much are you receiving?",
+    "disclaimer": "Result includes transaction fee, exchange rate, and withdrawal cost",
+    "bestOption": "Best option for this amount",
+    "fee": "Fee:",
+    "withdrawal": "Withdrawal:",
+    "youReceive": "You receive",
+    "youLose": "you lose {pct}% ({amount} USD)",
+    "goTo": "Go to {name}",
+    "footerNote": "Fees are approximate and may vary by country, withdrawal method, and transaction volume.",
+    "processingTimes": {
+      "wise": "1-2 business days",
+      "payoneer": "2-5 business days",
+      "skrill": "1-3 business days",
+      "paypal": "2-3 business days"
+    },
+    "platforms": {
+      "wise": {
+        "tagline": "The cheapest for transfers",
+        "pro1": "Lowest fees on the market",
+        "pro2": "Exchange rate very close to mid-market",
+        "pro3": "Full cost transparency",
+        "con1": "Less well-known than PayPal",
+        "con2": "No buyer protection",
+        "con3": "Stricter verification"
+      },
+      "payoneer": {
+        "tagline": "Ideal for marketplaces and freelancers",
+        "pro1": "Debit card available",
+        "pro2": "Widely used on global marketplaces",
+        "pro3": "Covers 200+ countries",
+        "con1": "Moderate fees",
+        "con2": "Variable customer support",
+        "con3": "Inactivity charges"
+      },
+      "skrill": {
+        "tagline": "Good fee / speed ratio",
+        "pro1": "Fast transfers",
+        "pro2": "Prepaid card available",
+        "pro3": "Wide global acceptance",
+        "con1": "Inactivity fees",
+        "con2": "Strict identity verification",
+        "con3": "Limited customer support"
+      },
+      "paypal": {
+        "tagline": "The most known, but the most expensive",
+        "pro1": "Widely accepted globally",
+        "pro2": "Easy to use",
+        "pro3": "Brand recognition",
+        "con1": "Highest fees",
+        "con2": "Occasional fund holds",
+        "con3": "Unfavorable exchange rate"
+      }
+    },
+    "faqTitle": "Frequently asked questions",
+    "faqSubtitle": "Everything you need to know about international payments",
+    "faq": {
+      "q1": "What documentation do I need to receive international payments?",
+      "a1": "You typically need official identification (passport or national ID), proof of address, and depending on the platform, your tax ID number. Some platforms may require additional documentation to comply with anti-money laundering regulations (KYC).",
+      "q2": "How do taxes affect my international payments?",
+      "a2": "International payments may be subject to taxes in your country. We recommend consulting with an accountant to understand your obligations based on your tax situation.",
+      "q3": "What is the fastest way to receive payments?",
+      "a3": "Wise and Skrill usually process in 1-2 business days. PayPal can be faster for initial deposits, but withdrawals to bank accounts take longer. If you need the money quickly, Payoneer and Skrill offer debit cards to use the funds immediately.",
+      "q4": "How can I reduce fees?",
+      "a4": "Some strategies: use Wise for large transfers (the percentage fee is the lowest), consolidate small payments into larger transfers so the fixed withdrawal cost has less impact, and talk with your clients about using platforms with lower sending costs.",
+      "q5": "Can I have accounts on multiple platforms at the same time?",
+      "a5": "Yes, and it's recommended. Many freelancers use Wise for European clients (for the exchange rate), Payoneer for marketplaces like Upwork or Fiverr, and PayPal as a backup option for clients who don't use other platforms."
+    }
+  },
+  "metadata": {
+    "title": "finko - Tools for freelancers",
+    "description": "Calculate rates, generate proposals, and create professional invoices easily"
+  }
+}

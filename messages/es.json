@@ -1,0 +1,395 @@
+{
+  "common": {
+    "backToTools": "Volver a herramientas",
+    "open": "Abrir",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "copyText": "Copiar texto",
+    "copiedText": "¡Copiado!",
+    "exportPDF": "Exportar PDF",
+    "exporting": "Exportando...",
+    "addItem": "Agregar ítem",
+    "noResults": "Sin resultados",
+    "preview": "Vista previa"
+  },
+  "nav": {
+    "tagline": "hecho por freelancers, para freelancers",
+    "home": "Inicio",
+    "calculator": "Calculadora",
+    "budgets": "Presupuestos",
+    "receipts": "Recibos",
+    "payments": "Pagos"
+  },
+  "hero": {
+    "badge": "100% gratis · Sin registro requerido",
+    "title1": "Gestioná tu carrera",
+    "titleHighlight": "freelance",
+    "title2": "con confianza",
+    "subtitle": "Calculá tarifas justas, generá presupuestos profesionales y administrá tus cobros del exterior. Todo en un solo lugar.",
+    "ctaCalculate": "Calcular mi tarifa",
+    "ctaBudget": "Generar presupuesto"
+  },
+  "home": {
+    "toolsTitle": "Herramientas",
+    "whyTitle": "Por qué usarlas",
+    "saldo": {
+      "title": "Convierte y envía dinero digital en 3 simples pasos",
+      "subtitle": "Rápido, seguro y con las mejores tasas del mercado",
+      "bgAlt": "Fondo verde texturizado"
+    },
+    "tools": {
+      "calculator": {
+        "title": "Calculadora de Tarifas",
+        "description": "Determiná cuánto cobrar por tus servicios basado en tu experiencia, ubicación y tipo de proyecto."
+      },
+      "proposals": {
+        "title": "Generador de Presupuestos",
+        "description": "Creá presupuestos profesionales con plantillas personalizables que impresionarán a tus clientes."
+      },
+      "receipts": {
+        "title": "Generador de Recibos",
+        "description": "Generá facturas y recibos profesionales en segundos, listos para enviar a tus clientes."
+      },
+      "payments": {
+        "title": "Cobros del Exterior",
+        "description": "Comparar las mejores plataformas para recibir pagos internacionales y maximizar tus ingresos."
+      }
+    },
+    "benefits": {
+      "time": {
+        "title": "Ahorrá tiempo",
+        "description": "Automatizá tareas administrativas para enfocarte en tu trabajo."
+      },
+      "income": {
+        "title": "Aumentá tus ingresos",
+        "description": "Establecé tarifas justas y justificá tu valor con documentos profesionales."
+      },
+      "professional": {
+        "title": "Profesionalizá tu negocio",
+        "description": "Impresioná a tus clientes con documentos bien diseñados y procesos eficientes."
+      }
+    }
+  },
+  "footer": {
+    "description": "Herramientas para freelancers que simplifican tu negocio. Calcula tarifas, genera presupuestos y crea facturas profesionales.",
+    "coffee": "¿Te resultaron útiles nuestras herramientas? ¡Invítanos a un cafecito!",
+    "coffeeBtn": "Invitar un cafecito",
+    "rights": "Todos los derechos reservados."
+  },
+  "calculator": {
+    "title": "Calculadora de Tarifas",
+    "subtitle": "Calculá cuánto cobrar por tus servicios freelance",
+    "sectionProfile": "Tu perfil",
+    "workType": "Tipo de trabajo",
+    "searchPlaceholder": "Buscar tipo de trabajo...",
+    "experience": "Experiencia",
+    "year": "año",
+    "years": "años",
+    "noExperience": "Sin experiencia",
+    "expertLabel": "Experto",
+    "marketLabel": "Mercado donde ofrecés tus servicios",
+    "sectionProject": "Este proyecto",
+    "estimatedHours": "Horas estimadas",
+    "estimatedHoursHelp": "Total de horas que dedicarás al proyecto.",
+    "hoursUnit": "horas",
+    "complexity": "Complejidad",
+    "complexityLow": "Baja",
+    "complexityLowDesc": "Tarea simple",
+    "complexityMid": "Media",
+    "complexityMidDesc": "Estándar",
+    "complexityHigh": "Alta",
+    "complexityHighDesc": "Técnicamente complejo",
+    "urgent": "Entrega urgente",
+    "urgentDesc": "Suma un 30% a la tarifa de mercado",
+    "sectionNumbers": "Mis números",
+    "monthlyTarget": "Ingreso mensual que necesitás",
+    "monthlyTargetHelp": "Incluí tu sueldo deseado más tus gastos fijos (herramientas, servicios, etc.).",
+    "usdMonth": "USD/mes",
+    "billableHours": "Horas facturables por semana",
+    "billableHoursHelp": "Horas reales que podés cobrar. No todo tu tiempo de trabajo es facturable.",
+    "hsSem": "hs/sem",
+    "advanced": "Configuración avanzada",
+    "weeksYear": "Semanas/año",
+    "weeksHelp": "Semanas que trabajás al año. 52 menos tus vacaciones.",
+    "weekUnit": "sem",
+    "taxes": "Impuestos",
+    "taxesHelp": "Estimación según tu región. Podés ajustarlo a tu situación real.",
+    "suggestedRegion": "Sugerido para tu región",
+    "margin": "Margen",
+    "marginHelp": "Porcentaje extra para ahorro, inversión o imprevistos.",
+    "recommendedRate": "Tarifa recomendada",
+    "combination": "Combinación de tarifa de mercado y sostenible",
+    "projectTotal": "Total del proyecto",
+    "forHours": "Por {hours} hora de trabajo",
+    "forHoursPlural": "Por {hours} horas de trabajo",
+    "breakdown": "Desglose",
+    "marketRate": "Tarifa de mercado",
+    "sustainableRate": "Tarifa sostenible",
+    "perHour": "/ hora",
+    "billableHoursYear": "Horas facturables/año",
+    "annualIncome": "Ingreso anual necesario",
+    "makeProposal": "Armar presupuesto con esta tarifa",
+    "copyResults": "Copiar resultados",
+    "rateNote": "La tarifa recomendada pondera 40% mercado + 60% sostenibilidad",
+    "selectWork": "Selecciona el tipo de trabajo",
+    "regions": {
+      "latam": "Latinoamérica",
+      "usa": "Estados Unidos",
+      "europe": "Europa",
+      "asia": "Asia"
+    },
+    "expLabels": {
+      "junior": "Junior",
+      "semiSenior": "Semi-senior",
+      "senior": "Senior",
+      "expert": "Experto"
+    },
+    "categories": {
+      "development": {
+        "name": "Desarrollo",
+        "web": "Desarrollo Web",
+        "mobile": "Desarrollo Móvil",
+        "software": "Desarrollo de Software",
+        "game": "Desarrollo de Videojuegos",
+        "blockchain": "Blockchain / Web3"
+      },
+      "design": {
+        "name": "Diseño",
+        "ui": "Diseño UI/UX",
+        "graphic": "Diseño Gráfico",
+        "brand": "Branding",
+        "illustration": "Ilustración",
+        "animation": "Animación"
+      },
+      "content": {
+        "name": "Contenido",
+        "writing": "Redacción",
+        "translation": "Traducción",
+        "editing": "Edición",
+        "audiovisual": "Contenido Audiovisual",
+        "social": "Redes Sociales"
+      },
+      "marketing": {
+        "name": "Marketing",
+        "digital": "Marketing Digital",
+        "seo": "SEO",
+        "sem": "SEM / Ads",
+        "email": "Email Marketing",
+        "strategy": "Estrategia de Marketing"
+      },
+      "business": {
+        "name": "Negocios",
+        "consulting": "Consultoría",
+        "analysis": "Análisis de Datos",
+        "finance": "Finanzas",
+        "legal": "Legal",
+        "project": "Gestión de Proyectos"
+      }
+    }
+  },
+  "proposals": {
+    "title": "Generador de Presupuestos",
+    "subtitle": "Completá los campos y descargá tu propuesta en PDF",
+    "fieldsOf6": "{filled} de 6 campos completos",
+    "logo": "Logo de tu empresa",
+    "logoLoaded": "Logo cargado · se guarda automáticamente",
+    "uploadLogo": "Subir logo",
+    "uploadLogoDesc": "PNG, JPG o SVG · Se guarda en tu navegador",
+    "clientName": "Nombre del cliente",
+    "clientNameEx": "Ej: Empresa ABC",
+    "projectTitle": "Título del proyecto",
+    "projectTitleEx": "Ej: Diseño de sitio web",
+    "scope": "Alcance del proyecto",
+    "scopeDesc": "Describí qué incluye y qué no incluye el proyecto...",
+    "deliverables": "Entregables",
+    "deliverablesEx": "Ej: Sitio web responsive",
+    "timeline": "Cronograma",
+    "timelineEx": "Ej: Diseños — 30 de mayo",
+    "budget": "Presupuesto",
+    "budgetEx": "Ej: Costo total: $2,500 USD",
+    "terms": "Términos y condiciones",
+    "termsEx": "Ej: 50% de anticipo al inicio",
+    "exportPDF": "Exportar PDF",
+    "exporting": "Exportando...",
+    "previewBtn": "Ver vista previa del presupuesto",
+    "previewTitle": "Vista previa del presupuesto",
+    "previewSubtitle": "Así se verá tu PDF al exportarlo",
+    "copyText": "Copiar texto",
+    "copiedText": "¡Copiado!",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "docTitle": "PROPUESTA DE PROYECTO",
+    "docFor": "Para:",
+    "docScopeTitle": "Alcance del proyecto",
+    "docDeliverables": "Entregables",
+    "docTimeline": "Cronograma",
+    "docBudget": "Presupuesto",
+    "docTerms": "Términos y condiciones",
+    "docEmpty": "Sin especificar.",
+    "docClientPlaceholder": "Nombre del cliente",
+    "docProjectPlaceholder": "Título del proyecto",
+    "docScopePlaceholder": "Descripción detallada del proyecto...",
+    "defaultTerms": {
+      "t1": "50% de pago inicial para comenzar el proyecto",
+      "t2": "50% al finalizar y entregar el proyecto",
+      "t3": "Incluye 2 rondas de revisiones",
+      "t4": "Cambios adicionales se facturarán por hora"
+    },
+    "prefillType": "Tipo de trabajo: {type}",
+    "prefillRate": "Tarifa recomendada: ${rate} USD/hora",
+    "prefillHours": "Horas estimadas: {hours} horas",
+    "prefillTotal": "Total del proyecto: ${total} USD",
+    "colors": {
+      "green": "Verde",
+      "blue": "Azul",
+      "purple": "Púrpura",
+      "amber": "Ámbar",
+      "red": "Rojo",
+      "gray": "Gris"
+    }
+  },
+  "receipts": {
+    "title": "Generador de Recibos",
+    "subtitle": "Completá los datos y descargá tu recibo en PDF",
+    "logo": "Logo de tu empresa",
+    "logoLoaded": "Logo cargado · se guarda automáticamente",
+    "uploadLogo": "Subir logo",
+    "uploadLogoDesc": "PNG, JPG o SVG · Se guarda en tu navegador",
+    "yourData": "Tus datos",
+    "yourDataAuto": "Se guardan automáticamente para la próxima vez",
+    "nameOrCompany": "Nombre o empresa",
+    "nameEx": "Ej: Juan Pérez",
+    "yourEmail": "Tu email",
+    "taxId": "CUIT/CUIL",
+    "client": "Cliente",
+    "clientName": "Nombre del cliente",
+    "clientNameEx": "Empresa ABC",
+    "clientEmail": "Email del cliente",
+    "receiptDetail": "Detalle del recibo",
+    "receiptNumber": "Número de recibo",
+    "issueDate": "Fecha de emisión",
+    "dueDate": "Fecha de vencimiento",
+    "items": "Conceptos",
+    "addItem": "Agregar concepto",
+    "description": "Descripción",
+    "qty": "Cant.",
+    "unitPrice": "Precio unit.",
+    "itemDescEx": "Ej: Diseño de logotipo",
+    "subtotal": "Subtotal",
+    "vat": "IVA",
+    "total": "Total",
+    "paymentData": "Datos para el pago",
+    "paymentDataAuto": "Se guardan automáticamente para la próxima vez",
+    "bankOrWallet": "Banco o billetera",
+    "bankEx": "Ej: Mercado Pago",
+    "accountNumber": "N° de cuenta / Alias",
+    "accountEx": "CBU, CVU o Alias",
+    "accountHolder": "Titular de la cuenta",
+    "holderEx": "Ej: Juan Pérez",
+    "previewBtn": "Ver vista previa del recibo",
+    "previewTitle": "Vista previa del recibo",
+    "previewSubtitle": "Así se verá tu PDF al exportarlo",
+    "exportPDF": "Exportar PDF",
+    "exporting": "Exportando...",
+    "progressOf5": "{filled} de 5 campos completos",
+    "docReceipt": "Recibo",
+    "docIssuedTo": "Facturado a",
+    "docIssueDate": "Emisión:",
+    "docDueDate": "Vencimiento:",
+    "docDescriptionHeader": "Descripción",
+    "docQtyHeader": "Cant.",
+    "docUnitPriceHeader": "Precio unit.",
+    "docAmountHeader": "Importe",
+    "docBank": "Banco / Billetera:",
+    "docAccount": "Cuenta:",
+    "docHolder": "Titular:",
+    "docPaymentData": "Datos para el pago",
+    "docThankYou": "¡Gracias por tu preferencia!",
+    "docDescPlaceholder": "Descripción del servicio",
+    "docClientPlaceholder": "Nombre del cliente",
+    "docIssuerPlaceholder": "Tu Nombre o Empresa",
+    "colors": {
+      "purple": "Púrpura",
+      "blue": "Azul",
+      "green": "Verde",
+      "amber": "Ámbar",
+      "red": "Rojo",
+      "gray": "Gris"
+    }
+  },
+  "payments": {
+    "title": "Cómo cobrar del exterior",
+    "subtitle": "Ingresá el monto a cobrar y te mostramos cuánto te llega con cada plataforma, ordenado de mejor a peor",
+    "howMuch": "¿Cuánto vas a cobrar?",
+    "disclaimer": "El resultado incluye comisión de transacción, tipo de cambio y costo de retiro",
+    "bestOption": "Mejor opción para este monto",
+    "fee": "Comisión:",
+    "withdrawal": "Retiro:",
+    "youReceive": "Recibís",
+    "youLose": "perdés {pct}% ({amount} USD)",
+    "goTo": "Ir a {name}",
+    "footerNote": "Las comisiones son aproximadas y pueden variar según el país, el método de retiro y el volumen de transacciones.",
+    "processingTimes": {
+      "wise": "1-2 días hábiles",
+      "payoneer": "2-5 días hábiles",
+      "skrill": "1-3 días hábiles",
+      "paypal": "2-3 días hábiles"
+    },
+    "platforms": {
+      "wise": {
+        "tagline": "La más barata para transferencias",
+        "pro1": "Comisiones más bajas del mercado",
+        "pro2": "Tipo de cambio muy cercano al oficial",
+        "pro3": "Transparencia total en costos",
+        "con1": "Menos conocida que PayPal",
+        "con2": "Sin protección al comprador",
+        "con3": "Verificación más estricta"
+      },
+      "payoneer": {
+        "tagline": "Ideal para marketplaces y freelancers",
+        "pro1": "Tarjeta de débito disponible",
+        "pro2": "Muy usada en marketplaces globales",
+        "pro3": "Cubre más de 200 países",
+        "con1": "Comisiones moderadas",
+        "con2": "Atención al cliente variable",
+        "con3": "Cargos por inactividad"
+      },
+      "skrill": {
+        "tagline": "Buena relación comisión / velocidad",
+        "pro1": "Transferencias rápidas",
+        "pro2": "Tarjeta prepagada disponible",
+        "pro3": "Amplia aceptación global",
+        "con1": "Comisiones por inactividad",
+        "con2": "Verificación de identidad estricta",
+        "con3": "Soporte al cliente limitado"
+      },
+      "paypal": {
+        "tagline": "El más conocido, pero el más caro",
+        "pro1": "Ampliamente aceptado globalmente",
+        "pro2": "Fácil de usar",
+        "pro3": "Reconocimiento de marca",
+        "con1": "Las comisiones más altas",
+        "con2": "Retención de fondos ocasional",
+        "con3": "Tipo de cambio desfavorable"
+      }
+    },
+    "faqTitle": "Preguntas frecuentes",
+    "faqSubtitle": "Todo lo que necesitás saber sobre cobros del exterior",
+    "faq": {
+      "q1": "¿Qué documentación necesito para recibir pagos del exterior?",
+      "a1": "Generalmente necesitás identificación oficial (DNI o pasaporte), comprobante de domicilio y, según la plataforma, tu número de CUIT/CUIL. Algunas plataformas pueden pedir documentación adicional para cumplir con regulaciones contra el lavado de dinero (KYC).",
+      "q2": "¿Cómo afectan los impuestos a mis cobros internacionales?",
+      "a2": "Los pagos del exterior pueden estar sujetos a impuestos en Argentina. Si sos monotributista o responsable inscripto, debés declarar estos ingresos. Te recomendamos consultar con un contador para entender tus obligaciones según tu situación fiscal.",
+      "q3": "¿Cuál es la forma más rápida de recibir pagos?",
+      "a3": "Wise y Skrill suelen procesar en 1-2 días hábiles. PayPal puede ser más rápido para la acreditación inicial, pero los retiros a cuenta bancaria demoran más. Si necesitás el dinero rápido, Payoneer y Skrill ofrecen tarjetas de débito para usar los fondos de inmediato.",
+      "q4": "¿Cómo puedo reducir las comisiones?",
+      "a4": "Algunas estrategias: usá Wise para transferencias grandes (la comisión porcentual es la más baja), consolidá pagos chicos en transferencias más grandes para que el costo fijo de retiro impacte menos, y hablá con tus clientes para que usen plataformas con menores costos de envío.",
+      "q5": "¿Puedo tener cuentas en varias plataformas a la vez?",
+      "a5": "Sí, y es lo recomendable. Muchos freelancers usan Wise para clientes europeos (por el tipo de cambio), Payoneer para marketplaces como Upwork o Fiverr, y PayPal como opción de respaldo para clientes que no usan otras plataformas."
+    }
+  },
+  "metadata": {
+    "title": "finko - Herramientas para freelancers",
+    "description": "Calcula tarifas, genera presupuestos y crea facturas profesionales fácilmente"
+  }
+}

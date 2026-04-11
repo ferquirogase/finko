@@ -1,13 +1,14 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link, usePathname } from "@/i18n/navigation"
 import { IconHome, IconCalculator, IconFileText, IconCreditCard, IconCurrencyDollar } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 
 export default function BottomNav() {
   const pathname = usePathname()
+  const t = useTranslations("nav")
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -25,11 +26,11 @@ export default function BottomNav() {
   }, [scrolled])
 
   const navItems = [
-    { name: "Inicio",       href: "/",              icon: IconHome },
-    { name: "Calculadora",  href: "/calculadora",   icon: IconCalculator },
-    { name: "Presupuestos", href: "/presupuestos",  icon: IconFileText },
-    { name: "Recibos",      href: "/recibos",       icon: IconCreditCard },
-    { name: "Pagos",        href: "/pagos-exterior", icon: IconCurrencyDollar },
+    { nameKey: "home",       href: "/",               icon: IconHome },
+    { nameKey: "calculator", href: "/calculadora",    icon: IconCalculator },
+    { nameKey: "budgets",    href: "/presupuestos",   icon: IconFileText },
+    { nameKey: "receipts",   href: "/recibos",        icon: IconCreditCard },
+    { nameKey: "payments",   href: "/pagos-exterior", icon: IconCurrencyDollar },
   ]
 
   return (
@@ -44,7 +45,7 @@ export default function BottomNav() {
           const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
 
           return (
-            <Link key={item.name} href={item.href} className="group flex flex-col items-center justify-center">
+            <Link key={item.nameKey} href={item.href} className="group flex flex-col items-center justify-center">
               <div
                 className={cn(
                   "flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200",
@@ -61,7 +62,7 @@ export default function BottomNav() {
                   isActive ? "text-brand-400" : "text-gray-500 group-hover:text-brand-400",
                 )}
               >
-                {item.name}
+                {t(item.nameKey as any)}
               </span>
             </Link>
           )

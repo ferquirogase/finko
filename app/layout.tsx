@@ -9,24 +9,13 @@ const outfit = Outfit({
   display: "swap",
 })
 
-export const metadata = {
-  title: "finko - Herramientas para freelancers",
-  description: "Calcula tarifas, genera presupuestos y crea facturas profesionales fácilmente",
-  icons: {
-    icon: [{ url: "/finko-fav.png" }, { url: "/icon.png" }],
-    apple: [{ url: "/pwa/apple-icon-180.png" }],
-  },
-  manifest: "/manifest.json",
-    generator: 'v0.dev'
-}
-
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <html lang="es" className="dark">
+    <html className="dark" suppressHydrationWarning>
       <head>
         {/* Google Analytics */}
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-WJQ2C9VR70" strategy="afterInteractive" />
@@ -53,7 +42,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Schema.org markup para SEO */}
+        {/* Schema.org markup */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -65,20 +54,11 @@ export default function RootLayout({
               description: "Calcula tarifas, genera presupuestos y crea facturas profesionales fácilmente",
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
-              offers: {
-                "@type": "Offer",
-                price: "0",
-                priceCurrency: "USD",
-              },
-              author: {
-                "@type": "Person",
-                name: "Fernando Quiroga",
-              },
+              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+              author: { "@type": "Person", name: "Fernando Quiroga" },
             }),
           }}
         />
-
-        {/* Schema.org markup para Organization */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -93,7 +73,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={outfit.className}>{children}</body>
+      <body className={outfit.className} suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   )
 }

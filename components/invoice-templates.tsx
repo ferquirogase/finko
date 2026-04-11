@@ -6,36 +6,29 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog"
 import {
-  CreditCard,
-  Plus,
-  Trash2,
-  FileDown,
-  Palette,
-  Eye,
-  ImagePlus,
-  X,
+  CreditCard, Plus, Trash2, FileDown, Palette, Eye, ImagePlus, X,
 } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useLocale } from "next-intl"
 
 // ── Colores ────────────────────────────────────────────────────────────────
-const colorOptions = [
-  { id: "purple", name: "Púrpura", primary: "text-purple-700", secondary: "text-purple-600", border: "border-purple-100", bg: "bg-purple-50", hex: "#8b5cf6" },
-  { id: "blue",   name: "Azul",    primary: "text-blue-700",   secondary: "text-blue-600",   border: "border-blue-100",   bg: "bg-blue-50",   hex: "#3b82f6" },
-  { id: "green",  name: "Verde",   primary: "text-green-700",  secondary: "text-green-600",  border: "border-green-100",  bg: "bg-green-50",  hex: "#10b981" },
-  { id: "amber",  name: "Ámbar",   primary: "text-amber-700",  secondary: "text-amber-600",  border: "border-amber-100",  bg: "bg-amber-50",  hex: "#f59e0b" },
-  { id: "red",    name: "Rojo",    primary: "text-red-700",    secondary: "text-red-600",    border: "border-red-100",    bg: "bg-red-50",    hex: "#ef4444" },
-  { id: "gray",   name: "Gris",    primary: "text-gray-700",   secondary: "text-gray-600",   border: "border-gray-200",   bg: "bg-gray-50",   hex: "#6b7280" },
-]
+const COLOR_IDS = ["purple", "blue", "green", "amber", "red", "gray"] as const
+type ColorId = typeof COLOR_IDS[number]
 
-type Color = typeof colorOptions[number]
-type Item  = { description: string; quantity: number; price: number }
+const COLOR_STYLES: Record<ColorId, { primary: string; secondary: string; border: string; bg: string; hex: string }> = {
+  purple: { primary: "text-purple-700", secondary: "text-purple-600", border: "border-purple-100", bg: "bg-purple-50", hex: "#8b5cf6" },
+  blue:   { primary: "text-blue-700",   secondary: "text-blue-600",   border: "border-blue-100",   bg: "bg-blue-50",   hex: "#3b82f6" },
+  green:  { primary: "text-green-700",  secondary: "text-green-600",  border: "border-green-100",  bg: "bg-green-50",  hex: "#10b981" },
+  amber:  { primary: "text-amber-700",  secondary: "text-amber-600",  border: "border-amber-100",  bg: "bg-amber-50",  hex: "#f59e0b" },
+  red:    { primary: "text-red-700",    secondary: "text-red-600",    border: "border-red-100",    bg: "bg-red-50",    hex: "#ef4444" },
+  gray:   { primary: "text-gray-700",   secondary: "text-gray-600",   border: "border-gray-200",   bg: "bg-gray-50",   hex: "#6b7280" },
+}
 
-// ── Toggle compacto para visibilidad de campos ─────────────────────────────
+type Item = { description: string; quantity: number; price: number }
+
 function FieldToggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <Switch
@@ -46,7 +39,7 @@ function FieldToggle({ checked, onChange }: { checked: boolean; onChange: (v: bo
   )
 }
 
-// ── Documento del recibo (siempre blanco — para PDF) ──────────────────────
+// ── Documento del recibo ──────────────────────────────────────────────────
 function ReceiptDocument({
   innerRef,
   issuerName, issuerEmail, issuerTaxId,
@@ -55,23 +48,25 @@ function ReceiptDocument({
   invoiceNumber, issueDate, dueDate, showDueDate,
   items, taxRate, showTax,
   bankName, accountIdentifier, accountHolder,
-  selectedColor, logo,
+  selectedColor, logo, locale, t,
 }: {
   innerRef?: React.RefObject<HTMLDivElement | null>
-  issuerName: string;   issuerEmail: string;  issuerTaxId: string
+  issuerName: string; issuerEmail: string; issuerTaxId: string
   showIssuerEmail: boolean; showIssuerTaxId: boolean
-  clientName: string;   clientEmail: string;  showClientEmail: boolean
-  invoiceNumber: string; issueDate: string;   dueDate: string; showDueDate: boolean
-  items: Item[];        taxRate: number;      showTax: boolean
-  bankName: string;     accountIdentifier: string; accountHolder: string
-  selectedColor: Color; logo: string | null
+  clientName: string; clientEmail: string; showClientEmail: boolean
+  invoiceNumber: string; issueDate: string; dueDate: string; showDueDate: boolean
+  items: Item[]; taxRate: number; showTax: boolean
+  bankName: string; accountIdentifier: string; accountHolder: string
+  selectedColor: typeof COLOR_STYLES[ColorId]; logo: string | null
+  locale: string; t: (key: string, values?: Record<string, string | number>) => string
 }) {
-  const subtotal = items.reduce((t, i) => t + i.quantity * i.price, 0)
+  const subtotal = items.reduce((s, i) => s + i.quantity * i.price, 0)
   const tax      = showTax ? subtotal * (taxRate / 100) : 0
   const total    = subtotal + tax
 
+  const dateLocale = locale === "en" ? "en-US" : "es-AR"
   const formatDate = (d: string) =>
-    d ? new Date(d + "T00:00:00").toLocaleDateString("es-AR") : new Date().toLocaleDateString("es-AR")
+    d ? new Date(d + "T00:00:00").toLocaleDateString(dateLocale) : "—"
 
   return (
     <div ref={innerRef} className={`rounded-3xl border ${selectedColor.border} bg-white p-8`}>
@@ -79,26 +74,20 @@ function ReceiptDocument({
       {/* Encabezado */}
       <div className={`mb-8 flex items-start justify-between border-b ${selectedColor.border} pb-6`}>
         <div>
-          {logo && (
-            <img src={logo} alt="Logo" className="mb-3 h-12 max-w-[140px] object-contain" />
-          )}
+          {logo && <img src={logo} alt="Logo" className="mb-3 h-12 max-w-[140px] object-contain" />}
           <h1 className={`text-2xl font-bold ${selectedColor.primary}`}>
-            {issuerName || "Tu Nombre o Empresa"}
+            {issuerName || t("docIssuerPlaceholder")}
           </h1>
-          {showIssuerEmail && (
-            <p className="text-sm text-gray-500">{issuerEmail || "tu@email.com"}</p>
-          )}
-          {showIssuerTaxId && (
-            <p className="text-sm text-gray-500">CUIT/CUIL: {issuerTaxId || "20-XXXXXXXX-X"}</p>
-          )}
+          {showIssuerEmail && <p className="text-sm text-gray-500">{issuerEmail || "tu@email.com"}</p>}
+          {showIssuerTaxId && <p className="text-sm text-gray-500">{t("taxId")}: {issuerTaxId || "—"}</p>}
         </div>
 
         <div className="text-right">
-          <p className={`text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>Recibo</p>
+          <p className={`text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>{t("docReceipt")}</p>
           <p className={`text-3xl font-bold ${selectedColor.primary}`}>N° {invoiceNumber || "001"}</p>
-          <p className="mt-2 text-sm text-gray-500">Emisión: {formatDate(issueDate)}</p>
+          <p className="mt-2 text-sm text-gray-500">{t("docIssueDate")} {formatDate(issueDate)}</p>
           {showDueDate && dueDate && (
-            <p className="text-sm text-gray-500">Vencimiento: {formatDate(dueDate)}</p>
+            <p className="text-sm text-gray-500">{t("docDueDate")} {formatDate(dueDate)}</p>
           )}
         </div>
       </div>
@@ -106,41 +95,29 @@ function ReceiptDocument({
       {/* Cliente */}
       <div className={`mb-6 inline-block rounded-xl ${selectedColor.bg} px-4 py-3`}>
         <p className={`text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>
-          Facturado a
+          {t("docIssuedTo")}
         </p>
-        <p className="mt-0.5 font-semibold text-gray-800">{clientName || "Nombre del cliente"}</p>
-        {showClientEmail && (
-          <p className="text-sm text-gray-500">{clientEmail || "cliente@email.com"}</p>
-        )}
+        <p className="mt-0.5 font-semibold text-gray-800">{clientName || t("docClientPlaceholder")}</p>
+        {showClientEmail && <p className="text-sm text-gray-500">{clientEmail || "cliente@email.com"}</p>}
       </div>
 
       {/* Tabla de conceptos */}
       <table className="mb-6 w-full text-sm">
         <thead>
           <tr className={`border-b-2 ${selectedColor.border}`}>
-            <th className={`pb-2 text-left text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>
-              Descripción
-            </th>
-            <th className={`pb-2 text-center text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>
-              Cant.
-            </th>
-            <th className={`pb-2 text-right text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>
-              Precio unit.
-            </th>
-            <th className={`pb-2 text-right text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>
-              Importe
-            </th>
+            <th className={`pb-2 text-left text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>{t("docDescriptionHeader")}</th>
+            <th className={`pb-2 text-center text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>{t("docQtyHeader")}</th>
+            <th className={`pb-2 text-right text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>{t("docUnitPriceHeader")}</th>
+            <th className={`pb-2 text-right text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>{t("docAmountHeader")}</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item, i) => (
             <tr key={i} className={`border-b ${selectedColor.border}`}>
-              <td className="py-3 text-gray-700">{item.description || "Descripción del servicio"}</td>
+              <td className="py-3 text-gray-700">{item.description || t("docDescPlaceholder")}</td>
               <td className="py-3 text-center text-gray-500">{item.quantity}</td>
               <td className="py-3 text-right text-gray-500">${item.price.toFixed(2)}</td>
-              <td className="py-3 text-right font-medium text-gray-800">
-                ${(item.quantity * item.price).toFixed(2)}
-              </td>
+              <td className="py-3 text-right font-medium text-gray-800">${(item.quantity * item.price).toFixed(2)}</td>
             </tr>
           ))}
         </tbody>
@@ -150,17 +127,17 @@ function ReceiptDocument({
       <div className="flex justify-end">
         <div className={`w-56 space-y-2 rounded-xl ${selectedColor.bg} p-4 text-sm`}>
           <div className="flex justify-between text-gray-600">
-            <span>Subtotal</span>
+            <span>{t("subtotal")}</span>
             <span>${subtotal.toFixed(2)}</span>
           </div>
           {showTax && (
             <div className="flex justify-between text-gray-600">
-              <span>IVA ({taxRate}%)</span>
+              <span>{t("vat")} ({taxRate}%)</span>
               <span>${tax.toFixed(2)}</span>
             </div>
           )}
           <div className={`flex justify-between border-t ${selectedColor.border} pt-2 font-bold ${selectedColor.primary}`}>
-            <span>Total</span>
+            <span>{t("total")}</span>
             <span>${total.toFixed(2)}</span>
           </div>
         </div>
@@ -170,69 +147,57 @@ function ReceiptDocument({
       {(bankName || accountIdentifier || accountHolder) && (
         <div className={`mt-8 border-t ${selectedColor.border} pt-6`}>
           <p className={`mb-2 text-xs font-semibold uppercase tracking-wider ${selectedColor.secondary}`}>
-            Datos para el pago
+            {t("docPaymentData")}
           </p>
           <div className="space-y-0.5 text-sm text-gray-600">
-            {bankName          && <p><span className="font-medium">Banco / Billetera:</span> {bankName}</p>}
-            {accountIdentifier && <p><span className="font-medium">Cuenta:</span> {accountIdentifier}</p>}
-            {accountHolder     && <p><span className="font-medium">Titular:</span> {accountHolder}</p>}
+            {bankName          && <p><span className="font-medium">{t("docBank")}</span> {bankName}</p>}
+            {accountIdentifier && <p><span className="font-medium">{t("docAccount")}</span> {accountIdentifier}</p>}
+            {accountHolder     && <p><span className="font-medium">{t("docHolder")}</span> {accountHolder}</p>}
           </div>
         </div>
       )}
 
       {/* Footer */}
-      <p className={`mt-10 text-center text-sm ${selectedColor.secondary}`}>
-        ¡Gracias por tu preferencia!
-      </p>
+      <p className={`mt-10 text-center text-sm ${selectedColor.secondary}`}>{t("docThankYou")}</p>
     </div>
   )
 }
 
 // ── Componente principal ───────────────────────────────────────────────────
 export default function InvoiceTemplates() {
+  const t = useTranslations("receipts")
+  const locale = useLocale()
 
-  // Emisor
   const [issuerName,  setIssuerName]  = useState("")
   const [issuerEmail, setIssuerEmail] = useState("")
   const [issuerTaxId, setIssuerTaxId] = useState("")
-
-  // Cliente
   const [clientName,  setClientName]  = useState("")
   const [clientEmail, setClientEmail] = useState("")
-
-  // Recibo
   const [invoiceNumber, setInvoiceNumber] = useState("001")
-  const [issueDate,     setIssueDate]     = useState("")
-  const [dueDate,       setDueDate]       = useState("")
-
-  // Conceptos
+  const [issueDate, setIssueDate] = useState("")
+  const [dueDate,   setDueDate]   = useState("")
   const [items,   setItems]   = useState<Item[]>([{ description: "", quantity: 1, price: 0 }])
   const [taxRate, setTaxRate] = useState(21)
-
-  // Banco
-  const [bankName,           setBankName]           = useState("")
-  const [accountIdentifier,  setAccountIdentifier]  = useState("")
-  const [accountHolder,      setAccountHolder]      = useState("")
-
-  // Visibilidad
+  const [bankName,          setBankName]          = useState("")
+  const [accountIdentifier, setAccountIdentifier] = useState("")
+  const [accountHolder,     setAccountHolder]     = useState("")
   const [showIssuerEmail, setShowIssuerEmail] = useState(true)
   const [showIssuerTaxId, setShowIssuerTaxId] = useState(true)
   const [showClientEmail, setShowClientEmail] = useState(true)
   const [showDueDate,     setShowDueDate]     = useState(true)
   const [showTax,         setShowTax]         = useState(true)
-
-  // UI
   const [receiptColor, setReceiptColor] = useState("purple")
   const [previewOpen,  setPreviewOpen]  = useState(false)
   const [isExporting,  setIsExporting]  = useState(false)
   const [logo,         setLogo]         = useState<string | null>(null)
 
-  const pdfRef      = useRef<HTMLDivElement>(null)
+  const pdfRef       = useRef<HTMLDivElement>(null)
   const logoInputRef = useRef<HTMLInputElement>(null)
 
-  const selectedColor = colorOptions.find((c) => c.id === receiptColor) ?? colorOptions[0]
+  const selectedColor = COLOR_STYLES[receiptColor as ColorId] ?? COLOR_STYLES.purple
 
-  // ── Cargar datos persistidos desde localStorage ──────────────────────────
+  const colorOptions = COLOR_IDS.map((id) => ({ id, name: t(`colors.${id}` as any), ...COLOR_STYLES[id] }))
+
   useEffect(() => {
     const g = (k: string) => localStorage.getItem(k) ?? ""
     if (g("finko_issuer_name"))        setIssuerName(g("finko_issuer_name"))
@@ -244,7 +209,6 @@ export default function InvoiceTemplates() {
     if (g("finko_receipt_logo"))       setLogo(g("finko_receipt_logo"))
   }, [])
 
-  // ── Logo ──────────────────────────────────────────────────────────────────
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -263,84 +227,61 @@ export default function InvoiceTemplates() {
     if (logoInputRef.current) logoInputRef.current.value = ""
   }
 
-  // ── Persistir datos del emisor y banco ───────────────────────────────────
   const persist = (key: string, value: string) => localStorage.setItem(key, value)
 
-  // ── Conceptos ─────────────────────────────────────────────────────────────
   const addItem    = () => setItems([...items, { description: "", quantity: 1, price: 0 }])
-  const removeItem = (i: number) => {
-    if (items.length === 1) return
-    setItems(items.filter((_, j) => j !== i))
-  }
+  const removeItem = (i: number) => { if (items.length === 1) return; setItems(items.filter((_, j) => j !== i)) }
   const updateItem = (i: number, field: keyof Item, value: string | number) => {
-    const next = [...items]
-    next[i] = { ...next[i], [field]: value }
-    setItems(next)
+    const next = [...items]; next[i] = { ...next[i], [field]: value }; setItems(next)
   }
 
-  const subtotal = items.reduce((t, i) => t + i.quantity * i.price, 0)
+  const subtotal = items.reduce((s, i) => s + i.quantity * i.price, 0)
   const tax      = showTax ? subtotal * (taxRate / 100) : 0
   const total    = subtotal + tax
 
-  // ── Progreso ──────────────────────────────────────────────────────────────
   const filledFields = [
-    issuerName.trim(),
-    clientName.trim(),
+    issuerName.trim(), clientName.trim(),
     items.some((i) => i.description.trim()),
     items.some((i) => i.price > 0),
     bankName.trim() || accountIdentifier.trim(),
   ].filter(Boolean).length
   const progressPercent = Math.round((filledFields / 5) * 100)
 
-  // ── Exportar PDF ──────────────────────────────────────────────────────────
   const exportToPDF = async () => {
     if (typeof window === "undefined" || !pdfRef.current) return
     setIsExporting(true)
     try {
-      const [jsPDFModule, html2canvasModule] = await Promise.all([
-        import("jspdf"),
-        import("html2canvas"),
-      ])
+      const [jsPDFModule, html2canvasModule] = await Promise.all([import("jspdf"), import("html2canvas")])
       const jsPDF       = jsPDFModule.default
       const html2canvas = html2canvasModule.default
 
       const element = pdfRef.current.cloneNode(true) as HTMLElement
-      element.style.width           = "210mm"
-      element.style.padding         = "20mm 15mm"
-      element.style.backgroundColor = "white"
-      element.style.position        = "absolute"
-      element.style.left            = "-9999px"
+      element.style.width = "210mm"; element.style.padding = "20mm 15mm"
+      element.style.backgroundColor = "white"; element.style.position = "absolute"; element.style.left = "-9999px"
       document.body.appendChild(element)
 
-      const canvas = await html2canvas(element, {
-        scale: 2, useCORS: true, logging: false, windowWidth: 1200,
-      })
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true, logging: false, windowWidth: 1200 })
       document.body.removeChild(element)
 
-      const pdf        = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" })
-      const imgWidth   = 210
-      const pageHeight = 297
-      const imgHeight  = (canvas.height * imgWidth) / canvas.width
-      const imgData    = canvas.toDataURL("image/png")
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" })
+      const imgWidth = 210, pageHeight = 297
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      const imgData = canvas.toDataURL("image/png")
 
       pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
 
       if (imgHeight > pageHeight) {
-        let remaining = imgHeight - pageHeight
-        let pos = -pageHeight
+        let remaining = imgHeight - pageHeight, pos = -pageHeight
         while (remaining > 0) {
           pdf.addPage()
           pdf.addImage(imgData, "PNG", 0, pos, imgWidth, imgHeight)
-          pdf.setTextColor(150, 150, 150)
-          pdf.setFontSize(8)
+          pdf.setTextColor(150, 150, 150); pdf.setFontSize(8)
           pdf.text("Hecho con finkoapp.online", imgWidth / 2, pageHeight - 5, { align: "center" })
-          pos -= pageHeight
-          remaining -= pageHeight
+          pos -= pageHeight; remaining -= pageHeight
         }
       }
 
-      pdf.setTextColor(150, 150, 150)
-      pdf.setFontSize(8)
+      pdf.setTextColor(150, 150, 150); pdf.setFontSize(8)
       pdf.text("Hecho con finkoapp.online", imgWidth / 2, pageHeight - 5, { align: "center" })
       pdf.save(`recibo-${invoiceNumber || "001"}.pdf`)
     } catch (error) {
@@ -357,33 +298,28 @@ export default function InvoiceTemplates() {
     invoiceNumber, issueDate, dueDate, showDueDate,
     items, taxRate, showTax,
     bankName, accountIdentifier, accountHolder,
-    selectedColor, logo,
+    selectedColor, logo, locale, t: t as any,
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
-
-      {/* Div invisible — siempre en el DOM para el PDF export */}
       <div className="sr-only" aria-hidden>
         <ReceiptDocument innerRef={pdfRef} {...docProps} />
       </div>
 
       <div className="rounded-3xl bg-gray-900 p-6">
-
         {/* Header */}
         <div className="mb-6 flex items-start gap-4">
           <div className="rounded-full bg-purple-500/15 p-2 text-purple-400">
             <CreditCard className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-100">Generador de Recibos</h2>
-            <p className="text-sm text-gray-500">Completá los datos y descargá tu recibo en PDF</p>
+            <h2 className="text-xl font-semibold text-gray-100">{t("title")}</h2>
+            <p className="text-sm text-gray-500">{t("subtitle")}</p>
           </div>
         </div>
 
         <div className="space-y-6">
-
           {/* Color + progreso */}
           <div className="flex items-center gap-4 rounded-xl border border-gray-800 px-4 py-3">
             <Palette className="h-4 w-4 flex-shrink-0 text-gray-600" />
@@ -405,10 +341,7 @@ export default function InvoiceTemplates() {
             </div>
             <div className="hidden items-center gap-2 sm:flex">
               <div className="h-1.5 w-24 overflow-hidden rounded-full bg-gray-700">
-                <div
-                  className="h-1.5 rounded-full transition-all duration-500"
-                  style={{ width: `${progressPercent}%`, backgroundColor: selectedColor.hex }}
-                />
+                <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${progressPercent}%`, backgroundColor: selectedColor.hex }} />
               </div>
               <span className="w-8 text-right text-xs font-medium text-gray-500">{progressPercent}%</span>
             </div>
@@ -416,171 +349,109 @@ export default function InvoiceTemplates() {
 
           {/* Logo */}
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-300">Logo de tu empresa</label>
-            <input
-              ref={logoInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleLogoUpload}
-            />
+            <label className="text-sm font-medium text-gray-300">{t("logo")}</label>
+            <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
             {logo ? (
               <div className="flex items-center gap-3 rounded-xl border border-gray-700 px-4 py-3">
                 <img src={logo} alt="Logo" className="h-10 max-w-[100px] object-contain" />
-                <span className="flex-1 text-sm text-gray-500">
-                  Logo cargado · se guarda automáticamente
-                </span>
-                <button
-                  type="button"
-                  onClick={handleLogoRemove}
-                  className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
-                >
+                <span className="flex-1 text-sm text-gray-500">{t("logoLoaded")}</span>
+                <button type="button" onClick={handleLogoRemove} className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={() => logoInputRef.current?.click()}
-                className="flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-gray-700 px-4 py-4 text-left transition-colors hover:border-purple-400 hover:bg-purple-500/10"
-              >
+              <button type="button" onClick={() => logoInputRef.current?.click()} className="flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-gray-700 px-4 py-4 text-left transition-colors hover:border-purple-400 hover:bg-purple-500/10">
                 <ImagePlus className="h-5 w-5 flex-shrink-0 text-gray-500" />
                 <div>
-                  <p className="text-sm font-medium text-gray-400">Subir logo</p>
-                  <p className="text-xs text-gray-600">PNG, JPG o SVG · Se guarda en tu navegador</p>
+                  <p className="text-sm font-medium text-gray-400">{t("uploadLogo")}</p>
+                  <p className="text-xs text-gray-600">{t("uploadLogoDesc")}</p>
                 </div>
               </button>
             )}
           </div>
 
-          {/* ── Tus datos ─────────────────────────────────────────────── */}
+          {/* Tus datos */}
           <div className="space-y-3">
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">Tus datos</h3>
-              <p className="mt-0.5 text-xs text-gray-600">Se guardan automáticamente para la próxima vez</p>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">{t("yourData")}</h3>
+              <p className="mt-0.5 text-xs text-gray-600">{t("yourDataAuto")}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">Nombre o empresa</label>
-                <Input
-                  placeholder="Ej: Juan Pérez"
-                  value={issuerName}
-                  onChange={(e) => { setIssuerName(e.target.value); persist("finko_issuer_name", e.target.value) }}
-                  className="rounded-xl"
-                />
+                <label className="text-sm font-medium text-gray-300">{t("nameOrCompany")}</label>
+                <Input placeholder={t("nameEx")} value={issuerName} onChange={(e) => { setIssuerName(e.target.value); persist("finko_issuer_name", e.target.value) }} className="rounded-xl" />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-300">Tu email</label>
+                  <label className="text-sm font-medium text-gray-300">{t("yourEmail")}</label>
                   <FieldToggle checked={showIssuerEmail} onChange={setShowIssuerEmail} />
                 </div>
-                <Input
-                  placeholder="tu@email.com"
-                  type="email"
-                  value={issuerEmail}
-                  onChange={(e) => { setIssuerEmail(e.target.value); persist("finko_issuer_email", e.target.value) }}
-                  className={`rounded-xl transition-opacity ${!showIssuerEmail ? "opacity-40" : ""}`}
-                />
+                <Input placeholder="tu@email.com" type="email" value={issuerEmail} onChange={(e) => { setIssuerEmail(e.target.value); persist("finko_issuer_email", e.target.value) }} className={`rounded-xl transition-opacity ${!showIssuerEmail ? "opacity-40" : ""}`} />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-300">CUIT/CUIL</label>
+                  <label className="text-sm font-medium text-gray-300">{t("taxId")}</label>
                   <FieldToggle checked={showIssuerTaxId} onChange={setShowIssuerTaxId} />
                 </div>
-                <Input
-                  placeholder="20-12345678-9"
-                  value={issuerTaxId}
-                  onChange={(e) => { setIssuerTaxId(e.target.value); persist("finko_issuer_taxid", e.target.value) }}
-                  className={`rounded-xl transition-opacity ${!showIssuerTaxId ? "opacity-40" : ""}`}
-                />
+                <Input placeholder="20-12345678-9" value={issuerTaxId} onChange={(e) => { setIssuerTaxId(e.target.value); persist("finko_issuer_taxid", e.target.value) }} className={`rounded-xl transition-opacity ${!showIssuerTaxId ? "opacity-40" : ""}`} />
               </div>
             </div>
           </div>
 
-          {/* ── Cliente ───────────────────────────────────────────────── */}
+          {/* Cliente */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">Cliente</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">{t("client")}</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">Nombre del cliente</label>
-                <Input
-                  placeholder="Empresa ABC"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  className="rounded-xl"
-                />
+                <label className="text-sm font-medium text-gray-300">{t("clientName")}</label>
+                <Input placeholder={t("clientNameEx")} value={clientName} onChange={(e) => setClientName(e.target.value)} className="rounded-xl" />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-300">Email del cliente</label>
+                  <label className="text-sm font-medium text-gray-300">{t("clientEmail")}</label>
                   <FieldToggle checked={showClientEmail} onChange={setShowClientEmail} />
                 </div>
-                <Input
-                  placeholder="cliente@empresa.com"
-                  value={clientEmail}
-                  onChange={(e) => setClientEmail(e.target.value)}
-                  className={`rounded-xl transition-opacity ${!showClientEmail ? "opacity-40" : ""}`}
-                />
+                <Input placeholder="cliente@empresa.com" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} className={`rounded-xl transition-opacity ${!showClientEmail ? "opacity-40" : ""}`} />
               </div>
             </div>
           </div>
 
-          {/* ── Detalle del recibo ────────────────────────────────────── */}
+          {/* Detalle del recibo */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">Detalle del recibo</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">{t("receiptDetail")}</h3>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">Número de recibo</label>
-                <Input
-                  placeholder="001"
-                  value={invoiceNumber}
-                  onChange={(e) => setInvoiceNumber(e.target.value)}
-                  className="rounded-xl"
-                />
+                <label className="text-sm font-medium text-gray-300">{t("receiptNumber")}</label>
+                <Input placeholder="001" value={invoiceNumber} onChange={(e) => setInvoiceNumber(e.target.value)} className="rounded-xl" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">Fecha de emisión</label>
-                <Input
-                  type="date"
-                  value={issueDate}
-                  onChange={(e) => setIssueDate(e.target.value)}
-                  className="rounded-xl"
-                />
+                <label className="text-sm font-medium text-gray-300">{t("issueDate")}</label>
+                <Input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} className="rounded-xl" />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-300">Fecha de vencimiento</label>
+                  <label className="text-sm font-medium text-gray-300">{t("dueDate")}</label>
                   <FieldToggle checked={showDueDate} onChange={setShowDueDate} />
                 </div>
-                <Input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className={`rounded-xl transition-opacity ${!showDueDate ? "opacity-40" : ""}`}
-                />
+                <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={`rounded-xl transition-opacity ${!showDueDate ? "opacity-40" : ""}`} />
               </div>
             </div>
           </div>
 
-          {/* ── Conceptos ─────────────────────────────────────────────── */}
+          {/* Conceptos */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">Conceptos</h3>
-              <button
-                type="button"
-                onClick={addItem}
-                className="flex items-center gap-1.5 text-sm font-medium text-purple-400 transition-colors hover:text-purple-300"
-              >
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">{t("items")}</h3>
+              <button type="button" onClick={addItem} className="flex items-center gap-1.5 text-sm font-medium text-purple-400 transition-colors hover:text-purple-300">
                 <Plus className="h-4 w-4" />
-                Agregar concepto
+                {t("addItem")}
               </button>
             </div>
 
-            {/* Cabeceras */}
             <div className="grid grid-cols-12 gap-2 px-1">
-              <div className="col-span-6 text-xs font-medium text-gray-500">Descripción</div>
-              <div className="col-span-2 text-center text-xs font-medium text-gray-500">Cant.</div>
-              <div className="col-span-3 text-center text-xs font-medium text-gray-500">Precio unit.</div>
+              <div className="col-span-6 text-xs font-medium text-gray-500">{t("description")}</div>
+              <div className="col-span-2 text-center text-xs font-medium text-gray-500">{t("qty")}</div>
+              <div className="col-span-3 text-center text-xs font-medium text-gray-500">{t("unitPrice")}</div>
               <div className="col-span-1" />
             </div>
 
@@ -588,40 +459,16 @@ export default function InvoiceTemplates() {
               {items.map((item, i) => (
                 <div key={i} className="grid grid-cols-12 gap-2">
                   <div className="col-span-6">
-                    <Input
-                      placeholder="Ej: Diseño de logotipo"
-                      value={item.description}
-                      onChange={(e) => updateItem(i, "description", e.target.value)}
-                      className="rounded-xl"
-                    />
+                    <Input placeholder={t("itemDescEx")} value={item.description} onChange={(e) => updateItem(i, "description", e.target.value)} className="rounded-xl" />
                   </div>
                   <div className="col-span-2">
-                    <Input
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) => updateItem(i, "quantity", parseInt(e.target.value) || 1)}
-                      className="rounded-xl text-center"
-                      min="1"
-                    />
+                    <Input type="number" value={item.quantity} onChange={(e) => updateItem(i, "quantity", parseInt(e.target.value) || 1)} className="rounded-xl text-center" min="1" />
                   </div>
                   <div className="col-span-3">
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={item.price || ""}
-                      onChange={(e) => updateItem(i, "price", parseFloat(e.target.value) || 0)}
-                      className="rounded-xl"
-                      min="0"
-                      step="0.01"
-                    />
+                    <Input type="number" placeholder="0.00" value={item.price || ""} onChange={(e) => updateItem(i, "price", parseFloat(e.target.value) || 0)} className="rounded-xl" min="0" step="0.01" />
                   </div>
                   <div className="col-span-1 flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={() => removeItem(i)}
-                      disabled={items.length === 1}
-                      className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30"
-                    >
+                    <button type="button" onClick={() => removeItem(i)} disabled={items.length === 1} className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -633,23 +480,16 @@ export default function InvoiceTemplates() {
             <div className="flex justify-end">
               <div className="w-64 space-y-2 rounded-xl border border-gray-800 bg-gray-800 p-4 text-sm">
                 <div className="flex justify-between text-gray-400">
-                  <span>Subtotal</span>
+                  <span>{t("subtotal")}</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between text-gray-400">
                   <div className="flex items-center gap-2">
                     <FieldToggle checked={showTax} onChange={setShowTax} />
-                    <span>IVA</span>
+                    <span>{t("vat")}</span>
                     {showTax && (
                       <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          value={taxRate}
-                          onChange={(e) => setTaxRate(Number(e.target.value) || 0)}
-                          className="w-12 rounded-lg border border-gray-700 bg-gray-700 px-1.5 py-0.5 text-center text-xs text-gray-200"
-                          min="0"
-                          max="100"
-                        />
+                        <input type="number" value={taxRate} onChange={(e) => setTaxRate(Number(e.target.value) || 0)} className="w-12 rounded-lg border border-gray-700 bg-gray-700 px-1.5 py-0.5 text-center text-xs text-gray-200" min="0" max="100" />
                         <span className="text-xs">%</span>
                       </div>
                     )}
@@ -657,84 +497,57 @@ export default function InvoiceTemplates() {
                   <span>${tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between border-t border-gray-700 pt-2 font-semibold text-gray-100">
-                  <span>Total</span>
+                  <span>{t("total")}</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* ── Datos para el pago ────────────────────────────────────── */}
+          {/* Datos para el pago */}
           <div className="space-y-3">
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">Datos para el pago</h3>
-              <p className="mt-0.5 text-xs text-gray-600">Se guardan automáticamente para la próxima vez</p>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-600">{t("paymentData")}</h3>
+              <p className="mt-0.5 text-xs text-gray-600">{t("paymentDataAuto")}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">Banco o billetera</label>
-                <Input
-                  placeholder="Ej: Mercado Pago"
-                  value={bankName}
-                  onChange={(e) => { setBankName(e.target.value); persist("finko_bank_name", e.target.value) }}
-                  className="rounded-xl"
-                />
+                <label className="text-sm font-medium text-gray-300">{t("bankOrWallet")}</label>
+                <Input placeholder={t("bankEx")} value={bankName} onChange={(e) => { setBankName(e.target.value); persist("finko_bank_name", e.target.value) }} className="rounded-xl" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">N° de cuenta / Alias</label>
-                <Input
-                  placeholder="CBU, CVU o Alias"
-                  value={accountIdentifier}
-                  onChange={(e) => { setAccountIdentifier(e.target.value); persist("finko_account_identifier", e.target.value) }}
-                  className="rounded-xl"
-                />
+                <label className="text-sm font-medium text-gray-300">{t("accountNumber")}</label>
+                <Input placeholder={t("accountEx")} value={accountIdentifier} onChange={(e) => { setAccountIdentifier(e.target.value); persist("finko_account_identifier", e.target.value) }} className="rounded-xl" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">Titular de la cuenta</label>
-                <Input
-                  placeholder="Ej: Juan Pérez"
-                  value={accountHolder}
-                  onChange={(e) => { setAccountHolder(e.target.value); persist("finko_account_holder", e.target.value) }}
-                  className="rounded-xl"
-                />
+                <label className="text-sm font-medium text-gray-300">{t("accountHolder")}</label>
+                <Input placeholder={t("holderEx")} value={accountHolder} onChange={(e) => { setAccountHolder(e.target.value); persist("finko_account_holder", e.target.value) }} className="rounded-xl" />
               </div>
             </div>
           </div>
 
-          {/* ── CTA ───────────────────────────────────────────────────── */}
+          {/* CTA */}
           <div className="pt-2">
-            <Button
-              onClick={() => setPreviewOpen(true)}
-              className="w-full gap-2 rounded-xl py-5 text-base font-semibold"
-              style={{ backgroundColor: selectedColor.hex, color: "white" }}
-            >
+            <Button onClick={() => setPreviewOpen(true)} className="w-full gap-2 rounded-xl py-5 text-base font-semibold" style={{ backgroundColor: selectedColor.hex, color: "white" }}>
               <Eye className="h-5 w-5" />
-              Ver vista previa del recibo
+              {t("previewBtn")}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* ── Modal de vista previa ── */}
+      {/* Modal de vista previa */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="flex max-h-[95dvh] w-[95vw] max-w-3xl flex-col overflow-hidden rounded-3xl bg-gray-900 p-0">
           <DialogHeader className="flex-shrink-0 border-b border-gray-800 bg-gray-800 px-6 py-4">
             <div className="flex items-center justify-between pr-8">
               <div>
-                <DialogTitle className="text-base font-semibold text-gray-100">
-                  Vista previa del recibo
-                </DialogTitle>
-                <p className="mt-0.5 text-xs text-gray-500">Así se verá tu PDF al exportarlo</p>
+                <DialogTitle className="text-base font-semibold text-gray-100">{t("previewTitle")}</DialogTitle>
+                <p className="mt-0.5 text-xs text-gray-500">{t("previewSubtitle")}</p>
               </div>
-              <Button
-                size="sm"
-                onClick={exportToPDF}
-                disabled={isExporting}
-                className="gap-1.5 rounded-xl"
-                style={{ backgroundColor: selectedColor.hex, color: "white" }}
-              >
+              <Button size="sm" onClick={exportToPDF} disabled={isExporting} className="gap-1.5 rounded-xl" style={{ backgroundColor: selectedColor.hex, color: "white" }}>
                 <FileDown className="h-3.5 w-3.5" />
-                {isExporting ? "Exportando..." : "Exportar PDF"}
+                {isExporting ? t("exporting") : t("exportPDF")}
               </Button>
             </div>
           </DialogHeader>
