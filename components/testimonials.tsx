@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 export default function Testimonials() {
   return (
@@ -22,7 +22,6 @@ export default function Testimonials() {
             <CardContent className="p-6">
               <div className="flex flex-col items-center space-y-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src="/focused-freelancer.png" alt="Avatar" />
                   <AvatarFallback>LM</AvatarFallback>
                 </Avatar>
                 <div className="space-y-2 text-center">
@@ -41,7 +40,6 @@ export default function Testimonials() {
             <CardContent className="p-6">
               <div className="flex flex-col items-center space-y-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src="/focused-freelancer.png" alt="Avatar" />
                   <AvatarFallback>CR</AvatarFallback>
                 </Avatar>
                 <div className="space-y-2 text-center">
@@ -60,7 +58,6 @@ export default function Testimonials() {
             <CardContent className="p-6">
               <div className="flex flex-col items-center space-y-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src="/focused-marketing-freelancer.png" alt="Avatar" />
                   <AvatarFallback>AG</AvatarFallback>
                 </Avatar>
                 <div className="space-y-2 text-center">

@@ -1,6 +1,16 @@
+import dynamic from "next/dynamic"
 import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 import { Link } from "@/i18n/navigation"
+import { IconArrowLeft } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
+import Navbar from "@/components/navbar"
+import Footer from "@/components/footer"
+import BottomNav from "@/components/bottom-nav"
+import { ThemeProvider } from "@/components/theme-provider"
+
+const SubtleBackground = dynamic(() => import("@/components/subtle-background"), { ssr: false })
+const PricingCalculator = dynamic(() => import("@/components/pricing-calculator"))
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -21,14 +31,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
   }
 }
-import { IconArrowLeft } from "@tabler/icons-react"
-import { Button } from "@/components/ui/button"
-import PricingCalculator from "@/components/pricing-calculator"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import BottomNav from "@/components/bottom-nav"
-import SubtleBackground from "@/components/subtle-background"
-import { ThemeProvider } from "@/components/theme-provider"
 
 export default async function CalculadoraPage() {
   const t = await getTranslations("common")

@@ -1,7 +1,16 @@
-import { Suspense } from "react"
+import dynamic from "next/dynamic"
 import { getTranslations } from "next-intl/server"
 import type { Metadata } from "next"
 import { Link } from "@/i18n/navigation"
+import { IconArrowLeft } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
+import Navbar from "@/components/navbar"
+import Footer from "@/components/footer"
+import BottomNav from "@/components/bottom-nav"
+import { ThemeProvider } from "@/components/theme-provider"
+
+const SubtleBackground = dynamic(() => import("@/components/subtle-background"), { ssr: false })
+const ProposalGenerator = dynamic(() => import("@/components/proposal-generator"))
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -22,14 +31,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
   }
 }
-import { IconArrowLeft } from "@tabler/icons-react"
-import { Button } from "@/components/ui/button"
-import ProposalGenerator from "@/components/proposal-generator"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import BottomNav from "@/components/bottom-nav"
-import SubtleBackground from "@/components/subtle-background"
-import { ThemeProvider } from "@/components/theme-provider"
 
 export default async function PresupuestosPage() {
   const t = await getTranslations("common")
@@ -49,9 +50,7 @@ export default async function PresupuestosPage() {
             </Link>
           </div>
 
-          <Suspense fallback={null}>
-            <ProposalGenerator />
-          </Suspense>
+          <ProposalGenerator />
         </div>
         <Footer />
         <BottomNav />

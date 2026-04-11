@@ -1,11 +1,13 @@
+import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import BottomNav from "@/components/bottom-nav"
-import SubtleBackground from "@/components/subtle-background"
-import Hero from "@/components/hero"
 import Image from "next/image"
+
+const SubtleBackground = dynamic(() => import("@/components/subtle-background"), { ssr: false })
+const Hero = dynamic(() => import("@/components/hero"))
 import {
   IconCalculator,
   IconFileText,
@@ -130,15 +132,7 @@ export default function Home() {
             className="block rounded-2xl overflow-hidden relative transition-all duration-200 hover:scale-[1.01] hover:shadow-xl hover:shadow-black/30"
             style={{ minHeight: "150px" }}
           >
-            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-emerald-500 to-teal-600">
-              <Image
-                src="/green-gradient-texture.png"
-                alt={t("home.saldo.bgAlt")}
-                fill
-                style={{ objectFit: "cover", opacity: 0.8 }}
-                priority
-              />
-            </div>
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600" />
             <div className="relative z-10 py-6 px-5 sm:py-8 flex flex-col items-center justify-center text-center">
               <div className="mb-3">
                 <Image
