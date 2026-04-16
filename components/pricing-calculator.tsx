@@ -156,6 +156,7 @@ export default function PricingCalculator() {
   // UI
   const [searchTerm, setSearchTerm] = useState("Desarrollo Web")
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -213,17 +214,19 @@ export default function PricingCalculator() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const filtered = projectCategories
-    .map((cat) => ({
-      ...cat,
-      subcategories: cat.subcategories.filter(
-        (s) =>
-          searchTerm === "" ||
-          s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          cat.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ),
-    }))
-    .filter((cat) => cat.subcategories.length > 0)
+  const filtered = isTyping
+    ? projectCategories
+        .map((cat) => ({
+          ...cat,
+          subcategories: cat.subcategories.filter(
+            (s) =>
+              searchTerm === "" ||
+              s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              cat.name.toLowerCase().includes(searchTerm.toLowerCase())
+          ),
+        }))
+        .filter((cat) => cat.subcategories.length > 0)
+    : projectCategories
 
   const experienceLabel =
     experience <= 2 ? "Junior" : experience <= 5 ? "Semi-senior" : experience <= 8 ? "Senior" : "Experto"
@@ -259,11 +262,16 @@ export default function PricingCalculator() {
                       value={searchTerm}
                       onChange={(e) => {
                         setSearchTerm(e.target.value)
+                        setIsTyping(true)
                         setDropdownOpen(true)
                       }}
-                      onFocus={() => setDropdownOpen(true)}
+                      onFocus={(e) => {
+                        e.target.select()
+                        setIsTyping(false)
+                        setDropdownOpen(true)
+                      }}
                       placeholder="Buscar tipo de trabajo..."
-                      className="rounded-lg pl-9 pr-9"
+                      className="rounded-lg pl-9 pr-9 cursor-pointer focus:cursor-text"
                     />
                     <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 pointer-events-none" />
                   </div>
@@ -285,6 +293,7 @@ export default function PricingCalculator() {
                               onClick={() => {
                                 setProjectType(sub.id)
                                 setSearchTerm(sub.name)
+                                setIsTyping(false)
                                 setDropdownOpen(false)
                               }}
                               className={`flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-brand-500/10 ${
