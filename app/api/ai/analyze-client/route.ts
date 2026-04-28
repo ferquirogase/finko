@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     }
 
     const { output } = await generateText({
-      model: "openai/gpt-4o-mini",
+      model: groq("mixtral-8x7b-32768"),
       output: Output.object({
         schema: clientAnalysisSchema,
       }),
