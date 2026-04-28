@@ -388,6 +388,44 @@
       "a5": "Yes, and it's recommended. Many freelancers use Wise for European clients (for the exchange rate), Payoneer for marketplaces like Upwork or Fiverr, and PayPal as a backup option for clients who don't use other platforms."
     }
   },
+  "dashboard": {
+    "sectionTitle": "Your week",
+    "weeklyBriefing": {
+      "title": "Weekly summary",
+      "criticalAlerts": "alerts",
+      "income": "Income",
+      "activeProjects": "Active projects",
+      "proposalsSent": "Proposals sent",
+      "hoursLogged": "Hours logged",
+      "conversionRate": "conversion",
+      "vsLastWeek": "vs last week"
+    },
+    "urgentAlerts": {
+      "title": "Needs attention",
+      "overduePayment": "Overdue payment",
+      "upcomingDeadline": "Upcoming deadline",
+      "noResponse": "No response",
+      "pendingInvoice": "Pending invoice"
+    },
+    "recommendedActions": {
+      "title": "Recommended actions",
+      "suggestion": "Suggestion"
+    },
+    "followUpQueue": {
+      "title": "Pending follow-ups",
+      "pending": "pending",
+      "daysAgo": "days",
+      "contact": "Contact"
+    },
+    "paymentReminders": {
+      "title": "Pending payments",
+      "overdue": "Overdue",
+      "upcoming": "Due soon",
+      "daysOverdue": "days overdue",
+      "daysLeft": "days left",
+      "sendReminder": "Remind"
+    }
+  },
   "metadata": {
     "title": "finko - Tools for freelancers",
     "description": "Calculate rates, generate proposals, and create professional invoices easily",

@@ -5,6 +5,20 @@ import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import BottomNav from "@/components/bottom-nav"
 import Image from "next/image"
+import {
+  WeeklyBriefing,
+  UrgentAlerts,
+  RecommendedActions,
+  FollowUpQueue,
+  PaymentReminders,
+} from "@/components/dashboard"
+import {
+  mockWeeklyBriefing,
+  mockUrgentAlerts,
+  mockRecommendedActions,
+  mockFollowUpQueue,
+  mockPaymentReminders,
+} from "@/lib/mock-dashboard-data"
 
 const SubtleBackground = dynamic(() => import("@/components/subtle-background"))
 const Hero = dynamic(() => import("@/components/hero"))
@@ -88,6 +102,31 @@ export default function Home() {
 
           {/* ── Hero ── */}
           <Hero />
+
+          {/* ── AI Dashboard: Tu semana ── */}
+          <section className="space-y-4">
+            <div className="flex items-center">
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-600">
+                {t("dashboard.sectionTitle")}
+              </h2>
+              <div className="h-px flex-1 ml-4 bg-gray-800" />
+            </div>
+
+            {/* Weekly Briefing */}
+            <WeeklyBriefing data={mockWeeklyBriefing} />
+
+            {/* Two-column layout for alerts and actions on larger screens */}
+            <div className="grid gap-4 lg:grid-cols-2">
+              <UrgentAlerts alerts={mockUrgentAlerts} />
+              <RecommendedActions actions={mockRecommendedActions} />
+            </div>
+
+            {/* Two-column layout for follow-ups and payments */}
+            <div className="grid gap-4 lg:grid-cols-2">
+              <FollowUpQueue items={mockFollowUpQueue} />
+              <PaymentReminders reminders={mockPaymentReminders} />
+            </div>
+          </section>
 
           {/* ── Herramientas ── */}
           <section>
