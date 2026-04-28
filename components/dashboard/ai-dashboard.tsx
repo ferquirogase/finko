@@ -161,10 +161,17 @@ export function AIDashboardAlerts() {
     load()
   }, [])
 
-  // Transform AI insights to component format
+  // Transform AI insights to component format - convert snake_case to camelCase
+  const typeMap: Record<string, string> = {
+    'overdue_payment': 'overduePayment',
+    'deadline': 'deadline',
+    'no_response': 'noResponse',
+    'pending_invoice': 'pendingInvoice',
+  }
+  
   const alerts = insights?.urgentAlerts.map(a => ({
     id: a.id,
-    type: a.type.replace('_', '') as any, // Convert underscore format
+    type: (typeMap[a.type] || a.type) as "overduePayment" | "deadline" | "noResponse" | "pendingInvoice",
     title: a.title,
     description: a.description,
     severity: a.severity,
