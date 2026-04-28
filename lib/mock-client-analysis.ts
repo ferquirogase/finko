@@ -1,7 +1,25 @@
-import type { ClientAnalysis, ClientMessage } from "@/types/new-client"
+import type { ClientAnalysis, ClientMessage, DataSource, EditableValue } from "@/types/new-client"
 
 // Simulates AI analysis delay
 const SIMULATED_DELAY_MS = 1500
+
+// Helper to create editable values with confidence tracking
+function editable<T>(
+  value: T,
+  source: DataSource,
+  reason: string,
+  confidence: number = 70
+): EditableValue<T> {
+  return {
+    value,
+    isEditable: true,
+    confidence: {
+      level: confidence,
+      source,
+      reason,
+    },
+  }
+}
 
 // Mock analysis that extracts realistic data from any input
 export async function analyzeClientMessage(
@@ -19,13 +37,27 @@ export async function analyzeClientMessage(
 
   // Determine project type
   let projectType = "Proyecto digital"
-  if (hasWebKeywords) projectType = "Desarrollo web"
-  else if (hasDesignKeywords) projectType = "Diseño gráfico"
-  else if (hasAppKeywords) projectType = "Desarrollo de app"
+  let projectTypeSource: DataSource = "assumption"
+  let projectTypeReason = "No se detectaron palabras clave específicas del tipo de proyecto"
+  
+  if (hasWebKeywords) {
+    projectType = "Desarrollo web"
+    projectTypeSource = "detected"
+    projectTypeReason = "Palabras clave de web detectadas en el mensaje"
+  } else if (hasDesignKeywords) {
+    projectType = "Diseño gráfico"
+    projectTypeSource = "detected"
+    projectTypeReason = "Palabras clave de diseño detectadas"
+  } else if (hasAppKeywords) {
+    projectType = "Desarrollo de app"
+    projectTypeSource = "detected"
+    projectTypeReason = "Palabras clave de app/móvil detectadas"
+  }
 
   // Extract potential name (simple heuristic)
   const nameMatch = message.match(/(?:soy|me llamo|nombre es)\s+([A-Z][a-záéíóú]+)/i)
   const companyMatch = message.match(/(?:empresa|compañía|negocio|startup)\s+([A-Z][a-záéíóúA-Z\s]+)/i)
+  const emailMatch = message.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i)
 
   const analysis: ClientAnalysis = {
     id: `analysis-${Date.now()}`,
@@ -35,20 +67,70 @@ export async function analyzeClientMessage(
       source,
       receivedAt: now,
     },
-    clientName: nameMatch?.[1] || undefined,
-    clientCompany: companyMatch?.[1]?.trim() || undefined,
+    clientName: editable(
+      nameMatch?.[1] || undefined,
+      nameMatch ? "detected" : "assumption",
+      nameMatch ? "Nombre extraído del mensaje" : "No se detectó nombre - agregar manualmente",
+      nameMatch ? 85 : 20
+    ),
+    clientCompany: editable(
+      companyMatch?.[1]?.trim() || undefined,
+      companyMatch ? "detected" : "assumption",
+      companyMatch ? "Empresa mencionada en el mensaje" : "No se detectó empresa",
+      companyMatch ? 80 : 20
+    ),
+    clientEmail: editable(
+      emailMatch?.[0] || undefined,
+      emailMatch ? "detected" : "assumption",
+      emailMatch ? "Email encontrado en el mensaje" : "No se detectó email",
+      emailMatch ? 95 : 10
+    ),
 
     scope: {
-      summary: generateScopeSummary(message, projectType),
-      projectType,
-      estimatedComplexity: message.length > 500 ? "high" : message.length > 200 ? "medium" : "low",
-      suggestedDeliverables: generateDeliverables(projectType, message),
+      summary: editable(
+        generateScopeSummary(message, projectType),
+        "inferred",
+        "Resumen generado a partir del análisis del mensaje",
+        75
+      ),
+      projectType: editable(
+        projectType,
+        projectTypeSource,
+        projectTypeReason,
+        projectTypeSource === "detected" ? 90 : 50
+      ),
+      estimatedComplexity: editable(
+        message.length > 500 ? "high" : message.length > 200 ? "medium" : "low",
+        "inferred",
+        "Estimado basado en la extensión y detalle del mensaje",
+        60
+      ),
+      suggestedDeliverables: editable(
+        generateDeliverables(projectType, message),
+        "inferred",
+        "Entregables típicos para este tipo de proyecto - ajustar según necesidad",
+        65
+      ),
       uncertainAreas: generateUncertainAreas(message),
     },
 
     urgency: {
-      level: hasUrgentKeywords ? "urgent" : "normal",
-      deadline: hasUrgentKeywords ? "Próxima semana (mencionado)" : undefined,
+      level: editable(
+        hasUrgentKeywords ? "urgent" : "normal",
+        hasUrgentKeywords ? "detected" : "inferred",
+        hasUrgentKeywords 
+          ? "Palabras de urgencia detectadas en el mensaje" 
+          : "Sin indicadores de urgencia - asumiendo timeline normal",
+        hasUrgentKeywords ? 90 : 70
+      ),
+      deadline: editable(
+        hasUrgentKeywords ? "Próxima semana (mencionado)" : undefined,
+        hasUrgentKeywords ? "inferred" : "assumption",
+        hasUrgentKeywords 
+          ? "Fecha estimada basada en urgencia detectada" 
+          : "Sin deadline específico mencionado",
+        hasUrgentKeywords ? 60 : 30
+      ),
       reasoning: hasUrgentKeywords
         ? "El cliente menciona urgencia o plazos cortos en su mensaje"
         : "No se detectaron indicadores de urgencia específicos",
@@ -59,14 +141,36 @@ export async function analyzeClientMessage(
 
     budget: {
       mentioned: hasBudgetMention,
-      clientExpectation: hasBudgetMention ? "market" : "unclear",
+      clientExpectation: editable(
+        hasBudgetMention ? "market" : "unclear",
+        hasBudgetMention ? "inferred" : "assumption",
+        hasBudgetMention 
+          ? "El cliente menciona presupuesto - expectativas de mercado asumidas" 
+          : "Sin mención de presupuesto - clarificar expectativas",
+        hasBudgetMention ? 65 : 40
+      ),
       pricingGuidance: generatePricingGuidance(projectType, message),
-      suggestedHourlyRate: getSuggestedRate(projectType),
-      suggestedProjectRate: getSuggestedProjectRate(projectType, message),
+      suggestedHourlyRate: editable(
+        getSuggestedRate(projectType),
+        "inferred",
+        `Tarifa promedio para ${projectType.toLowerCase()} en LATAM`,
+        70
+      ),
+      suggestedProjectRate: editable(
+        getSuggestedProjectRate(projectType, message),
+        "inferred",
+        "Estimación basada en tipo de proyecto y complejidad detectada",
+        55
+      ),
     },
 
     paymentMethod: {
-      primary: "transferencia",
+      primary: editable(
+        "transferencia",
+        "inferred",
+        "Transferencia es el método más seguro para clientes nuevos",
+        85
+      ),
       alternatives: ["wise", "paypal"],
       reasoning:
         "Para clientes nuevos, se recomienda transferencia bancaria con 50% de anticipo. Si es internacional, Wise ofrece mejores tasas que PayPal.",
@@ -76,9 +180,24 @@ export async function analyzeClientMessage(
     redFlags: generateRedFlags(message),
 
     suggestedReply: {
-      tone: "professional",
-      subject: `Re: ${projectType} - Próximos pasos`,
-      body: generateReplyBody(projectType, message),
+      tone: editable(
+        "professional",
+        "inferred",
+        "Tono profesional recomendado para primer contacto",
+        80
+      ),
+      subject: editable(
+        `Re: ${projectType} - Próximos pasos`,
+        "inferred",
+        "Asunto sugerido basado en tipo de proyecto",
+        75
+      ),
+      body: editable(
+        generateReplyBody(projectType, message),
+        "inferred",
+        "Respuesta generada - editar y personalizar antes de enviar",
+        70
+      ),
       callToAction:
         "¿Te parece si agendamos una llamada de 15 minutos para afinar los detalles?",
     },
@@ -103,7 +222,7 @@ function generateScopeSummary(message: string, projectType: string): string {
   return `Proyecto de ${projectType.toLowerCase()} con alcance por definir. El cliente muestra interés inicial y hay suficiente contexto para una primera conversación.`
 }
 
-function generateDeliverables(projectType: string, message: string): string[] {
+function generateDeliverables(projectType: string, _message: string): string[] {
   const base: Record<string, string[]> = {
     "Desarrollo web": [
       "Diseño UI/UX responsive",
@@ -199,6 +318,11 @@ function generateRedFlags(message: string): ClientAnalysis["redFlags"] {
       description: "El mensaje sugiere que el cliente espera trabajo sin pago o a cambio de exposición",
       severity: "high",
       recommendation: "Aclarar tus tarifas desde el inicio. Si insiste, declinar amablemente.",
+      action: {
+        tool: "email",
+        label: "Enviar tarifas",
+        prefillData: { template: "rates" },
+      },
     })
   }
 
@@ -209,6 +333,12 @@ function generateRedFlags(message: string): ClientAnalysis["redFlags"] {
       description: "Plazos muy ajustados pueden indicar mala planificación del cliente",
       severity: "medium",
       recommendation: "Cobrar tarifa de urgencia (15-25% extra) y definir expectativas claras.",
+      action: {
+        tool: "calculadora",
+        label: "Calcular con urgencia",
+        href: "/calculadora",
+        prefillData: { urgencyMultiplier: 1.2 },
+      },
     })
   }
 
@@ -219,6 +349,11 @@ function generateRedFlags(message: string): ClientAnalysis["redFlags"] {
       description: "Frases como 'es algo sencillo' suelen subestimar el esfuerzo real",
       severity: "low",
       recommendation: "Desglosar el trabajo en tareas para mostrar la complejidad real.",
+      action: {
+        tool: "presupuestos",
+        label: "Detallar en presupuesto",
+        href: "/presupuestos",
+      },
     })
   }
 
@@ -235,7 +370,7 @@ function generateRedFlags(message: string): ClientAnalysis["redFlags"] {
   return flags
 }
 
-function generateReplyBody(projectType: string, message: string): string {
+function generateReplyBody(projectType: string, _message: string): string {
   return `¡Hola! Gracias por contactarme.
 
 Me interesa saber más sobre tu proyecto de ${projectType.toLowerCase()}. Por lo que mencionas, creo que podemos trabajar juntos.
@@ -255,6 +390,10 @@ function generateNextSteps(projectType: string): ClientAnalysis["nextSteps"] {
       action: "Responder al cliente",
       description: "Usa la respuesta sugerida como base y personalízala",
       priority: "high",
+      linkedAction: {
+        tool: "whatsapp",
+        label: "Copiar respuesta",
+      },
     },
     {
       id: "ns-2",
@@ -263,6 +402,12 @@ function generateNextSteps(projectType: string): ClientAnalysis["nextSteps"] {
       priority: "high",
       linkedTool: "calculadora",
       linkHref: "/calculadora",
+      linkedAction: {
+        tool: "calculadora",
+        label: "Ir a calculadora",
+        href: "/calculadora",
+        prefillData: { projectType },
+      },
     },
     {
       id: "ns-3",
@@ -271,6 +416,12 @@ function generateNextSteps(projectType: string): ClientAnalysis["nextSteps"] {
       priority: "medium",
       linkedTool: "presupuestos",
       linkHref: "/presupuestos",
+      linkedAction: {
+        tool: "presupuestos",
+        label: "Crear presupuesto",
+        href: "/presupuestos",
+        prefillData: { projectType },
+      },
     },
     {
       id: "ns-4",

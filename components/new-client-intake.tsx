@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import {
@@ -17,9 +17,18 @@ import {
   IconBrandWhatsapp,
   IconMail,
   IconFileText,
+  IconCalculator,
+  IconReceipt,
 } from "@tabler/icons-react"
-import type { ClientAnalysis, ClientMessage } from "@/types/new-client"
+import type { ClientAnalysis, ClientMessage, EditableValue } from "@/types/new-client"
 import { analyzeClientMessage } from "@/lib/mock-client-analysis"
+import {
+  DecisionBadge,
+  EditableField,
+  EditableList,
+  ActionButton,
+  ConfidenceMeter,
+} from "./decision-layer"
 
 type TabId = "overview" | "project" | "financials" | "flags" | "reply" | "next"
 
@@ -47,6 +56,47 @@ export function NewClientIntake() {
   const [activeTab, setActiveTab] = useState<TabId>("overview")
   const [copiedReply, setCopiedReply] = useState(false)
 
+  // Handler to update editable values in analysis
+  const updateAnalysis = useCallback((
+    path: string,
+    value: unknown
+  ) => {
+    setAnalysis((prev) => {
+      if (!prev) return prev
+      const updated = { ...prev }
+      const keys = path.split(".")
+      let current: Record<string, unknown> = updated as Record<string, unknown>
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (current[keys[i]] && typeof current[keys[i]] === "object") {
+          current[keys[i]] = { ...(current[keys[i]] as object) }
+          current = current[keys[i]] as Record<string, unknown>
+        }
+      }
+      
+      const lastKey = keys[keys.length - 1]
+      const existingValue = current[lastKey]
+      
+      // If it's an EditableValue, update the value property
+      if (existingValue && typeof existingValue === "object" && "isEditable" in existingValue) {
+        current[lastKey] = {
+          ...(existingValue as object),
+          value,
+          confidence: {
+            ...((existingValue as EditableValue<unknown>).confidence || {}),
+            source: "detected", // User edited = now detected
+            reason: "Editado manualmente",
+            level: 100,
+          },
+        }
+      } else {
+        current[lastKey] = value
+      }
+      
+      return updated
+    })
+  }, [])
+
   const handleAnalyze = async () => {
     if (!message.trim()) return
     setIsAnalyzing(true)
@@ -61,7 +111,7 @@ export function NewClientIntake() {
 
   const handleCopyReply = () => {
     if (!analysis) return
-    const fullReply = `${analysis.suggestedReply.body}\n\n${analysis.suggestedReply.callToAction}`
+    const fullReply = `${analysis.suggestedReply.body.value}\n\n${analysis.suggestedReply.callToAction}`
     navigator.clipboard.writeText(fullReply)
     setCopiedReply(true)
     setTimeout(() => setCopiedReply(false), 2000)
@@ -169,9 +219,15 @@ export function NewClientIntake() {
 
           {/* Tab Content */}
           <div className="p-6">
-            {activeTab === "overview" && <OverviewTab analysis={analysis} t={t} />}
-            {activeTab === "project" && <ProjectTab analysis={analysis} t={t} />}
-            {activeTab === "financials" && <FinancialsTab analysis={analysis} t={t} />}
+            {activeTab === "overview" && (
+              <OverviewTab analysis={analysis} t={t} onUpdate={updateAnalysis} />
+            )}
+            {activeTab === "project" && (
+              <ProjectTab analysis={analysis} t={t} onUpdate={updateAnalysis} />
+            )}
+            {activeTab === "financials" && (
+              <FinancialsTab analysis={analysis} t={t} onUpdate={updateAnalysis} />
+            )}
             {activeTab === "flags" && <FlagsTab analysis={analysis} t={t} />}
             {activeTab === "reply" && (
               <ReplyTab
@@ -179,6 +235,7 @@ export function NewClientIntake() {
                 t={t}
                 onCopy={handleCopyReply}
                 copied={copiedReply}
+                onUpdate={updateAnalysis}
               />
             )}
             {activeTab === "next" && <NextStepsTab analysis={analysis} t={t} />}
@@ -190,13 +247,13 @@ export function NewClientIntake() {
 }
 
 // Tab Components
-function OverviewTab({
-  analysis,
-  t,
-}: {
+interface TabProps {
   analysis: ClientAnalysis
   t: ReturnType<typeof useTranslations>
-}) {
+  onUpdate?: (path: string, value: unknown) => void
+}
+
+function OverviewTab({ analysis, t, onUpdate }: TabProps) {
   const urgencyColors = {
     urgent: "bg-red-500/20 text-red-400 border-red-500/30",
     normal: "bg-blue-500/20 text-blue-400 border-blue-500/30",
@@ -205,97 +262,138 @@ function OverviewTab({
 
   return (
     <div className="space-y-6">
-      {/* Client info if detected */}
-      {(analysis.clientName || analysis.clientCompany) && (
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500/20 text-brand-400">
-            {analysis.clientName?.[0] || analysis.clientCompany?.[0] || "?"}
-          </div>
-          <div>
-            {analysis.clientName && (
-              <p className="font-medium text-white">{analysis.clientName}</p>
-            )}
-            {analysis.clientCompany && (
-              <p className="text-sm text-gray-400">{analysis.clientCompany}</p>
-            )}
-          </div>
+      {/* Client info - editable */}
+      <div className="flex items-start gap-4 rounded-xl border border-gray-800 bg-gray-800/50 p-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-brand-400">
+          {analysis.clientName?.value?.[0] || analysis.clientCompany?.value?.[0] || "?"}
         </div>
-      )}
+        <div className="flex-1 space-y-2">
+          <EditableField
+            value={analysis.clientName?.value}
+            onChange={(v) => onUpdate?.("clientName", v)}
+            confidence={analysis.clientName?.confidence}
+            placeholder={t("overview.addName")}
+            className="font-medium"
+          />
+          <EditableField
+            value={analysis.clientCompany?.value}
+            onChange={(v) => onUpdate?.("clientCompany", v)}
+            confidence={analysis.clientCompany?.confidence}
+            placeholder={t("overview.addCompany")}
+            className="text-sm"
+          />
+          <EditableField
+            value={analysis.clientEmail?.value}
+            onChange={(v) => onUpdate?.("clientEmail", v)}
+            confidence={analysis.clientEmail?.confidence}
+            placeholder={t("overview.addEmail")}
+            className="text-sm text-gray-400"
+          />
+        </div>
+      </div>
 
-      {/* Summary */}
+      {/* Summary - editable */}
       <div>
         <h3 className="mb-2 text-sm font-medium uppercase tracking-wider text-gray-500">
           {t("overview.summary")}
         </h3>
-        <p className="text-gray-300">{analysis.scope.summary}</p>
+        <EditableField
+          value={analysis.scope.summary.value}
+          onChange={(v) => onUpdate?.("scope.summary", v)}
+          confidence={analysis.scope.summary.confidence}
+          multiline
+          showBadge
+        />
       </div>
 
-      {/* Quick stats */}
+      {/* Quick stats - editable */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
-          <p className="mb-1 text-xs text-gray-500">{t("overview.projectType")}</p>
-          <p className="font-medium text-white">{analysis.scope.projectType}</p>
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-gray-500">{t("overview.projectType")}</p>
+            <DecisionBadge
+              source={analysis.scope.projectType.confidence.source}
+              confidence={analysis.scope.projectType.confidence.level}
+              reason={analysis.scope.projectType.confidence.reason}
+              size="sm"
+            />
+          </div>
+          <EditableField
+            value={analysis.scope.projectType.value}
+            onChange={(v) => onUpdate?.("scope.projectType", v)}
+            showBadge={false}
+            className="font-medium"
+          />
         </div>
         <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
-          <p className="mb-1 text-xs text-gray-500">{t("overview.complexity")}</p>
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-gray-500">{t("overview.complexity")}</p>
+            <DecisionBadge
+              source={analysis.scope.estimatedComplexity.confidence.source}
+              size="sm"
+            />
+          </div>
           <p className="font-medium capitalize text-white">
-            {t(`complexity.${analysis.scope.estimatedComplexity}`)}
+            {t(`complexity.${analysis.scope.estimatedComplexity.value}`)}
           </p>
         </div>
         <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
-          <p className="mb-1 text-xs text-gray-500">{t("overview.urgency")}</p>
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-gray-500">{t("overview.urgency")}</p>
+            <DecisionBadge
+              source={analysis.urgency.level.confidence.source}
+              size="sm"
+            />
+          </div>
           <span
             className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${
-              urgencyColors[analysis.urgency.level]
+              urgencyColors[analysis.urgency.level.value]
             }`}
           >
-            {t(`urgency.${analysis.urgency.level}`)}
+            {t(`urgency.${analysis.urgency.level.value}`)}
           </span>
         </div>
       </div>
 
-      {/* Confidence */}
-      <div className="flex items-center gap-3">
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-800">
-          <div
-            className="h-full bg-brand-500 transition-all"
-            style={{ width: `${analysis.confidenceScore}%` }}
-          />
+      {/* Confidence meter */}
+      <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-sm font-medium text-gray-300">{t("overview.analysisConfidence")}</p>
         </div>
-        <span className="text-sm text-gray-400">
-          {analysis.confidenceScore}% {t("overview.confidence")}
-        </span>
+        <ConfidenceMeter score={analysis.confidenceScore} />
+        {analysis.analysisNotes && (
+          <p className="mt-3 text-sm italic text-gray-500">{analysis.analysisNotes}</p>
+        )}
       </div>
 
-      {analysis.analysisNotes && (
-        <p className="text-sm italic text-gray-500">{analysis.analysisNotes}</p>
-      )}
+      {/* Quick action */}
+      <div className="flex justify-end">
+        <Link
+          href="/calculadora"
+          className="flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600"
+        >
+          {t("overview.nextAction")}
+          <IconChevronRight size={16} />
+        </Link>
+      </div>
     </div>
   )
 }
 
-function ProjectTab({
-  analysis,
-  t,
-}: {
-  analysis: ClientAnalysis
-  t: ReturnType<typeof useTranslations>
-}) {
+function ProjectTab({ analysis, t, onUpdate }: TabProps) {
   return (
     <div className="space-y-6">
-      {/* Deliverables */}
+      {/* Deliverables - editable list */}
       <div>
         <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-gray-500">
           {t("project.deliverables")}
         </h3>
-        <ul className="space-y-2">
-          {analysis.scope.suggestedDeliverables.map((item, i) => (
-            <li key={i} className="flex items-start gap-2">
-              <IconCheck size={16} className="mt-1 shrink-0 text-brand-400" />
-              <span className="text-gray-300">{item}</span>
-            </li>
-          ))}
-        </ul>
+        <EditableList
+          items={analysis.scope.suggestedDeliverables.value}
+          onChange={(items) => onUpdate?.("scope.suggestedDeliverables", items)}
+          confidence={analysis.scope.suggestedDeliverables.confidence}
+          addLabel={t("project.addDeliverable")}
+        />
       </div>
 
       {/* Uncertain areas */}
@@ -313,34 +411,42 @@ function ProjectTab({
         </ul>
       </div>
 
-      {/* Urgency details */}
+      {/* Urgency details - editable */}
       <div>
         <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-gray-500">
           {t("project.urgencyDetails")}
         </h3>
-        <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
+        <div className="space-y-3 rounded-xl border border-gray-800 bg-gray-800/50 p-4">
           <p className="text-gray-300">{analysis.urgency.reasoning}</p>
-          {analysis.urgency.deadline && (
-            <p className="mt-2 text-sm text-brand-400">
-              {t("project.deadline")}: {analysis.urgency.deadline}
-            </p>
-          )}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">{t("project.deadline")}:</span>
+            <EditableField
+              value={analysis.urgency.deadline?.value}
+              onChange={(v) => onUpdate?.("urgency.deadline", v)}
+              confidence={analysis.urgency.deadline?.confidence}
+              placeholder={t("project.noDeadline")}
+              className="text-brand-400"
+            />
+          </div>
           {analysis.urgency.flexibilityNotes && (
-            <p className="mt-2 text-sm text-gray-500">{analysis.urgency.flexibilityNotes}</p>
+            <p className="text-sm text-gray-500">{analysis.urgency.flexibilityNotes}</p>
           )}
         </div>
       </div>
+
+      {/* Action */}
+      <Link
+        href="/presupuestos"
+        className="flex items-center justify-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-3 text-brand-400 transition-colors hover:bg-brand-500/20"
+      >
+        <IconReceipt size={20} />
+        {t("project.createProposal")}
+      </Link>
     </div>
   )
 }
 
-function FinancialsTab({
-  analysis,
-  t,
-}: {
-  analysis: ClientAnalysis
-  t: ReturnType<typeof useTranslations>
-}) {
+function FinancialsTab({ analysis, t, onUpdate }: TabProps) {
   return (
     <div className="space-y-6">
       {/* Pricing guidance */}
@@ -351,26 +457,50 @@ function FinancialsTab({
         <p className="text-gray-300">{analysis.budget.pricingGuidance}</p>
       </div>
 
-      {/* Suggested rates */}
+      {/* Suggested rates - editable */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {analysis.budget.suggestedHourlyRate && (
-          <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
-            <p className="mb-1 text-xs text-gray-500">{t("financials.hourlyRate")}</p>
-            <p className="text-2xl font-bold text-brand-400">
-              ${analysis.budget.suggestedHourlyRate}
-              <span className="text-sm font-normal text-gray-500"> /hr</span>
-            </p>
+        <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-gray-500">{t("financials.hourlyRate")}</p>
+            <DecisionBadge
+              source={analysis.budget.suggestedHourlyRate.confidence.source}
+              confidence={analysis.budget.suggestedHourlyRate.confidence.level}
+              reason={analysis.budget.suggestedHourlyRate.confidence.reason}
+              size="sm"
+            />
           </div>
-        )}
-        {analysis.budget.suggestedProjectRate && (
-          <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
-            <p className="mb-1 text-xs text-gray-500">{t("financials.projectRate")}</p>
-            <p className="text-2xl font-bold text-brand-400">
-              ${analysis.budget.suggestedProjectRate}
-              <span className="text-sm font-normal text-gray-500"> USD</span>
-            </p>
+          <div className="flex items-baseline gap-1">
+            <span className="text-gray-400">$</span>
+            <EditableField
+              value={analysis.budget.suggestedHourlyRate.value}
+              onChange={(v) => onUpdate?.("budget.suggestedHourlyRate", Number(v))}
+              showBadge={false}
+              className="text-2xl font-bold text-brand-400"
+            />
+            <span className="text-sm text-gray-500">/hr</span>
           </div>
-        )}
+        </div>
+        <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs text-gray-500">{t("financials.projectRate")}</p>
+            <DecisionBadge
+              source={analysis.budget.suggestedProjectRate.confidence.source}
+              confidence={analysis.budget.suggestedProjectRate.confidence.level}
+              reason={analysis.budget.suggestedProjectRate.confidence.reason}
+              size="sm"
+            />
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-gray-400">$</span>
+            <EditableField
+              value={analysis.budget.suggestedProjectRate.value}
+              onChange={(v) => onUpdate?.("budget.suggestedProjectRate", Number(v))}
+              showBadge={false}
+              className="text-2xl font-bold text-brand-400"
+            />
+            <span className="text-sm text-gray-500">USD</span>
+          </div>
+        </div>
       </div>
 
       {/* Payment method recommendation */}
@@ -379,9 +509,9 @@ function FinancialsTab({
           {t("financials.paymentMethod")}
         </h3>
         <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
-          <div className="mb-2 flex items-center gap-2">
+          <div className="mb-3 flex items-center gap-2">
             <span className="rounded-full bg-brand-500/20 px-3 py-1 text-sm font-medium text-brand-400">
-              {t(`paymentMethods.${analysis.paymentMethod.primary}`)}
+              {t(`paymentMethods.${analysis.paymentMethod.primary.value}`)}
             </span>
             {analysis.paymentMethod.alternatives.map((alt) => (
               <span
@@ -391,6 +521,10 @@ function FinancialsTab({
                 {t(`paymentMethods.${alt}`)}
               </span>
             ))}
+            <DecisionBadge
+              source={analysis.paymentMethod.primary.confidence.source}
+              size="sm"
+            />
           </div>
           <p className="text-sm text-gray-400">{analysis.paymentMethod.reasoning}</p>
           {analysis.paymentMethod.riskNotes && (
@@ -399,25 +533,28 @@ function FinancialsTab({
         </div>
       </div>
 
-      {/* Link to calculator */}
-      <Link
-        href="/calculadora"
-        className="flex items-center justify-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-3 text-brand-400 transition-colors hover:bg-brand-500/20"
-      >
-        <IconCoin size={20} />
-        {t("financials.goToCalculator")}
-      </Link>
+      {/* Actions */}
+      <div className="flex gap-3">
+        <Link
+          href="/calculadora"
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-3 text-brand-400 transition-colors hover:bg-brand-500/20"
+        >
+          <IconCalculator size={20} />
+          {t("financials.goToCalculator")}
+        </Link>
+        <Link
+          href="/presupuestos"
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-3 text-white transition-colors hover:bg-brand-600"
+        >
+          <IconReceipt size={20} />
+          {t("financials.createProposal")}
+        </Link>
+      </div>
     </div>
   )
 }
 
-function FlagsTab({
-  analysis,
-  t,
-}: {
-  analysis: ClientAnalysis
-  t: ReturnType<typeof useTranslations>
-}) {
+function FlagsTab({ analysis, t }: Omit<TabProps, "onUpdate">) {
   const severityColors = {
     high: "border-red-500/30 bg-red-500/10",
     medium: "border-yellow-500/30 bg-yellow-500/10",
@@ -465,10 +602,19 @@ function FlagsTab({
             </span>
           </div>
           <p className="mb-3 text-sm text-gray-300">{flag.description}</p>
-          <p className="text-sm text-gray-400">
-            <strong className="text-gray-300">{t("flags.recommendation")}:</strong>{" "}
-            {flag.recommendation}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-400">
+              <strong className="text-gray-300">{t("flags.recommendation")}:</strong>{" "}
+              {flag.recommendation}
+            </p>
+            {flag.action && (
+              <ActionButton
+                action={flag.action}
+                variant="ghost"
+                size="sm"
+              />
+            )}
+          </div>
         </div>
       ))}
     </div>
@@ -480,33 +626,56 @@ function ReplyTab({
   t,
   onCopy,
   copied,
-}: {
-  analysis: ClientAnalysis
-  t: ReturnType<typeof useTranslations>
-  onCopy: () => void
-  copied: boolean
-}) {
+  onUpdate,
+}: TabProps & { onCopy: () => void; copied: boolean }) {
+  const tones: Array<"formal" | "friendly" | "professional"> = ["professional", "formal", "friendly"]
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium uppercase tracking-wider text-gray-500">
           {t("reply.suggested")}
         </h3>
-        <span className="rounded-full bg-gray-800 px-2 py-0.5 text-xs text-gray-400">
-          {t(`reply.tone.${analysis.suggestedReply.tone}`)}
-        </span>
+        <div className="flex gap-1">
+          {tones.map((tone) => (
+            <button
+              key={tone}
+              onClick={() => onUpdate?.("suggestedReply.tone", tone)}
+              className={`rounded-full px-2 py-0.5 text-xs transition-colors ${
+                analysis.suggestedReply.tone.value === tone
+                  ? "bg-brand-500/20 text-brand-400"
+                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+              }`}
+            >
+              {t(`reply.tone.${tone}`)}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {analysis.suggestedReply.subject && (
+      {analysis.suggestedReply.subject?.value && (
         <div className="rounded-lg border border-gray-800 bg-gray-800/50 px-4 py-2">
           <span className="text-xs text-gray-500">{t("reply.subject")}:</span>
-          <p className="text-white">{analysis.suggestedReply.subject}</p>
+          <EditableField
+            value={analysis.suggestedReply.subject.value}
+            onChange={(v) => onUpdate?.("suggestedReply.subject", v)}
+            confidence={analysis.suggestedReply.subject.confidence}
+            showBadge={false}
+          />
         </div>
       )}
 
       <div className="rounded-xl border border-gray-800 bg-gray-800/50 p-4">
-        <p className="whitespace-pre-wrap text-gray-300">{analysis.suggestedReply.body}</p>
-        <p className="mt-4 text-brand-400">{analysis.suggestedReply.callToAction}</p>
+        <EditableField
+          value={analysis.suggestedReply.body.value}
+          onChange={(v) => onUpdate?.("suggestedReply.body", v)}
+          multiline
+          showBadge={false}
+          className="whitespace-pre-wrap text-gray-300"
+        />
+        <p className="mt-4 border-t border-gray-700 pt-4 text-brand-400">
+          {analysis.suggestedReply.callToAction}
+        </p>
       </div>
 
       <button
@@ -531,13 +700,7 @@ function ReplyTab({
   )
 }
 
-function NextStepsTab({
-  analysis,
-  t,
-}: {
-  analysis: ClientAnalysis
-  t: ReturnType<typeof useTranslations>
-}) {
+function NextStepsTab({ analysis, t }: Omit<TabProps, "onUpdate">) {
   const priorityColors = {
     high: "bg-red-500",
     medium: "bg-yellow-500",
@@ -563,14 +726,20 @@ function NextStepsTab({
             </div>
             <p className="text-sm text-gray-400">{step.description}</p>
           </div>
-          {step.linkHref && (
+          {step.linkedAction ? (
+            <ActionButton
+              action={step.linkedAction}
+              variant="secondary"
+              size="sm"
+            />
+          ) : step.linkHref ? (
             <Link
               href={step.linkHref}
               className="shrink-0 rounded-lg border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 text-sm text-brand-400 transition-colors hover:bg-brand-500/20"
             >
               {t("nextSteps.go")}
             </Link>
-          )}
+          ) : null}
         </div>
       ))}
     </div>

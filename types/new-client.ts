@@ -4,6 +4,28 @@ export type UrgencyLevel = "urgent" | "normal" | "flexible"
 export type RedFlagSeverity = "high" | "medium" | "low"
 export type PaymentMethod = "transferencia" | "paypal" | "wise" | "crypto" | "efectivo" | "tarjeta"
 
+// Decision layer types - distinguishes facts from inferences
+export type DataSource = "detected" | "inferred" | "assumption"
+
+export interface ConfidenceInfo {
+  level: number // 0-100
+  source: DataSource
+  reason: string
+}
+
+export interface EditableValue<T> {
+  value: T
+  isEditable: boolean
+  confidence: ConfidenceInfo
+}
+
+export interface LinkedAction {
+  tool: "calculadora" | "presupuestos" | "recibos" | "pagos" | "whatsapp" | "email"
+  label: string
+  href?: string
+  prefillData?: Record<string, unknown>
+}
+
 export interface ClientMessage {
   content: string
   source: "whatsapp" | "email" | "brief" | "other"
@@ -11,16 +33,16 @@ export interface ClientMessage {
 }
 
 export interface ExtractedScope {
-  summary: string
-  projectType: string
-  estimatedComplexity: "low" | "medium" | "high"
-  suggestedDeliverables: string[]
+  summary: EditableValue<string>
+  projectType: EditableValue<string>
+  estimatedComplexity: EditableValue<"low" | "medium" | "high">
+  suggestedDeliverables: EditableValue<string[]>
   uncertainAreas: string[]
 }
 
 export interface UrgencyAnalysis {
-  level: UrgencyLevel
-  deadline?: string
+  level: EditableValue<UrgencyLevel>
+  deadline: EditableValue<string | undefined>
   reasoning: string
   flexibilityNotes?: string
 }
@@ -31,14 +53,14 @@ export interface BudgetClues {
   currency?: string
   rangeMin?: number
   rangeMax?: number
-  clientExpectation: "low" | "market" | "premium" | "unclear"
+  clientExpectation: EditableValue<"low" | "market" | "premium" | "unclear">
   pricingGuidance: string
-  suggestedHourlyRate?: number
-  suggestedProjectRate?: number
+  suggestedHourlyRate: EditableValue<number | undefined>
+  suggestedProjectRate: EditableValue<number | undefined>
 }
 
 export interface PaymentRecommendation {
-  primary: PaymentMethod
+  primary: EditableValue<PaymentMethod>
   alternatives: PaymentMethod[]
   reasoning: string
   riskNotes?: string
@@ -50,13 +72,15 @@ export interface RedFlag {
   description: string
   severity: RedFlagSeverity
   recommendation: string
+  action?: LinkedAction
 }
 
 export interface SuggestedReply {
-  tone: "formal" | "friendly" | "professional"
-  subject?: string
-  body: string
+  tone: EditableValue<"formal" | "friendly" | "professional">
+  subject: EditableValue<string | undefined>
+  body: EditableValue<string>
   callToAction: string
+  sentAt?: Date
 }
 
 export interface NextStep {
@@ -66,15 +90,17 @@ export interface NextStep {
   priority: "high" | "medium" | "low"
   linkedTool?: "calculadora" | "presupuestos" | "recibos" | "pagos"
   linkHref?: string
+  linkedAction?: LinkedAction
+  completed?: boolean
 }
 
 export interface ClientAnalysis {
   id: string
   createdAt: Date
   originalMessage: ClientMessage
-  clientName?: string
-  clientCompany?: string
-  clientEmail?: string
+  clientName: EditableValue<string | undefined>
+  clientCompany: EditableValue<string | undefined>
+  clientEmail: EditableValue<string | undefined>
   
   // Core analysis sections
   scope: ExtractedScope
@@ -88,6 +114,24 @@ export interface ClientAnalysis {
   // Meta
   confidenceScore: number // 0-100
   analysisNotes?: string
+}
+
+// Helper to create editable values
+export function createEditableValue<T>(
+  value: T,
+  source: DataSource = "inferred",
+  reason: string = "",
+  confidenceLevel: number = 70
+): EditableValue<T> {
+  return {
+    value,
+    isEditable: true,
+    confidence: {
+      level: confidenceLevel,
+      source,
+      reason,
+    },
+  }
 }
 
 // Analysis request/response for future API integration

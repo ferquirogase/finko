@@ -426,6 +426,15 @@
       "sendReminder": "Recordar"
     }
   },
+  "decision": {
+    "detected": "Detectado",
+    "inferred": "Inferido",
+    "assumption": "Supuesto",
+    "confidenceHigh": "Alta confianza",
+    "confidenceMedium": "Confianza media",
+    "confidenceLow": "Baja confianza",
+    "confidenceVeryLow": "Muy baja confianza"
+  },
   "newClient": {
     "title": "Tengo un cliente nuevo",
     "subtitle": "Pegá el mensaje de tu cliente y Finko te ayuda a analizar el proyecto, detectar riesgos y preparar tu respuesta.",
@@ -455,7 +464,12 @@
       "projectType": "Tipo de proyecto",
       "complexity": "Complejidad",
       "urgency": "Urgencia",
-      "confidence": "confianza"
+      "confidence": "confianza",
+      "analysisConfidence": "Confianza del análisis",
+      "addName": "Agregar nombre del cliente",
+      "addCompany": "Agregar empresa",
+      "addEmail": "Agregar email",
+      "nextAction": "Calcular tarifa"
     },
     "complexity": {
       "low": "Baja",
@@ -471,14 +485,18 @@
       "deliverables": "Entregables sugeridos",
       "uncertainAreas": "Áreas a clarificar",
       "urgencyDetails": "Análisis de urgencia",
-      "deadline": "Deadline detectado"
+      "deadline": "Deadline",
+      "noDeadline": "Sin deadline específico",
+      "addDeliverable": "Agregar entregable",
+      "createProposal": "Crear presupuesto con estos datos"
     },
     "financials": {
       "pricingGuidance": "Guía de precios",
       "hourlyRate": "Tarifa por hora sugerida",
       "projectRate": "Precio del proyecto sugerido",
       "paymentMethod": "Método de pago recomendado",
-      "goToCalculator": "Calcular tarifa con más detalle"
+      "goToCalculator": "Calcular tarifa",
+      "createProposal": "Crear presupuesto"
     },
     "paymentMethods": {
       "transferencia": "Transferencia",
