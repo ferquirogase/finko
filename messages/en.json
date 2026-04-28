@@ -12,6 +12,26 @@
     "noResults": "No results",
     "preview": "Preview"
   },
+  "messages": {
+    "suggestDraft": "Suggest message",
+    "draftMessage": "Draft message",
+    "channels": {
+      "whatsapp": "WhatsApp",
+      "email": "Email"
+    },
+    "tones": {
+      "formal": "Formal",
+      "friendly": "Friendly",
+      "professional": "Professional",
+      "firm": "Firm"
+    },
+    "subject": "Subject",
+    "fillPlaceholders": "Fill in",
+    "edit": "Edit",
+    "done": "Done",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
   "nav": {
     "tagline": "made by freelancers, for freelancers",
     "home": "Home",
@@ -416,7 +436,8 @@
       "title": "Pending follow-ups",
       "pending": "pending",
       "daysAgo": "days",
-      "contact": "Contact"
+      "contact": "Contact",
+      "draftMessage": "Message"
     },
     "paymentReminders": {
       "title": "Pending payments",
@@ -424,7 +445,8 @@
       "upcoming": "Due soon",
       "daysOverdue": "days overdue",
       "daysLeft": "days left",
-      "sendReminder": "Remind"
+      "sendReminder": "Remind",
+      "draftReminder": "Message"
     },
     "todayPriorities": {
       "title": "Today needs your attention",

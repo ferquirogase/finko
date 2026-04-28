@@ -1,7 +1,12 @@
-import { IconCash, IconAlertTriangle, IconClock } from "@tabler/icons-react"
+"use client"
+
+import { useState } from "react"
+import { IconCash, IconAlertTriangle, IconClock, IconMessage } from "@tabler/icons-react"
 import { useTranslations } from "next-intl"
 import type { PaymentReminder } from "@/lib/mock-dashboard-data"
 import { cn } from "@/lib/utils"
+import { generatePaymentReminder, type MessageDraft, type MessageTone, type MessageChannel } from "@/lib/mock-messages"
+import SuggestedMessage from "@/components/suggested-message"
 
 interface PaymentRemindersProps {
   reminders: PaymentReminder[]
@@ -56,6 +61,9 @@ export default function PaymentReminders({ reminders }: PaymentRemindersProps) {
 
 function PaymentCard({ reminder }: { reminder: PaymentReminder }) {
   const t = useTranslations("dashboard.paymentReminders")
+  const [showMessage, setShowMessage] = useState(false)
+  const [messageDraft, setMessageDraft] = useState<MessageDraft | null>(null)
+  const [currentChannel, setCurrentChannel] = useState<MessageChannel>("whatsapp")
 
   const statusStyles = {
     por_vencer: {
@@ -84,41 +92,108 @@ function PaymentCard({ reminder }: { reminder: PaymentReminder }) {
   const styles = statusStyles[reminder.status]
   const Icon = styles.icon
 
+  const daysOverdue = reminder.daysUntilDue < 0 ? Math.abs(reminder.daysUntilDue) : 0
   const daysText = reminder.daysUntilDue < 0 
-    ? `${Math.abs(reminder.daysUntilDue)} ${t("daysOverdue")}`
+    ? `${daysOverdue} ${t("daysOverdue")}`
     : `${reminder.daysUntilDue} ${t("daysLeft")}`
 
+  const handleDraftMessage = () => {
+    const draft = generatePaymentReminder(
+      reminder.clientName,
+      reminder.projectName,
+      reminder.amount,
+      reminder.currency,
+      daysOverdue,
+      reminder.dueDate,
+      currentChannel
+    )
+    setMessageDraft(draft)
+    setShowMessage(true)
+  }
+
+  const handleChannelChange = (channel: MessageChannel) => {
+    setCurrentChannel(channel)
+    const draft = generatePaymentReminder(
+      reminder.clientName,
+      reminder.projectName,
+      reminder.amount,
+      reminder.currency,
+      daysOverdue,
+      reminder.dueDate,
+      channel
+    )
+    setMessageDraft(draft)
+  }
+
+  // Determine available tones based on overdue status
+  const availableTones: MessageTone[] = daysOverdue > 14 
+    ? ["firm", "professional"] 
+    : ["friendly", "professional"]
+
+  const handleToneChange = (tone: MessageTone) => {
+    // Regenerate with appropriate scenario
+    const scenario = tone === "firm" ? "payment_reminder_firm" : "payment_reminder_friendly"
+    const draft = generatePaymentReminder(
+      reminder.clientName,
+      reminder.projectName,
+      reminder.amount,
+      reminder.currency,
+      daysOverdue,
+      reminder.dueDate,
+      currentChannel
+    )
+    setMessageDraft(draft)
+  }
+
   return (
-    <div className={cn(
-      "flex items-center gap-3 rounded-xl border p-3",
-      styles.border,
-      styles.bg
-    )}>
-      <div className={cn("shrink-0", styles.iconColor)}>
-        <Icon className="h-5 w-5" stroke={1.5} />
-      </div>
-      
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <p className="font-medium text-gray-100 truncate">{reminder.clientName}</p>
-          <span className="shrink-0 text-sm font-semibold text-gray-100">
-            ${reminder.amount.toLocaleString()}
-          </span>
+    <div className="space-y-2">
+      <div className={cn(
+        "flex items-center gap-3 rounded-xl border p-3",
+        styles.border,
+        styles.bg
+      )}>
+        <div className={cn("shrink-0", styles.iconColor)}>
+          <Icon className="h-5 w-5" stroke={1.5} />
         </div>
-        <p className="text-sm text-gray-400 truncate">{reminder.projectName}</p>
-        <div className="mt-1 flex items-center gap-2">
-          <span className={cn("rounded-md px-2 py-0.5 text-xs font-medium", styles.badge)}>
-            {daysText}
-          </span>
-          {reminder.invoiceNumber && (
-            <span className="text-xs text-gray-500">{reminder.invoiceNumber}</span>
-          )}
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-medium text-gray-100 truncate">{reminder.clientName}</p>
+            <span className="shrink-0 text-sm font-semibold text-gray-100">
+              ${reminder.amount.toLocaleString()}
+            </span>
+          </div>
+          <p className="text-sm text-gray-400 truncate">{reminder.projectName}</p>
+          <div className="mt-1 flex items-center gap-2">
+            <span className={cn("rounded-md px-2 py-0.5 text-xs font-medium", styles.badge)}>
+              {daysText}
+            </span>
+            {reminder.invoiceNumber && (
+              <span className="text-xs text-gray-500">{reminder.invoiceNumber}</span>
+            )}
+          </div>
         </div>
+
+        <button 
+          onClick={handleDraftMessage}
+          className="shrink-0 flex items-center gap-1.5 rounded-lg bg-brand-500/20 px-3 py-1.5 text-xs font-medium text-brand-400 transition-colors hover:bg-brand-500/30"
+        >
+          <IconMessage className="h-3.5 w-3.5" stroke={2} />
+          {t("draftReminder")}
+        </button>
       </div>
 
-      <button className="shrink-0 rounded-lg bg-gray-700/50 px-3 py-1.5 text-xs font-medium text-gray-300 transition-colors hover:bg-gray-700 hover:text-gray-100">
-        {t("sendReminder")}
-      </button>
+      {/* Suggested message */}
+      {showMessage && messageDraft && (
+        <SuggestedMessage
+          draft={messageDraft}
+          onToneChange={handleToneChange}
+          onChannelChange={handleChannelChange}
+          availableTones={availableTones}
+          availableChannels={["whatsapp", "email"]}
+          className="ml-8"
+        />
+      )}
     </div>
   )
 }
