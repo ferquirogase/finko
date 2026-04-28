@@ -1,5 +1,5 @@
 "use client"
-
+// AI Dashboard v2 - rebuilt after zod upgrade
 import { useState, useEffect, useCallback } from "react"
 import { useTranslations } from "next-intl"
 import { IconSparkles, IconLoader2, IconRefresh } from "@tabler/icons-react"
@@ -57,15 +57,20 @@ export function AIDashboardToday() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  console.log("[v0] AIDashboardToday render - isLoading:", isLoading, "insights:", !!insights, "error:", error)
+
   const loadInsights = useCallback(async () => {
+    console.log("[v0] AIDashboardToday loadInsights starting...")
     setIsLoading(true)
     setError(null)
     try {
       const context = buildContext()
+      console.log("[v0] AIDashboardToday context built:", JSON.stringify(context).slice(0, 200))
       const result = await generateDashboardInsights(context)
+      console.log("[v0] AIDashboardToday result received:", JSON.stringify(result).slice(0, 200))
       setInsights(result)
     } catch (err) {
-      console.error("[Finko] Error loading AI insights:", err)
+      console.error("[v0] AIDashboardToday Error loading AI insights:", err)
       setError(err instanceof Error ? err.message : "Error al cargar insights")
       // Keep showing mock data on error
     } finally {
