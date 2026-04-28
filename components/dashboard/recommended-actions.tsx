@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/navigation"
 import { IconBulb, IconMessageCircle, IconCash, IconFileText, IconTruck, IconEye } from "@tabler/icons-react"
 import { useTranslations } from "next-intl"

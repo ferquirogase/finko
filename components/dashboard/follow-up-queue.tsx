@@ -1,5 +1,3 @@
-"use client"
-
 import { IconUsers, IconMail, IconBrandWhatsapp, IconPhone, IconCheck, IconClock } from "@tabler/icons-react"
 import { useTranslations } from "next-intl"
 import type { FollowUpItem } from "@/lib/mock-dashboard-data"

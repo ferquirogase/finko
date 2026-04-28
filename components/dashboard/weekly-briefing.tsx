@@ -1,5 +1,3 @@
-"use client"
-
 import { IconTrendingUp, IconTrendingDown, IconMinus, IconAlertTriangle } from "@tabler/icons-react"
 import { useTranslations } from "next-intl"
 import type { WeeklyBriefing as WeeklyBriefingType } from "@/lib/mock-dashboard-data"

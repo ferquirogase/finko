@@ -1,5 +1,3 @@
-"use client"
-
 import { IconCash, IconAlertTriangle, IconClock } from "@tabler/icons-react"
 import { useTranslations } from "next-intl"
 import type { PaymentReminder } from "@/lib/mock-dashboard-data"

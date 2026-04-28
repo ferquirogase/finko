@@ -1,5 +1,3 @@
-"use client"
-
 import { IconAlertCircle, IconClock, IconMessageCircle, IconReceipt } from "@tabler/icons-react"
 import { useTranslations } from "next-intl"
 import type { UrgentAlert } from "@/lib/mock-dashboard-data"
