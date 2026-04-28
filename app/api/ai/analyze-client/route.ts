@@ -30,6 +30,14 @@ Sé específico y actionable. Piensa como un mentor de negocios para freelancers
 
 export async function POST(req: Request) {
   try {
+    if (!process.env.GROQ_API_KEY) {
+      console.error("[Finko AI] GROQ_API_KEY not found in environment")
+      return Response.json(
+        { success: false, error: "AI service not configured. Please add GROQ_API_KEY in Settings > Vars." },
+        { status: 500 }
+      )
+    }
+
     const { message, source } = await req.json()
 
     if (!message || typeof message !== "string") {
