@@ -21,7 +21,7 @@ import {
   IconReceipt,
 } from "@tabler/icons-react"
 import type { ClientAnalysis, ClientMessage, EditableValue } from "@/types/new-client"
-import { analyzeClientMessage } from "@/lib/mock-client-analysis"
+import { analyzeClientWithAI } from "@/lib/ai/client"
 import {
   DecisionBadge,
   EditableField,
@@ -104,8 +104,7 @@ export function NewClientIntake() {
     setIsAnalyzing(true)
     setError(null)
     try {
-      // Using mock analysis for demo - simulates AI behavior perfectly
-      const result = await analyzeClientMessage(message, source)
+      const result = await analyzeClientWithAI(message, source)
       setAnalysis(result)
       setActiveTab("overview")
     } catch (err) {
