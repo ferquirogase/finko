@@ -1,5 +1,10 @@
 import { generateText, Output } from "ai"
+import { createGroq } from "@ai-sdk/groq"
 import { clientAnalysisSchema } from "@/lib/ai/schemas"
+
+const groq = createGroq({
+  apiKey: process.env.GROQ_API_KEY,
+})
 
 const SYSTEM_PROMPT = `Eres Finko, un asistente inteligente para freelancers en Latinoamérica. Tu trabajo es analizar mensajes de potenciales clientes y extraer información estructurada para ayudar al freelancer a tomar decisiones.
 
