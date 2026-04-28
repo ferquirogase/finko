@@ -390,6 +390,7 @@
   },
   "dashboard": {
     "sectionTitle": "Tu semana",
+    "todaySection": "Hoy",
     "weeklyBriefing": {
       "title": "Resumen semanal",
       "criticalAlerts": "alertas",
@@ -424,6 +425,51 @@
       "daysOverdue": "días vencido",
       "daysLeft": "días restantes",
       "sendReminder": "Recordar"
+    },
+    "todayPriorities": {
+      "title": "Hoy necesitás atención en",
+      "completed": "completadas",
+      "whyNow": "Por qué ahora:",
+      "impact": "Impacto",
+      "types": {
+        "delivery": "Entrega",
+        "followup": "Seguimiento",
+        "payment": "Cobro",
+        "meeting": "Reunión",
+        "task": "Tarea"
+      }
+    },
+    "activeProjects": {
+      "title": "Proyectos activos",
+      "projects": "proyectos",
+      "total": "total",
+      "progress": "Progreso",
+      "daysLeft": "días restantes",
+      "delivered": "Entregado",
+      "nextMilestone": "Próximo hito",
+      "in": "en",
+      "days": "días",
+      "today": "Hoy",
+      "status": {
+        "en_progreso": "En progreso",
+        "esperando_feedback": "Esperando feedback",
+        "por_entregar": "Por entregar",
+        "en_revision": "En revisión"
+      }
+    },
+    "weeklyTimeline": {
+      "title": "Entregas esta semana",
+      "deliveriesThisWeek": "entregas programadas",
+      "noDeliveries": "Sin entregas programadas esta semana",
+      "days": {
+        "lunes": "Lunes",
+        "martes": "Martes",
+        "miercoles": "Miércoles",
+        "jueves": "Jueves",
+        "viernes": "Viernes",
+        "sabado": "Sábado",
+        "domingo": "Domingo"
+      }
     }
   },
   "decision": {

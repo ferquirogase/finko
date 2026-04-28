@@ -64,6 +64,65 @@ export interface PaymentReminder {
   daysUntilDue: number // negative if overdue
 }
 
+// ===== ETAPA 4: Execution Tracking Types =====
+
+export interface TodayPriority {
+  id: string
+  type: "delivery" | "followup" | "payment" | "meeting" | "task"
+  title: string
+  description: string
+  clientName?: string
+  projectName?: string
+  urgency: "critical" | "high" | "medium"
+  whyNow: string // AI explanation of why this is important today
+  impact?: string // e.g., "20% más probabilidad de cierre si respondes hoy"
+  dueTime?: string // e.g., "14:00" for meetings
+  actionLabel: string
+  actionHref?: string
+  completed: boolean
+}
+
+export interface ActiveProject {
+  id: string
+  clientName: string
+  projectName: string
+  status: "en_progreso" | "esperando_feedback" | "por_entregar" | "en_revision"
+  progress: number // 0-100
+  startDate: string
+  estimatedEndDate: string
+  daysRemaining: number
+  totalValue: number
+  currency: string
+  nextMilestone?: ProjectMilestone
+  nextAction: {
+    description: string
+    dueDate?: string
+    actionLabel: string
+    actionHref?: string
+  }
+  healthStatus: "on_track" | "at_risk" | "delayed"
+  healthReason?: string
+}
+
+export interface ProjectMilestone {
+  id: string
+  name: string
+  dueDate: string
+  status: "pending" | "in_progress" | "completed" | "overdue"
+  daysUntilDue: number
+}
+
+export interface WeeklyDelivery {
+  id: string
+  projectName: string
+  clientName: string
+  milestoneName: string
+  dueDate: string
+  dayOfWeek: "lunes" | "martes" | "miercoles" | "jueves" | "viernes" | "sabado" | "domingo"
+  status: "pending" | "in_progress" | "completed" | "at_risk"
+  progress: number
+}
+
 // Mock data - represents a typical freelancer's week
 export const mockWeeklyBriefing: WeeklyBriefing = {
   totalIngresos: 2850,
@@ -213,6 +272,194 @@ export const mockPaymentReminders: PaymentReminder[] = [
   },
 ]
 
+// ===== ETAPA 4: Execution Mock Data =====
+
+export const mockTodayPriorities: TodayPriority[] = [
+  {
+    id: "priority-1",
+    type: "delivery",
+    title: "Entregar revisión final de branding",
+    description: "Café del Centro espera los archivos finales hoy",
+    clientName: "Café del Centro",
+    projectName: "Branding Completo",
+    urgency: "critical",
+    whyNow: "El deadline es mañana y el cliente necesita tiempo para revisar",
+    impact: "Evitar retraso y mantener tu reputación de entregas a tiempo",
+    actionLabel: "Preparar entrega",
+    actionHref: "/presupuestos",
+    completed: false,
+  },
+  {
+    id: "priority-2",
+    type: "payment",
+    title: "Cobrar factura vencida a Startup XYZ",
+    description: "7 días de retraso en pago de $1,200 USD",
+    clientName: "Startup XYZ",
+    projectName: "Diseño Web",
+    urgency: "high",
+    whyNow: "Cada día que pasa reduce la probabilidad de cobro. Actuar hoy es clave.",
+    impact: "Recuperar $1,200 USD pendientes",
+    actionLabel: "Enviar recordatorio",
+    actionHref: "/recibos",
+    completed: false,
+  },
+  {
+    id: "priority-3",
+    type: "followup",
+    title: "Responder a E-Shop Latino",
+    description: "Lead caliente esperando propuesta de rediseño",
+    clientName: "E-Shop Latino",
+    urgency: "high",
+    whyNow: "Han pasado 2 días sin respuesta. Responder hoy aumenta cierre en 40%.",
+    impact: "Potencial proyecto de $3,000-5,000 USD",
+    actionLabel: "Crear presupuesto",
+    actionHref: "/presupuestos",
+    completed: false,
+  },
+  {
+    id: "priority-4",
+    type: "task",
+    title: "Actualizar progreso a Carlos Méndez",
+    description: "Cliente esperando status del proyecto de App Móvil",
+    clientName: "Carlos Méndez",
+    projectName: "App Móvil",
+    urgency: "medium",
+    whyNow: "4 días sin comunicación. Un update breve mantiene la confianza.",
+    actionLabel: "Enviar update",
+    completed: false,
+  },
+]
+
+export const mockActiveProjects: ActiveProject[] = [
+  {
+    id: "project-1",
+    clientName: "Café del Centro",
+    projectName: "Branding Completo",
+    status: "por_entregar",
+    progress: 90,
+    startDate: "2024-01-02",
+    estimatedEndDate: "2024-01-24",
+    daysRemaining: 2,
+    totalValue: 850,
+    currency: "USD",
+    nextMilestone: {
+      id: "milestone-1",
+      name: "Entrega final",
+      dueDate: "2024-01-24",
+      status: "in_progress",
+      daysUntilDue: 2,
+    },
+    nextAction: {
+      description: "Exportar archivos finales y preparar carpeta de entrega",
+      dueDate: "2024-01-23",
+      actionLabel: "Preparar entrega",
+    },
+    healthStatus: "on_track",
+  },
+  {
+    id: "project-2",
+    clientName: "Carlos Méndez",
+    projectName: "App Móvil",
+    status: "en_progreso",
+    progress: 45,
+    startDate: "2024-01-08",
+    estimatedEndDate: "2024-02-15",
+    daysRemaining: 24,
+    totalValue: 3500,
+    currency: "USD",
+    nextMilestone: {
+      id: "milestone-2",
+      name: "Prototipo interactivo",
+      dueDate: "2024-01-28",
+      status: "in_progress",
+      daysUntilDue: 6,
+    },
+    nextAction: {
+      description: "Completar pantallas de onboarding y conectar flujo",
+      dueDate: "2024-01-26",
+      actionLabel: "Continuar diseño",
+    },
+    healthStatus: "on_track",
+  },
+  {
+    id: "project-3",
+    clientName: "María García",
+    projectName: "Identidad Visual",
+    status: "esperando_feedback",
+    progress: 60,
+    startDate: "2024-01-10",
+    estimatedEndDate: "2024-02-05",
+    daysRemaining: 14,
+    totalValue: 1200,
+    currency: "USD",
+    nextMilestone: {
+      id: "milestone-3",
+      name: "Aprobación de logo",
+      dueDate: "2024-01-25",
+      status: "pending",
+      daysUntilDue: 3,
+    },
+    nextAction: {
+      description: "Esperar feedback de cliente sobre opciones de logo",
+      actionLabel: "Hacer follow-up",
+    },
+    healthStatus: "at_risk",
+    healthReason: "4 días sin respuesta del cliente. Puede afectar timeline.",
+  },
+  {
+    id: "project-4",
+    clientName: "Startup XYZ",
+    projectName: "Diseño Web",
+    status: "en_revision",
+    progress: 100,
+    startDate: "2023-12-15",
+    estimatedEndDate: "2024-01-15",
+    daysRemaining: 0,
+    totalValue: 1200,
+    currency: "USD",
+    nextAction: {
+      description: "Cobrar factura pendiente - proyecto entregado",
+      actionLabel: "Enviar recordatorio",
+      actionHref: "/recibos",
+    },
+    healthStatus: "delayed",
+    healthReason: "Proyecto entregado pero pago vencido hace 7 días.",
+  },
+]
+
+export const mockWeeklyDeliveries: WeeklyDelivery[] = [
+  {
+    id: "delivery-1",
+    projectName: "Branding Completo",
+    clientName: "Café del Centro",
+    milestoneName: "Entrega final",
+    dueDate: "2024-01-24",
+    dayOfWeek: "miercoles",
+    status: "in_progress",
+    progress: 90,
+  },
+  {
+    id: "delivery-2",
+    projectName: "Identidad Visual",
+    clientName: "María García",
+    milestoneName: "Aprobación de logo",
+    dueDate: "2024-01-25",
+    dayOfWeek: "jueves",
+    status: "at_risk",
+    progress: 60,
+  },
+  {
+    id: "delivery-3",
+    projectName: "App Móvil",
+    clientName: "Carlos Méndez",
+    milestoneName: "Prototipo interactivo",
+    dueDate: "2024-01-28",
+    dayOfWeek: "domingo",
+    status: "pending",
+    progress: 45,
+  },
+]
+
 // Helper function to get dashboard data (future: replace with API call)
 export async function getDashboardData() {
   // Simulate API delay
@@ -224,5 +471,8 @@ export async function getDashboardData() {
     recommendedActions: mockRecommendedActions,
     followUpQueue: mockFollowUpQueue,
     paymentReminders: mockPaymentReminders,
+    todayPriorities: mockTodayPriorities,
+    activeProjects: mockActiveProjects,
+    weeklyDeliveries: mockWeeklyDeliveries,
   }
 }

@@ -11,6 +11,9 @@ import {
   RecommendedActions,
   FollowUpQueue,
   PaymentReminders,
+  TodayPriorities,
+  ActiveProjects,
+  WeeklyTimeline,
 } from "@/components/dashboard"
 import {
   mockWeeklyBriefing,
@@ -18,6 +21,9 @@ import {
   mockRecommendedActions,
   mockFollowUpQueue,
   mockPaymentReminders,
+  mockTodayPriorities,
+  mockActiveProjects,
+  mockWeeklyDeliveries,
 } from "@/lib/mock-dashboard-data"
 
 const SubtleBackground = dynamic(() => import("@/components/subtle-background"))
@@ -126,6 +132,19 @@ export default function Home() {
             </div>
           </Link>
 
+          {/* ── Execution Copilot: Hoy ── */}
+          <section className="space-y-4">
+            <div className="flex items-center">
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-600">
+                {t("dashboard.todaySection")}
+              </h2>
+              <div className="h-px flex-1 ml-4 bg-gray-800" />
+            </div>
+
+            {/* Today's Priorities - main focus for the day */}
+            <TodayPriorities priorities={mockTodayPriorities} />
+          </section>
+
           {/* ── AI Dashboard: Tu semana ── */}
           <section className="space-y-4">
             <div className="flex items-center">
@@ -137,6 +156,12 @@ export default function Home() {
 
             {/* Weekly Briefing */}
             <WeeklyBriefing data={mockWeeklyBriefing} />
+
+            {/* Weekly Timeline and Active Projects */}
+            <div className="grid gap-4 lg:grid-cols-2">
+              <WeeklyTimeline deliveries={mockWeeklyDeliveries} />
+              <ActiveProjects projects={mockActiveProjects} />
+            </div>
 
             {/* Two-column layout for alerts and actions on larger screens */}
             <div className="grid gap-4 lg:grid-cols-2">
