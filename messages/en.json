@@ -426,6 +426,100 @@
       "sendReminder": "Remind"
     }
   },
+  "newClient": {
+    "title": "I have a new client",
+    "subtitle": "Paste your client's message and Finko helps you analyze the project, detect risks, and prepare your response.",
+    "backToDashboard": "Back to home",
+    "inputTitle": "Client message",
+    "inputDescription": "Paste the WhatsApp, email, or brief your potential client sent you.",
+    "placeholder": "Hi, I'm reaching out because we need a website for our company. We're a fintech startup and we want something modern and professional. How much would you charge for something like this? We'd need it ready by next month if possible...",
+    "source": {
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "brief": "Brief"
+    },
+    "characters": "characters",
+    "analyze": "Analyze with AI",
+    "analyzing": "Analyzing...",
+    "reset": "New analysis",
+    "tabs": {
+      "overview": "Overview",
+      "project": "Project",
+      "financials": "Financials",
+      "flags": "Flags",
+      "reply": "Reply",
+      "next": "Next"
+    },
+    "overview": {
+      "summary": "Summary",
+      "projectType": "Project type",
+      "complexity": "Complexity",
+      "urgency": "Urgency",
+      "confidence": "confidence"
+    },
+    "complexity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "urgency": {
+      "urgent": "Urgent",
+      "normal": "Normal",
+      "flexible": "Flexible"
+    },
+    "project": {
+      "deliverables": "Suggested deliverables",
+      "uncertainAreas": "Areas to clarify",
+      "urgencyDetails": "Urgency analysis",
+      "deadline": "Detected deadline"
+    },
+    "financials": {
+      "pricingGuidance": "Pricing guidance",
+      "hourlyRate": "Suggested hourly rate",
+      "projectRate": "Suggested project price",
+      "paymentMethod": "Recommended payment method",
+      "goToCalculator": "Calculate rate in detail"
+    },
+    "paymentMethods": {
+      "transferencia": "Bank transfer",
+      "paypal": "PayPal",
+      "wise": "Wise",
+      "crypto": "Crypto",
+      "efectivo": "Cash",
+      "tarjeta": "Card"
+    },
+    "flags": {
+      "noFlags": "No flags detected",
+      "noFlagsDescription": "The client's message shows no evident risk signals.",
+      "found": "{count} flags detected",
+      "recommendation": "Recommendation"
+    },
+    "severity": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "reply": {
+      "suggested": "Suggested reply",
+      "subject": "Subject",
+      "tone": {
+        "formal": "Formal",
+        "friendly": "Friendly",
+        "professional": "Professional"
+      },
+      "copy": "Copy reply",
+      "copied": "Copied",
+      "editNote": "Edit and personalize this reply before sending."
+    },
+    "nextSteps": {
+      "go": "Go"
+    },
+    "entryCard": {
+      "title": "I have a new client",
+      "description": "Analyze a potential client's message and get recommendations on pricing, scope, and possible red flags.",
+      "cta": "Analyze client"
+    }
+  },
   "metadata": {
     "title": "finko - Tools for freelancers",
     "description": "Calculate rates, generate proposals, and create professional invoices easily",

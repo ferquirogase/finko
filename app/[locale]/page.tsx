@@ -31,6 +31,7 @@ import {
   IconClock,
   IconTrendingUp,
   IconStar,
+  IconSparkles,
 } from "@tabler/icons-react"
 
 export default function Home() {
@@ -102,6 +103,28 @@ export default function Home() {
 
           {/* ── Hero ── */}
           <Hero />
+
+          {/* ── AI Entry: Nuevo Cliente ── */}
+          <Link
+            href="/nuevo-cliente"
+            className="group flex items-center gap-4 rounded-2xl border border-brand-500/30 bg-gradient-to-r from-brand-500/10 to-brand-600/5 p-5 transition-all duration-200 hover:border-brand-500/50 hover:from-brand-500/15 hover:to-brand-600/10"
+          >
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-500/20">
+              <IconSparkles className="h-6 w-6 text-brand-400" stroke={1.5} />
+            </div>
+            <div className="flex-1">
+              <h3 className="mb-0.5 font-semibold text-white">
+                {t("newClient.entryCard.title")}
+              </h3>
+              <p className="text-sm text-gray-400">
+                {t("newClient.entryCard.description")}
+              </p>
+            </div>
+            <div className="hidden items-center gap-1 text-sm font-medium text-brand-400 transition-all duration-200 group-hover:gap-2 sm:flex">
+              {t("newClient.entryCard.cta")}
+              <IconArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" stroke={2} />
+            </div>
+          </Link>
 
           {/* ── AI Dashboard: Tu semana ── */}
           <section className="space-y-4">
