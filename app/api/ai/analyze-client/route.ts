@@ -1,10 +1,5 @@
 import { generateText, Output } from "ai"
-import { createOpenAI } from "@ai-sdk/openai"
 import { clientAnalysisSchema } from "@/lib/ai/schemas"
-
-const openai = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 const SYSTEM_PROMPT = `Eres Finko, un asistente inteligente para freelancers en Latinoamérica. Tu trabajo es analizar mensajes de potenciales clientes y extraer información estructurada para ayudar al freelancer a tomar decisiones.
 
@@ -30,14 +25,6 @@ Sé específico y actionable. Piensa como un mentor de negocios para freelancers
 
 export async function POST(req: Request) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
-      console.error("[Finko AI] OPENAI_API_KEY not found in environment")
-      return Response.json(
-        { success: false, error: "AI service not configured. Please add OPENAI_API_KEY in Settings > Vars." },
-        { status: 500 }
-      )
-    }
-
     const { message, source } = await req.json()
 
     if (!message || typeof message !== "string") {
@@ -48,7 +35,7 @@ export async function POST(req: Request) {
     }
 
     const { output } = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: "openai/gpt-4o-mini",
       output: Output.object({
         schema: clientAnalysisSchema,
       }),
