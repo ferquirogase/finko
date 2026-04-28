@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation"
-import { IconArrowRight } from "@tabler/icons-react"
+import { IconArrowRight, IconSparkles } from "@tabler/icons-react"
 import { useTranslations } from "next-intl"
 
 export default function Hero() {
@@ -9,8 +9,8 @@ export default function Hero() {
     <div className="py-6 md:py-10">
       {/* Badge */}
       <div className="mb-6 flex justify-center md:justify-start">
-        <span className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
+        <span className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 text-xs font-medium text-brand-400">
+          <IconSparkles className="h-3.5 w-3.5" stroke={2} />
           {t("badge")}
         </span>
       </div>

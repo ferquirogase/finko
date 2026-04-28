@@ -1,4 +1,4 @@
-import { IconAlertCircle, IconClock, IconMessageCircle, IconReceipt } from "@tabler/icons-react"
+import { IconAlertCircle, IconClock, IconMessageCircle, IconReceipt, IconCircleCheck } from "@tabler/icons-react"
 import { useTranslations } from "next-intl"
 import type { UrgentAlert } from "@/lib/mock-dashboard-data"
 import { cn } from "@/lib/utils"
@@ -10,25 +10,41 @@ interface UrgentAlertsProps {
 export default function UrgentAlerts({ alerts }: UrgentAlertsProps) {
   const t = useTranslations("dashboard.urgentAlerts")
 
-  if (alerts.length === 0) return null
+  const isEmpty = alerts.length === 0
 
   return (
     <div className="rounded-2xl border border-gray-800 bg-gray-900/50 p-5">
       <div className="mb-4 flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/20">
-          <IconAlertCircle className="h-4 w-4 text-red-400" stroke={2} />
+        <div className={cn(
+          "flex h-8 w-8 items-center justify-center rounded-lg",
+          isEmpty ? "bg-green-500/20" : "bg-red-500/20"
+        )}>
+          {isEmpty ? (
+            <IconCircleCheck className="h-4 w-4 text-green-400" stroke={2} />
+          ) : (
+            <IconAlertCircle className="h-4 w-4 text-red-400" stroke={2} />
+          )}
         </div>
         <h2 className="text-lg font-semibold text-gray-100">{t("title")}</h2>
-        <span className="ml-auto rounded-full bg-red-500/20 px-2 py-0.5 text-xs font-medium text-red-400">
-          {alerts.length}
-        </span>
+        {!isEmpty && (
+          <span className="ml-auto rounded-full bg-red-500/20 px-2 py-0.5 text-xs font-medium text-red-400">
+            {alerts.length}
+          </span>
+        )}
       </div>
 
-      <div className="space-y-3">
-        {alerts.map((alert) => (
-          <AlertCard key={alert.id} alert={alert} />
-        ))}
-      </div>
+      {isEmpty ? (
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <p className="text-sm font-medium text-gray-300">{t("empty")}</p>
+          <p className="mt-1 text-xs text-gray-500">{t("emptyDescription")}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {alerts.map((alert) => (
+            <AlertCard key={alert.id} alert={alert} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

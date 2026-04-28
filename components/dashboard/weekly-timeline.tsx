@@ -68,7 +68,9 @@ export default function WeeklyTimeline({ deliveries }: WeeklyTimelineProps) {
       </div>
 
       {daysWithDeliveries.length === 0 && (
-        <p className="text-center text-sm text-gray-500 py-4">{t("noDeliveries")}</p>
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <p className="text-sm font-medium text-gray-300">{t("noDeliveries")}</p>
+        </div>
       )}
     </div>
   )

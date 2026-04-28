@@ -18,6 +18,7 @@ export default function ActiveProjects({ projects }: ActiveProjectsProps) {
   const t = useTranslations("dashboard.activeProjects")
 
   const totalValue = projects.reduce((sum, p) => sum + p.totalValue, 0)
+  const isEmpty = projects.length === 0
 
   return (
     <div className="rounded-2xl border border-gray-800 bg-gray-900/50 p-5">
@@ -29,19 +30,28 @@ export default function ActiveProjects({ projects }: ActiveProjectsProps) {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-100">{t("title")}</h2>
-            <p className="text-xs text-gray-500">
-              {projects.length} {t("projects")} — ${totalValue.toLocaleString()} USD {t("total")}
-            </p>
+            {!isEmpty && (
+              <p className="text-xs text-gray-500">
+                {projects.length} {t("projects")} — ${totalValue.toLocaleString()} USD {t("total")}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Projects List */}
-      <div className="space-y-3">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+      {/* Projects List or Empty State */}
+      {isEmpty ? (
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <p className="text-sm font-medium text-gray-300">{t("empty")}</p>
+          <p className="mt-1 text-xs text-gray-500">{t("emptyDescription")}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -21,6 +21,7 @@ export default function TodayPriorities({ priorities }: TodayPrioritiesProps) {
   const t = useTranslations("dashboard.todayPriorities")
 
   const completedCount = priorities.filter(p => p.completed).length
+  const isEmpty = priorities.length === 0
 
   return (
     <div className="rounded-2xl border border-gray-800 bg-gray-900/50 p-5">
@@ -32,19 +33,28 @@ export default function TodayPriorities({ priorities }: TodayPrioritiesProps) {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-100">{t("title")}</h2>
-            <p className="text-xs text-gray-500">
-              {completedCount}/{priorities.length} {t("completed")}
-            </p>
+            {!isEmpty && (
+              <p className="text-xs text-gray-500">
+                {completedCount}/{priorities.length} {t("completed")}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Priority List */}
-      <div className="space-y-3">
-        {priorities.map((priority) => (
-          <PriorityCard key={priority.id} priority={priority} />
-        ))}
-      </div>
+      {/* Priority List or Empty State */}
+      {isEmpty ? (
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <p className="text-sm font-medium text-gray-300">{t("empty")}</p>
+          <p className="mt-1 text-xs text-gray-500">{t("emptyDescription")}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {priorities.map((priority) => (
+            <PriorityCard key={priority.id} priority={priority} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -125,15 +135,18 @@ function PriorityCard({ priority }: PriorityCardProps) {
           )}
 
           {/* Why Now - AI insight */}
-          <div className="rounded-lg bg-gray-800/50 px-3 py-2 mb-3">
-            <p className="text-xs text-gray-400">
-              <span className="font-medium text-brand-400">{t("whyNow")}</span> {priority.whyNow}
-            </p>
-            {priority.impact && (
-              <p className="text-xs text-green-400 mt-1">
-                {t("impact")}: {priority.impact}
+          <div className="flex items-start gap-2 rounded-lg bg-brand-500/5 px-3 py-2 mb-3">
+            <IconSparkles className="h-3.5 w-3.5 shrink-0 text-brand-400 mt-0.5" stroke={2} />
+            <div>
+              <p className="text-xs text-gray-400">
+                {priority.whyNow}
               </p>
-            )}
+              {priority.impact && (
+                <p className="text-xs text-green-400 mt-1">
+                  {t("impact")}: {priority.impact}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Action Button */}

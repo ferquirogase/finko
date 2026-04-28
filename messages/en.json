@@ -41,11 +41,11 @@
     "payments": "Payments"
   },
   "hero": {
-    "badge": "100% free · No sign-up required",
+    "badge": "Your AI-powered freelance copilot",
     "title1": "Manage your",
     "titleHighlight": "freelance",
-    "title2": "career with confidence",
-    "subtitle": "Calculate fair rates, generate professional proposals, and manage your international payments. All in one place.",
+    "title2": "career with intelligence",
+    "subtitle": "Finko analyzes your projects, suggests pricing, detects risks, and helps you get paid. All with built-in intelligence.",
     "ctaCalculate": "Calculate my rate",
     "ctaBudget": "Create proposal"
   },
@@ -409,10 +409,10 @@
     }
   },
   "dashboard": {
-    "sectionTitle": "Your week",
-    "todaySection": "Today",
+    "sectionTitle": "This week",
+    "todaySection": "Your focus today",
     "weeklyBriefing": {
-      "title": "Weekly summary",
+      "title": "Your week at a glance",
       "criticalAlerts": "alerts",
       "income": "Income",
       "activeProjects": "Active projects",
@@ -422,37 +422,47 @@
       "vsLastWeek": "vs last week"
     },
     "urgentAlerts": {
-      "title": "Needs attention",
+      "title": "Risk alerts",
       "overduePayment": "Overdue payment",
       "upcomingDeadline": "Upcoming deadline",
       "noResponse": "No response",
-      "pendingInvoice": "Pending invoice"
+      "pendingInvoice": "Pending invoice",
+      "empty": "No active alerts",
+      "emptyDescription": "No risks detected. Keep it up."
     },
     "recommendedActions": {
-      "title": "Recommended actions",
-      "suggestion": "Suggestion"
+      "title": "Finko suggests",
+      "suggestion": "Suggestion",
+      "empty": "No suggestions right now",
+      "emptyDescription": "When I detect opportunities, I'll show them here."
     },
     "followUpQueue": {
-      "title": "Pending follow-ups",
+      "title": "Pending communications",
       "pending": "pending",
       "daysAgo": "days",
       "contact": "Contact",
-      "draftMessage": "Message"
+      "draftMessage": "Message",
+      "empty": "All caught up",
+      "emptyDescription": "No pending follow-ups."
     },
     "paymentReminders": {
-      "title": "Pending payments",
+      "title": "To collect",
       "overdue": "Overdue",
       "upcoming": "Due soon",
       "daysOverdue": "days overdue",
       "daysLeft": "days left",
       "sendReminder": "Remind",
-      "draftReminder": "Message"
+      "draftReminder": "Message",
+      "empty": "No pending payments",
+      "emptyDescription": "Your payments are up to date."
     },
     "todayPriorities": {
       "title": "Today needs your attention",
       "completed": "completed",
       "whyNow": "Why now:",
       "impact": "Impact",
+      "empty": "Nothing urgent today",
+      "emptyDescription": "Good time to advance projects or find new clients.",
       "types": {
         "delivery": "Delivery",
         "followup": "Follow-up",
@@ -462,7 +472,7 @@
       }
     },
     "activeProjects": {
-      "title": "Active projects",
+      "title": "In progress",
       "projects": "projects",
       "total": "total",
       "progress": "Progress",
@@ -472,6 +482,8 @@
       "in": "in",
       "days": "days",
       "today": "Today",
+      "empty": "No active projects",
+      "emptyDescription": "Analyze a new client to get started.",
       "status": {
         "en_progreso": "In progress",
         "esperando_feedback": "Waiting feedback",
@@ -482,7 +494,7 @@
     "weeklyTimeline": {
       "title": "Deliveries this week",
       "deliveriesThisWeek": "scheduled deliveries",
-      "noDeliveries": "No deliveries scheduled this week",
+      "noDeliveries": "No deliveries this week. Good time to plan ahead.",
       "days": {
         "lunes": "Monday",
         "martes": "Tuesday",
