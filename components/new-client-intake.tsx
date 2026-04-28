@@ -21,7 +21,7 @@ import {
   IconReceipt,
 } from "@tabler/icons-react"
 import type { ClientAnalysis, ClientMessage, EditableValue } from "@/types/new-client"
-import { analyzeClientMessage } from "@/lib/mock-client-analysis"
+import { analyzeClientWithAI } from "@/lib/ai/client"
 import {
   DecisionBadge,
   EditableField,
@@ -97,13 +97,19 @@ export function NewClientIntake() {
     })
   }, [])
 
+  const [error, setError] = useState<string | null>(null)
+
   const handleAnalyze = async () => {
     if (!message.trim()) return
     setIsAnalyzing(true)
+    setError(null)
     try {
-      const result = await analyzeClientMessage(message, source)
+      const result = await analyzeClientWithAI(message, source)
       setAnalysis(result)
       setActiveTab("overview")
+    } catch (err) {
+      console.error("[Finko] Error analyzing client:", err)
+      setError(err instanceof Error ? err.message : "Error al analizar el mensaje")
     } finally {
       setIsAnalyzing(false)
     }
@@ -194,6 +200,27 @@ export function NewClientIntake() {
             </button>
           </div>
         </div>
+
+        {/* Error display */}
+        {error && (
+          <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <div className="flex items-center justify-between">
+              <div className="flex items-start gap-2">
+                <IconAlertTriangle size={18} className="mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium">{t("error.title")}</p>
+                  <p className="mt-1 text-red-400/80">{error}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="shrink-0 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/20"
+              >
+                {t("error.retry")}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Results Section */}

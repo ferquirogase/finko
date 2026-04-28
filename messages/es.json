@@ -388,7 +388,7 @@
         "pro1": "Ampliamente aceptado globalmente",
         "pro2": "Fácil de usar",
         "pro3": "Reconocimiento de marca",
-        "con1": "Las comisiones más altas",
+        "con1": "Las comisiones m��s altas",
         "con2": "Retención de fondos ocasional",
         "con3": "Tipo de cambio desfavorable"
       }
@@ -529,8 +529,13 @@
     },
     "characters": "caracteres",
     "analyze": "Analizar con IA",
-    "analyzing": "Analizando...",
+    "analyzing": "Finko está analizando...",
     "reset": "Nuevo análisis",
+    "error": {
+      "title": "Error al analizar",
+      "generic": "No se pudo analizar el mensaje. Intentá de nuevo.",
+      "retry": "Reintentar"
+    },
     "tabs": {
       "overview": "Resumen",
       "project": "Proyecto",

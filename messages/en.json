@@ -529,8 +529,13 @@
     },
     "characters": "characters",
     "analyze": "Analyze with AI",
-    "analyzing": "Analyzing...",
+    "analyzing": "Finko is analyzing...",
     "reset": "New analysis",
+    "error": {
+      "title": "Analysis error",
+      "generic": "Could not analyze the message. Please try again.",
+      "retry": "Retry"
+    },
     "tabs": {
       "overview": "Overview",
       "project": "Project",
