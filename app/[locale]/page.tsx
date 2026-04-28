@@ -7,21 +7,17 @@ import BottomNav from "@/components/bottom-nav"
 import Image from "next/image"
 import {
   WeeklyBriefing,
-  UrgentAlerts,
-  RecommendedActions,
   FollowUpQueue,
   PaymentReminders,
-  TodayPriorities,
   ActiveProjects,
   WeeklyTimeline,
+  AIDashboardToday,
+  AIDashboardAlerts,
 } from "@/components/dashboard"
 import {
   mockWeeklyBriefing,
-  mockUrgentAlerts,
-  mockRecommendedActions,
   mockFollowUpQueue,
   mockPaymentReminders,
-  mockTodayPriorities,
   mockActiveProjects,
   mockWeeklyDeliveries,
 } from "@/lib/mock-dashboard-data"
@@ -141,8 +137,8 @@ export default function Home() {
               <div className="h-px flex-1 ml-4 bg-gray-800" />
             </div>
 
-            {/* Today's Priorities - main focus for the day */}
-            <TodayPriorities priorities={mockTodayPriorities} />
+            {/* AI-powered Today's Priorities */}
+            <AIDashboardToday />
           </section>
 
           {/* ── AI Dashboard: Tu semana ── */}
@@ -163,11 +159,8 @@ export default function Home() {
               <ActiveProjects projects={mockActiveProjects} />
             </div>
 
-            {/* Two-column layout for alerts and actions on larger screens */}
-            <div className="grid gap-4 lg:grid-cols-2">
-              <UrgentAlerts alerts={mockUrgentAlerts} />
-              <RecommendedActions actions={mockRecommendedActions} />
-            </div>
+            {/* AI-powered alerts and recommended actions */}
+            <AIDashboardAlerts />
 
             {/* Two-column layout for follow-ups and payments */}
             <div className="grid gap-4 lg:grid-cols-2">

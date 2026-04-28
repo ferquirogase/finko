@@ -221,3 +221,107 @@ export async function generateMessageWithAI(
 
   return message
 }
+
+/**
+ * Dashboard context for AI insights generation
+ */
+export interface DashboardContext {
+  projects?: Array<{
+    id: string
+    name: string
+    clientName: string
+    status: string
+    progress: number
+    daysLeft: number
+    totalValue: number
+  }>
+  payments?: Array<{
+    id: string
+    clientName: string
+    projectName: string
+    amount: number
+    currency: string
+    daysUntilDue: number
+    status: string
+  }>
+  followUps?: Array<{
+    id: string
+    clientName: string
+    projectName?: string
+    daysSinceContact: number
+    suggestedAction: string
+  }>
+}
+
+/**
+ * AI-generated dashboard insights
+ */
+export interface DashboardInsights {
+  todayPriorities: Array<{
+    id: string
+    type: "delivery" | "followup" | "payment" | "meeting" | "task"
+    title: string
+    description: string
+    clientName: string | null
+    projectName: string | null
+    dueTime: string | null
+    urgencyLevel: "critical" | "high" | "medium"
+    whyNow: string
+    impact: string | null
+    completed?: boolean
+  }>
+  recommendedActions: Array<{
+    id: string
+    type: "followup" | "cobro" | "propuesta" | "entrega" | "revision"
+    title: string
+    description: string
+    reason: string
+    clientName: string | null
+    suggestedDate: string | null
+    actionLabel: string
+    linkedTool: string | null
+  }>
+  urgentAlerts: Array<{
+    id: string
+    type: "overdue_payment" | "deadline" | "no_response" | "pending_invoice"
+    title: string
+    description: string
+    severity: "critical" | "high" | "medium"
+    clientName: string | null
+    projectName: string | null
+    amount: number | null
+    daysOverdue: number | null
+  }>
+  weeklyInsight: string
+}
+
+/**
+ * Generates AI-powered dashboard insights based on user's data
+ */
+export async function generateDashboardInsights(
+  context: DashboardContext
+): Promise<DashboardInsights> {
+  const response = await fetch("/api/ai/dashboard-insights", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      projects: context.projects || [],
+      payments: context.payments || [],
+      followUps: context.followUps || [],
+      currentDate: new Date().toISOString().split('T')[0],
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || "Error generating dashboard insights")
+  }
+
+  const { success, insights, error } = await response.json()
+  
+  if (!success || !insights) {
+    throw new Error(error || "Failed to generate dashboard insights")
+  }
+
+  return insights as DashboardInsights
+}

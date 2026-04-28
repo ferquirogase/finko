@@ -411,6 +411,14 @@
   "dashboard": {
     "sectionTitle": "This week",
     "todaySection": "Your focus today",
+    "ai": {
+      "analyzing": "Finko is analyzing...",
+      "generated": "AI generated",
+      "usingExample": "Using example data",
+      "refresh": "Refresh",
+      "weeklyInsight": "Weekly insight",
+      "generating": "Generating..."
+    },
     "weeklyBriefing": {
       "title": "Your week at a glance",
       "criticalAlerts": "alerts",

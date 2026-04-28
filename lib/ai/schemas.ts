@@ -69,6 +69,51 @@ export const messageGenerationSchema = z.object({
   body: z.string().describe("The message body"),
   tone: z.enum(["formal", "friendly", "professional", "firm"]).describe("Detected tone"),
   callToAction: z.string().describe("What the reader should do next"),
+  placeholders: z.array(z.string()).nullable().describe("List of placeholders that need to be filled"),
 })
 
 export type AIGeneratedMessage = z.infer<typeof messageGenerationSchema>
+
+// Schema for dashboard insights - AI-generated priorities and suggestions
+export const dashboardInsightsSchema = z.object({
+  todayPriorities: z.array(z.object({
+    id: z.string().describe("Unique identifier"),
+    type: z.enum(["delivery", "followup", "payment", "meeting", "task"]).describe("Priority type"),
+    title: z.string().describe("Short title"),
+    description: z.string().describe("Brief description"),
+    clientName: z.string().nullable().describe("Related client"),
+    projectName: z.string().nullable().describe("Related project"),
+    dueTime: z.string().nullable().describe("Due time if applicable (HH:mm)"),
+    urgencyLevel: z.enum(["critical", "high", "medium"]).describe("Urgency level"),
+    whyNow: z.string().describe("AI explanation of why this is a priority today"),
+    impact: z.string().nullable().describe("Potential impact of completing/missing this"),
+  })).describe("Top 3-5 priorities for today"),
+  
+  recommendedActions: z.array(z.object({
+    id: z.string().describe("Unique identifier"),
+    type: z.enum(["followup", "cobro", "propuesta", "entrega", "revision"]).describe("Action type"),
+    title: z.string().describe("Action title"),
+    description: z.string().describe("Why this action is recommended"),
+    reason: z.string().describe("AI reasoning for suggesting this"),
+    clientName: z.string().nullable().describe("Related client"),
+    suggestedDate: z.string().nullable().describe("Suggested date to complete"),
+    actionLabel: z.string().describe("CTA button label"),
+    linkedTool: z.string().nullable().describe("Related Finko tool"),
+  })).describe("AI-suggested actions based on context"),
+  
+  urgentAlerts: z.array(z.object({
+    id: z.string().describe("Unique identifier"),
+    type: z.enum(["overdue_payment", "deadline", "no_response", "pending_invoice"]).describe("Alert type"),
+    title: z.string().describe("Alert title"),
+    description: z.string().describe("Alert description"),
+    severity: z.enum(["critical", "high", "medium"]).describe("Severity level"),
+    clientName: z.string().nullable().describe("Related client"),
+    projectName: z.string().nullable().describe("Related project"),
+    amount: z.number().nullable().describe("Amount if financial"),
+    daysOverdue: z.number().nullable().describe("Days overdue if applicable"),
+  })).describe("Urgent alerts requiring attention"),
+  
+  weeklyInsight: z.string().describe("A brief AI insight about the week's workload and priorities"),
+})
+
+export type AIDashboardInsights = z.infer<typeof dashboardInsightsSchema>

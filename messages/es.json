@@ -388,7 +388,7 @@
         "pro1": "Ampliamente aceptado globalmente",
         "pro2": "Fácil de usar",
         "pro3": "Reconocimiento de marca",
-        "con1": "Las comisiones m��s altas",
+        "con1": "Las comisiones m����s altas",
         "con2": "Retención de fondos ocasional",
         "con3": "Tipo de cambio desfavorable"
       }
@@ -411,6 +411,14 @@
   "dashboard": {
     "sectionTitle": "Esta semana",
     "todaySection": "Tu foco de hoy",
+    "ai": {
+      "analyzing": "Finko esta analizando...",
+      "generated": "Generado con IA",
+      "usingExample": "Usando datos de ejemplo",
+      "refresh": "Actualizar",
+      "weeklyInsight": "Insight de la semana",
+      "generating": "Generando..."
+    },
     "weeklyBriefing": {
       "title": "Tu semana en resumen",
       "criticalAlerts": "alertas",
