@@ -3,11 +3,11 @@ import type { MetadataRoute } from "next"
 const baseUrl = "https://finkoapp.online"
 
 const routes = [
-  { path: "", priority: 1.0, changeFrequency: "monthly" as const },
-  { path: "/calculadora", priority: 0.9, changeFrequency: "monthly" as const },
-  { path: "/presupuestos", priority: 0.9, changeFrequency: "monthly" as const },
-  { path: "/recibos", priority: 0.9, changeFrequency: "monthly" as const },
-  { path: "/pagos-exterior", priority: 0.8, changeFrequency: "monthly" as const },
+  { path: "", priority: 1.0, changeFrequency: "daily" as const },
+  { path: "/calculadora", priority: 0.9, changeFrequency: "weekly" as const },
+  { path: "/presupuestos", priority: 0.8, changeFrequency: "monthly" as const },
+  { path: "/recibos", priority: 0.8, changeFrequency: "monthly" as const },
+  { path: "/pagos-exterior", priority: 0.7, changeFrequency: "monthly" as const },
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
