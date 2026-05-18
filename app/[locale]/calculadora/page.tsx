@@ -10,7 +10,9 @@ import BottomNav from "@/components/bottom-nav"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const SubtleBackground = dynamic(() => import("@/components/subtle-background"))
-const PricingCalculator = dynamic(() => import("@/components/pricing-calculator"))
+const PricingCalculator = dynamic(() => import("@/components/pricing-calculator"), {
+  loading: () => <div className="h-[600px] animate-pulse rounded-xl bg-white/5" />,
+})
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params

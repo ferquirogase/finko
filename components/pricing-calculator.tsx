@@ -218,7 +218,7 @@ export default function PricingCalculator() {
             <Calculator className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-100">{t("title")}</h2>
+            <h1 className="text-xl font-semibold text-gray-100">{t("title")}</h1>
             <p className="text-sm text-gray-500">{t("subtitle")}</p>
           </div>
         </div>
