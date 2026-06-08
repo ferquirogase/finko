@@ -1,7 +1,6 @@
 import type React from "react"
 import { Geist } from "next/font/google"
 import "./globals.css"
-import Script from "next/script"
 import GoogleServices from "@/components/google-services"
 
 const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-4132066770991120"
@@ -20,12 +19,10 @@ export default function RootLayout({
   return (
     <html className="dark" suppressHydrationWarning>
       <head>
-        <Script
-          id="google-adsense"
+        <script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}
           crossOrigin="anonymous"
-          strategy="beforeInteractive"
         />
         {/* Schema.org markup */}
         <script
