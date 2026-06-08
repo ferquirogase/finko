@@ -4,6 +4,7 @@ import { getMessages, getTranslations } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { notFound } from "next/navigation"
 import InfoBar from "@/components/info-bar"
+import CookieConsentBanner from "@/components/cookie-consent-banner"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -78,6 +79,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider locale={locale} messages={messages}>
       <InfoBar />
       {children}
+      <CookieConsentBanner />
     </NextIntlClientProvider>
   )
 }

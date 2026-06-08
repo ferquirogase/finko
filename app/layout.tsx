@@ -3,7 +3,6 @@ import { Geist } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
 import GoogleServices from "@/components/google-services"
-import CookieConsentBanner from "@/components/cookie-consent-banner"
 
 const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-4132066770991120"
 
@@ -62,7 +61,6 @@ export default function RootLayout({
       <body className={geist.className} suppressHydrationWarning>
         <GoogleServices />
         {children}
-        <CookieConsentBanner />
       </body>
     </html>
   )
