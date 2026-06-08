@@ -4,10 +4,8 @@ import { Link } from "@/i18n/navigation"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import BottomNav from "@/components/bottom-nav"
+import AdSenseAd from "@/components/adsense-ad"
 import Image from "next/image"
-
-const SubtleBackground = dynamic(() => import("@/components/subtle-background"))
-const Hero = dynamic(() => import("@/components/hero"))
 import {
   IconCalculator,
   IconFileText,
@@ -18,6 +16,9 @@ import {
   IconTrendingUp,
   IconStar,
 } from "@tabler/icons-react"
+
+const SubtleBackground = dynamic(() => import("@/components/subtle-background"))
+const Hero = dynamic(() => import("@/components/hero"))
 
 export default function Home() {
   const t = useTranslations()
@@ -85,17 +86,14 @@ export default function Home() {
       <div className="mx-auto max-w-3xl px-4 py-8">
         <Navbar />
         <main className="space-y-16 pb-24">
-
-          {/* ── Hero ── */}
           <Hero />
 
-          {/* ── Herramientas ── */}
           <section>
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-600">
                 {t("home.toolsTitle")}
               </h2>
-              <div className="h-px flex-1 ml-4 bg-gray-800" />
+              <div className="ml-4 h-px flex-1 bg-gray-800" />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -109,7 +107,7 @@ export default function Home() {
                     <div className={`rounded-xl ${tool.accentBg} p-2.5`}>
                       <tool.icon className={`h-5 w-5 ${tool.accent}`} stroke={1.5} />
                     </div>
-                    <span className="text-xs font-mono font-semibold text-gray-700">{tool.number}</span>
+                    <span className="font-mono text-xs font-semibold text-gray-700">{tool.number}</span>
                   </div>
 
                   <h3 className="mb-1.5 font-semibold text-gray-100">{t(tool.titleKey as any)}</h3>
@@ -117,54 +115,59 @@ export default function Home() {
 
                   <div className="mt-4 flex items-center gap-1 text-xs font-medium text-gray-600 transition-all duration-200 group-hover:gap-2 group-hover:text-gray-400">
                     {t("common.open")}
-                    <IconArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" stroke={2} />
+                    <IconArrowRight
+                      className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+                      stroke={2}
+                    />
                   </div>
                 </Link>
               ))}
             </div>
           </section>
 
-          {/* ── Banner Saldo ── */}
           <a
             href="https://saldo.com.ar/"
             target="_blank"
             rel="noopener noreferrer"
-            className="block rounded-2xl overflow-hidden relative transition-all duration-200 hover:scale-[1.01] hover:shadow-xl hover:shadow-black/30"
+            className="relative block overflow-hidden rounded-2xl transition-all duration-200 hover:scale-[1.01] hover:shadow-xl hover:shadow-black/30"
             style={{ minHeight: "150px" }}
           >
-            <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600" />
-            <div className="relative z-10 py-6 px-5 sm:py-8 flex flex-col items-center justify-center text-center">
+            <div className="absolute inset-0 h-full w-full bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600" />
+            <div className="relative z-10 flex flex-col items-center justify-center px-5 py-6 text-center sm:py-8">
               <div className="mb-3">
                 <Image
                   src="/logo-saldo.png"
                   alt="Logo Saldo"
                   width={100}
                   height={50}
-                  className="sm:w-[120px] h-auto"
+                  className="h-auto sm:w-[120px]"
                   style={{ objectFit: "contain" }}
                 />
               </div>
               <div className="max-w-[280px] sm:max-w-md">
-                <h3 className="text-lg sm:text-xl font-bold text-white break-words sm:whitespace-nowrap">
+                <h3 className="break-words text-lg font-bold text-white sm:text-xl sm:whitespace-nowrap">
                   {t("home.saldo.title")}
                 </h3>
-                <p className="mt-1 text-sm sm:text-base text-white/90">
-                  {t("home.saldo.subtitle")}
-                </p>
+                <p className="mt-1 text-sm text-white/90 sm:text-base">{t("home.saldo.subtitle")}</p>
               </div>
             </div>
           </a>
 
-          {/* ── Por qué usarlas ── */}
+          <AdSenseAd
+            slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT}
+            format="auto"
+            className="rounded-2xl border border-dashed border-gray-800 bg-gray-900/60 p-4"
+          />
+
           <section>
             <div className="mb-6 flex items-center">
               <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-600">
                 {t("home.whyTitle")}
               </h2>
-              <div className="h-px flex-1 ml-4 bg-gray-800" />
+              <div className="ml-4 h-px flex-1 bg-gray-800" />
             </div>
 
-            <div className="grid gap-px rounded-2xl overflow-hidden border border-gray-800 sm:grid-cols-3">
+            <div className="grid gap-px overflow-hidden rounded-2xl border border-gray-800 sm:grid-cols-3">
               {benefits.map((b) => (
                 <div key={b.titleKey} className="flex flex-col gap-3 bg-gray-900 p-5">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-800 text-gray-400">
@@ -178,7 +181,6 @@ export default function Home() {
               ))}
             </div>
           </section>
-
         </main>
         <Footer />
         <BottomNav />

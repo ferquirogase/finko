@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation"
 import { IconBrandLinkedin, IconCoffee } from "@tabler/icons-react"
 import { Space_Grotesk } from "next/font/google"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -11,6 +11,8 @@ const spaceGrotesk = Space_Grotesk({
 
 export default function Footer() {
   const t = useTranslations("footer")
+  const locale = useLocale()
+  const isEnglish = locale === "en"
 
   return (
     <footer className="rounded-3xl border border-gray-800 bg-gray-900 py-12 pb-20">
@@ -22,9 +24,7 @@ export default function Footer() {
                 finko
               </span>
             </Link>
-            <p className="text-sm text-gray-500">
-              {t("description")}
-            </p>
+            <p className="text-sm text-gray-500">{t("description")}</p>
             <div className="flex items-center space-x-4">
               <Link
                 href="https://www.linkedin.com/in/ferquirogase/"
@@ -39,9 +39,7 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col items-center">
-            <p className="mb-2 text-center text-sm text-gray-400">
-              {t("coffee")}
-            </p>
+            <p className="mb-2 text-center text-sm text-gray-400">{t("coffee")}</p>
             <a
               href="https://cafecito.app/ferquirogaux"
               target="_blank"
@@ -55,6 +53,14 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 border-t border-gray-800 pt-8 text-center">
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-gray-500">
+            <Link href="/privacidad" className="transition-colors hover:text-brand-400">
+              {isEnglish ? "Privacy policy" : "Política de privacidad"}
+            </Link>
+            <Link href="/cookies" className="transition-colors hover:text-brand-400">
+              {isEnglish ? "Cookie policy" : "Política de cookies"}
+            </Link>
+          </div>
           <p className="text-sm text-gray-600">© {new Date().getFullYear()} Finko. {t("rights")}</p>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import BottomNav from "@/components/bottom-nav"
+import AdSenseAd from "@/components/adsense-ad"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const SubtleBackground = dynamic(() => import("@/components/subtle-background"))
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const t = await getTranslations({ locale, namespace: "metadata.pagos" })
   const baseUrl = "https://finkoapp.online"
   const path = locale === "en" ? "/en/pagos-exterior" : "/pagos-exterior"
+
   return {
     title: t("title"),
     description: t("description"),
@@ -107,6 +109,11 @@ export default async function PagosExteriorPage() {
           </div>
 
           <PaymentMethods />
+          <AdSenseAd
+            slot={process.env.NEXT_PUBLIC_ADSENSE_PAYMENTS_SLOT}
+            format="auto"
+            className="rounded-2xl border border-dashed border-gray-800 bg-gray-900/60 p-4"
+          />
           <PaymentFAQ />
         </div>
         <Footer />

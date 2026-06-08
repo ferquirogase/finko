@@ -2,6 +2,10 @@ import type React from "react"
 import { Geist } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
+import GoogleServices from "@/components/google-services"
+import CookieConsentBanner from "@/components/cookie-consent-banner"
+
+const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "ca-pub-4132066770991120"
 
 const geist = Geist({
   subsets: ["latin"],
@@ -17,17 +21,13 @@ export default function RootLayout({
   return (
     <html className="dark" suppressHydrationWarning>
       <head>
-        {/* Google Analytics */}
-        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-WJQ2C9VR70" strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-WJQ2C9VR70');
-          `}
-        </Script>
-
+        <Script
+          id="google-adsense"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         {/* Schema.org markup */}
         <script
           type="application/ld+json"
@@ -60,7 +60,9 @@ export default function RootLayout({
         />
       </head>
       <body className={geist.className} suppressHydrationWarning>
+        <GoogleServices />
         {children}
+        <CookieConsentBanner />
       </body>
     </html>
   )
